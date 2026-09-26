@@ -1,0 +1,39 @@
+# Workspace rules
+
+Keep Python modular. Application code lives in `src/`. Do not put math, ranking, or data-loading logic in tests, scripts, or notebooks.
+
+## Math rules
+
+Standard counting z-scores:
+
+```
+z = (stat - mean) / std_dev
+```
+
+Negative stat (TO):
+
+```
+z = -1 * (stat - mean) / std_dev
+```
+
+Percentages (FG%, FT%) MUST be volume-weighted:
+
+```
+FG_Impact = (FG% - Mean_FG%) * FGA
+FT_Impact = (FT% - Mean_FT%) * FTA
+```
+
+Standardize each impact onto the same scale as counting z-scores before summing:
+
+```
+z_FG% = (FG_Impact - mean(FG_Impact)) / std_dev(FG_Impact)
+z_FT% = (FT_Impact - mean(FT_Impact)) / std_dev(FT_Impact)
+```
+
+Use the player-pool population standard deviation (`ddof=0`). If a standard deviation is 0, the z-score for that category is 0.
+
+## Punt strategies
+
+Support active punt strategies. If punt categories are passed, drop their z-scores from the final score sum. Punting changes the total only. Stored per-category z-scores stay intact.
+
+Category keys: PTS, REB, AST, STL, BLK, 3PM, FG%, FT%, TO.
