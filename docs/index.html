@@ -3,75 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pilsner draft helper</title>
+  <title>Pilsner fantasy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/helper.css">
   <style>
-    :root {
-      --paper: #f3eee3;
-      --ink: #1a1a18;
-      --mute: #5c574e;
-      --rule: #cfc6b4;
-      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
-      color: var(--ink);
-      background: var(--paper);
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; }
-    a { color: var(--ink); }
-    .sheet { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
-    header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: baseline;
-      border-bottom: 2px solid var(--ink);
-      padding-bottom: 8px;
-    }
-    header p, header a { margin: 0; }
-    h1 {
-      font-size: 2.4rem;
-      letter-spacing: -0.04em;
-      margin: 18px 0 8px;
-      max-width: 16ch;
-      line-height: 0.95;
-    }
-    .lede { color: var(--mute); max-width: 38rem; line-height: 1.45; }
-    pre {
-      background: #fffdf7;
+    .picks { display: grid; gap: 12px; margin: 28px 0; }
+    .picks a {
+      display: block;
+      padding: 18px 20px;
       border: 2px solid var(--ink);
-      padding: 16px 18px;
-      overflow: auto;
-      font-size: 0.92rem;
-      line-height: 1.5;
-    }
-    .go {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 14px 20px;
-      background: var(--ink);
-      color: var(--paper);
-      font-weight: 700;
+      background: #fffdf7;
       text-decoration: none;
+      color: inherit;
     }
+    .picks a strong { display: block; font-size: 1.4rem; letter-spacing: -0.03em; }
+    .picks a span { color: var(--mute); }
+    .picks a.go-link { background: var(--ink); color: var(--paper); }
+    .picks a.go-link span { color: #d9d2c4; }
   </style>
 </head>
 <body>
   <main class="sheet">
     <header>
-      <p>Draft helper</p>
-      <a href="https://github.com/chamberneezy/fantasy">GitHub</a>
+      <p>3. Pilsner Fantasy Liga</p>
     </header>
-    <h1>Run it on your machine. Then open /helper.</h1>
-    <p class="lede">GitHub Pages cannot host the live pad. This is a Flask app. Clone the repo, start the server, and use <strong>http://127.0.0.1:5340/helper</strong>. It does not open Yahoo and it does not bid. 3. Pilsner: Sold and Me. Budget is your draft dollars, default $200.</p>
-    <pre>git clone https://github.com/chamberneezy/fantasy.git
-cd fantasy
-git checkout cursor/3rd-league-draft-dollars
-python3 -m pip install -r requirements.txt
-python3 src/draft_server.py</pre>
-    <p class="lede">Then open the helper. Mock is <code>/draft</code>. Lab is <code>/lab</code>.</p>
-    <a class="go" href="https://github.com/chamberneezy/fantasy/tree/cursor/3rd-league-draft-dollars">Open the repo</a>
+    <h1>Open the helper. Practice the mock.</h1>
+    <p class="lede">This runs in your browser. No clone, no localhost, no Yahoo login. Sold and Me on live night. Mock draft is the practice room with clocks.</p>
+    <div class="picks">
+      <a class="go-link" href="helper.html"><strong>Helper</strong><span>Tap a name. Sold is the room. Me is you. Default $200 draft dollars.</span></a>
+      <a href="draft.html"><strong>Mock draft</strong><span>Practice nomination, $1 opens, 20-second raises. Computers fill the other seats.</span></a>
+    </div>
   </main>
 </body>
 </html>
