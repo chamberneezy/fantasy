@@ -29,7 +29,7 @@ function money(value) {
 function render() {
   app.innerHTML = `
     <section class="room">
-      <header>
+      <header class="banner">
         <p>Draft lab</p>
         <span><a href="/helper">Helper</a> · <a href="/draft">Mock</a></span>
       </header>

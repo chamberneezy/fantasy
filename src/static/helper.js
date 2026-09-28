@@ -125,10 +125,12 @@ function render() {
 function gateHtml() {
   return `
     <section class="sheet">
-      <header>
+      <header class="banner">
         <p>Draft helper</p>
-        <a href="/draft">Practice mock</a>
-        <a href="/lab">Lab</a>
+        <nav class="links">
+          <a href="/draft">Practice mock</a>
+          <a href="/lab">Lab</a>
+        </nav>
       </header>
       <h1>Tap the name. Then Sold or Me.</h1>
       <p class="lede">3. Pilsner Fantasy Liga. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. Third league has no dynasty this year, so use Sold and Me. Keep and Locked stay for a 1st/2nd night only.</p>
@@ -173,7 +175,7 @@ function deskHtml() {
   const seats = (state.rosters && state.rosters[0] && state.rosters[0].slots) || [];
   return `
     <section class="sheet">
-      <header>
+      <header class="banner">
         <p>Draft helper</p>
         <span>${money(state.budget_left)} · ${state.spots_left} seats</span>
       </header>

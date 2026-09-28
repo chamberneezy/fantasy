@@ -122,7 +122,7 @@ function render() {
 function gateHtml() {
   return `
     <section class="sheet">
-      <header>
+      <header class="banner">
         <p>Draft helper</p>
         <nav class="links">
           <a href="index.html">Home</a>
@@ -173,7 +173,7 @@ function deskHtml() {
   const seats = (state.rosters && state.rosters[0] && state.rosters[0].slots) || [];
   return `
     <section class="sheet">
-      <header>
+      <header class="banner">
         <p>Draft helper</p>
         <nav class="links">
           <a href="index.html">Home</a>

@@ -1,12 +1,14 @@
 :root {
-  --bg: #14161a;
-  --panel: #1e2228;
-  --ink: #ece8dc;
-  --mute: #8d877c;
-  --line: #32363d;
-  --gold: #d4a017;
-  --stay: #3d9b6e;
-  --heat: #d24b4b;
+  --nba-red: #c8102e;
+  --nba-blue: #1d428a;
+  --bg: #eef2f6;
+  --panel: #ffffff;
+  --ink: #0c2340;
+  --mute: #4d5d73;
+  --line: #d5deea;
+  --gold: #f4c542;
+  --stay: #1d428a;
+  --heat: #c8102e;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
   color: var(--ink);
   background: var(--bg);
@@ -16,27 +18,32 @@ body { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 3px solid var(--nba-blue);
   outline-offset: 2px;
 }
 
 .room { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
-.room header {
+.room header, .banner {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: baseline;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
+  flex-wrap: wrap;
+  background: var(--nba-blue);
+  color: white;
+  margin: -28px -20px 22px;
+  padding: 14px 20px 10px;
+  border-bottom: 6px solid var(--nba-red);
 }
-.room header p { margin: 0; }
-.room header a { color: var(--ink); }
+.room header p, .banner p { margin: 0; }
+.room header a, .banner a { color: white; }
 .room h1 {
   font-size: 2.2rem;
   letter-spacing: -0.04em;
   margin: 20px 0 8px;
   max-width: 16ch;
   line-height: 0.95;
+  color: var(--nba-blue);
 }
 .lede { color: var(--mute); max-width: 42rem; }
 .tools {
@@ -50,21 +57,23 @@ label { display: grid; gap: 4px; color: var(--mute); font-size: 0.85rem; }
 input, select {
   background: var(--panel);
   border: 1px solid var(--line);
+  border-radius: 6px;
   min-height: 40px;
   padding: 6px 10px;
 }
 .go {
-  background: var(--ink);
-  color: var(--bg);
-  border: 0;
+  background: var(--nba-red);
+  color: white;
+  border: 1px solid var(--nba-red);
+  border-radius: 6px;
   min-height: 40px;
   padding: 0 14px;
   font-weight: 600;
 }
 .go.quiet {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--nba-blue);
+  border: 1px solid var(--nba-blue);
 }
 .error { color: var(--heat); }
 .plays { padding: 0; margin: 0 0 22px; }
@@ -77,23 +86,24 @@ td button {
   background: none;
   border: 0;
   padding: 0;
-  color: var(--ink);
+  color: var(--nba-blue);
   text-decoration: underline;
 }
 .heat { color: var(--heat); }
 .card {
-  background: var(--panel);
-  border: 1px solid var(--line);
+  background: var(--nba-blue);
+  color: white;
+  border: 0;
   padding: 16px 18px;
   margin: 22px 0;
 }
 .card h2 { margin: 0 0 8px; font-size: 1.4rem; }
 .card .now { color: var(--gold); font-size: 1.8rem; font-weight: 700; margin: 0; }
 .next { list-style: none; padding: 0; margin: 12px 0 0; }
-.next li { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px solid var(--line); }
+.next li { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px solid rgba(255, 255, 255, 0.18); }
 
 .squad { margin: 8px 0 28px; }
-.squad h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 10px; }
+.squad h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 10px; color: var(--nba-blue); }
 .squad ol { list-style: none; margin: 0; padding: 0; }
 .squad li {
   display: grid;
@@ -104,7 +114,7 @@ td button {
   border-top: 1px solid var(--line);
   font-variant-numeric: tabular-nums;
 }
-.squad .pos { color: var(--gold); font-weight: 600; }
+.squad .pos { color: var(--nba-red); font-weight: 600; }
 .squad .rate { text-align: right; }
 .squad .alts { color: var(--mute); font-size: 0.85rem; }
 
