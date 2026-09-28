@@ -6,6 +6,11 @@ let selectedPlayer = "";
 let viewing = 0;
 let error = "";
 let clock = null;
+const MARK = "/static/mark.png";
+
+function brand() {
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="40" height="40" alt=""></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+}
 
 async function api(path, body) {
   const response = await fetch(path, {
@@ -33,7 +38,15 @@ function setupHtml() {
   const teams = state.team_count || 16;
   return `
     <section class="setup">
-      <header class="banner"><p>Pilsner mock</p></header>
+      <header class="banner">
+        <div class="banner-inner">
+          ${brand()}
+          <nav class="links">
+            <a href="/helper">Helper</a>
+            <a href="/lab">Lab</a>
+          </nav>
+        </div>
+      </header>
       <h1>Where do you nominate?</h1>
       <p class="lede">This is the practice room: Yahoo clocks, computers, circular nominations. The live helper is a different page. The lab runs thousands of rooms and sale scenarios.</p>
       <div class="slots" id="slot-choices"></div>
@@ -89,7 +102,15 @@ function boardHtml() {
       : `${state.your_turn ? "You nominate" : `${state.on_clock} nominates`} · ${clock}`;
   return `
     <section class="board">
-      <header class="banner"><p>Pilsner mock</p></header>
+      <header class="banner">
+        <div class="banner-inner">
+          ${brand()}
+          <nav class="links">
+            <a href="/helper">Helper</a>
+            <a href="/lab">Lab</a>
+          </nav>
+        </div>
+      </header>
       <div class="board-head">
         <div class="call">
           <h1>${title}</h1>

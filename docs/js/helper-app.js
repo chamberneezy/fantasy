@@ -34,6 +34,11 @@ let line = "";
 let hammer = null;
 let lastPlayer = "";
 let searchCaret = null;
+const MARK = "img/mark.png";
+
+function brand() {
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="40" height="40" alt=""></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+}
 
 async function api(path, body) {
   try {
@@ -123,12 +128,14 @@ function gateHtml() {
   return `
     <section class="sheet">
       <header class="banner">
-        <p>Draft helper</p>
-        <nav class="links">
-          <a href="index.html">Home</a>
-          <a href="helper.html">Helper</a>
-          <a href="draft.html">Mock draft</a>
-        </nav>
+        <div class="banner-inner">
+          ${brand()}
+          <nav class="links">
+            <a href="index.html">Home</a>
+            <a href="helper.html">Helper</a>
+            <a href="draft.html">Mock draft</a>
+          </nav>
+        </div>
       </header>
       <h1>Tap the name. Then Sold or Me.</h1>
       <p class="lede">3. Pilsner Fantasy Liga. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. Third league has no dynasty this year, so use Sold and Me. Keep and Locked stay for a 1st/2nd night only.</p>
@@ -174,12 +181,14 @@ function deskHtml() {
   return `
     <section class="sheet">
       <header class="banner">
-        <p>Draft helper</p>
-        <nav class="links">
-          <a href="index.html">Home</a>
-          <a href="draft.html">Mock draft</a>
-        </nav>
-        <span>${money(state.budget_left)} · ${state.spots_left} seats</span>
+        <div class="banner-inner">
+          ${brand()}
+          <nav class="links">
+            <a href="index.html">Home</a>
+            <a href="draft.html">Mock draft</a>
+          </nav>
+          <span class="budget">${money(state.budget_left)} · ${state.spots_left} seats</span>
+        </div>
       </header>
       ${roomLine()}
       <form class="feed" id="feed-form">

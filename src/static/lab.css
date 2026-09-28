@@ -1,49 +1,89 @@
 :root {
-  --nba-red: #c8102e;
-  --nba-blue: #1d428a;
-  --bg: #eef2f6;
+  --nba-red: #e73f2b;
+  --nba-blue: #2b77e7;
+  --bg: #070d1a;
   --panel: #ffffff;
-  --ink: #0c2340;
-  --mute: #4d5d73;
-  --line: #d5deea;
+  --ink: #eef3ff;
+  --on-paper: #0b1b33;
+  --mute: #9db0d0;
+  --line: rgba(255, 255, 255, 0.12);
   --gold: #f4c542;
-  --stay: #1d428a;
-  --heat: #c8102e;
-  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --stay: #2b77e7;
+  --heat: #e73f2b;
+  --display: "Oswald", "Arial Narrow", sans-serif;
+  --ui: "Outfit", "Segoe UI", sans-serif;
+  font-family: var(--ui);
   color: var(--ink);
   background: var(--bg);
 }
 * { box-sizing: border-box; }
-body { margin: 0; }
+html, body { margin: 0; overflow-x: hidden; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 42% at 0% -10%, rgba(43, 119, 231, 0.38), transparent 58%),
+    radial-gradient(ellipse 55% 36% at 100% 0%, rgba(231, 63, 43, 0.28), transparent 52%),
+    var(--bg);
+}
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 3px solid var(--nba-blue);
+  outline: 3px solid #7eb0ff;
   outline-offset: 2px;
 }
 
-.room { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
-.room header, .banner {
+.room { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+.banner {
+  width: 100vw;
+  margin: 0 calc(50% - 50vw) 22px;
+  padding: 10px 20px;
+  background: rgba(7, 13, 26, 0.92);
+  color: white;
+  border-bottom: 3px solid var(--nba-red);
+  box-shadow:
+    0 0 0 1px rgba(43, 119, 231, 0.35),
+    0 10px 36px rgba(231, 63, 43, 0.22);
+}
+.banner-inner {
+  max-width: 960px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  align-items: baseline;
+  align-items: center;
+  gap: 14px;
   flex-wrap: wrap;
-  background: var(--nba-blue);
-  color: white;
-  margin: -28px -20px 22px;
-  padding: 14px 20px 10px;
-  border-bottom: 6px solid var(--nba-red);
 }
-.room header p, .banner p { margin: 0; }
-.room header a, .banner a { color: white; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark-wrap {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(from 200deg, #2b77e7, #e73f2b, #2b77e7);
+  box-shadow: 0 0 16px rgba(43, 119, 231, 0.7), 0 0 28px rgba(231, 63, 43, 0.45);
+}
+.mark { display: block; width: 38px; height: 38px; border-radius: 50%; background: #070d1a; }
+.wordmark {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.45rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.wordmark b { color: var(--nba-red); font-weight: 700; margin-right: 0.12em; }
+.banner a { color: white; text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.92rem; }
 .room h1 {
-  font-size: 2.2rem;
-  letter-spacing: -0.04em;
-  margin: 20px 0 8px;
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin: 12px 0 8px;
   max-width: 16ch;
   line-height: 0.95;
-  color: var(--nba-blue);
+  color: white;
 }
 .lede { color: var(--mute); max-width: 42rem; }
 .tools {
@@ -56,26 +96,30 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 label { display: grid; gap: 4px; color: var(--mute); font-size: 0.85rem; }
 input, select {
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 6px;
+  color: var(--on-paper);
+  border: 1px solid transparent;
+  border-radius: 8px;
   min-height: 40px;
   padding: 6px 10px;
 }
 .go {
+  font-family: var(--display);
   background: var(--nba-red);
   color: white;
   border: 1px solid var(--nba-red);
-  border-radius: 6px;
+  border-radius: 8px;
   min-height: 40px;
   padding: 0 14px;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .go.quiet {
-  background: var(--panel);
-  color: var(--nba-blue);
-  border: 1px solid var(--nba-blue);
+  background: transparent;
+  color: #9cc4ff;
+  border: 1px solid rgba(43, 119, 231, 0.5);
 }
-.error { color: var(--heat); }
+.error { color: #ff8a7a; }
 .plays { padding: 0; margin: 0 0 22px; }
 .plays li { margin: 0 0 8px; max-width: 46rem; }
 
@@ -86,24 +130,25 @@ td button {
   background: none;
   border: 0;
   padding: 0;
-  color: var(--nba-blue);
+  color: #9cc4ff;
   text-decoration: underline;
 }
 .heat { color: var(--heat); }
 .card {
-  background: var(--nba-blue);
+  background: linear-gradient(145deg, #1a4fc0 0%, #2b77e7 42%, #0d1b36 100%);
   color: white;
   border: 0;
   padding: 16px 18px;
   margin: 22px 0;
+  border-radius: 14px;
 }
-.card h2 { margin: 0 0 8px; font-size: 1.4rem; }
-.card .now { color: var(--gold); font-size: 1.8rem; font-weight: 700; margin: 0; }
+.card h2 { margin: 0 0 8px; font-family: var(--display); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.card .now { color: var(--gold); font-family: var(--display); font-size: 2rem; font-weight: 700; margin: 0; }
 .next { list-style: none; padding: 0; margin: 12px 0 0; }
 .next li { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px solid rgba(255, 255, 255, 0.18); }
 
 .squad { margin: 8px 0 28px; }
-.squad h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 10px; color: var(--nba-blue); }
+.squad h2 { font-family: var(--display); font-size: 1.15rem; font-weight: 600; margin: 0 0 10px; color: white; letter-spacing: 0.06em; text-transform: uppercase; }
 .squad ol { list-style: none; margin: 0; padding: 0; }
 .squad li {
   display: grid;
@@ -119,7 +164,8 @@ td button {
 .squad .alts { color: var(--mute); font-size: 0.85rem; }
 
 @media (max-width: 720px) {
-  .room h1 { font-size: 1.7rem; }
+  .room { padding: 0 14px 48px; }
+  .room h1 { font-size: 1.8rem; }
   table { font-size: 0.85rem; }
   .hide-s { display: none; }
   .squad li { grid-template-columns: 2.2rem 1fr 3rem; }

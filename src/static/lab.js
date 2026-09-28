@@ -6,6 +6,11 @@ let running = "";
 let player = "jokic";
 let buyer = "room";
 let price = 86;
+const MARK = "/static/mark.png";
+
+function brand() {
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="40" height="40" alt=""></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+}
 
 async function api(path, body) {
   const response = await fetch(path, {
@@ -30,8 +35,13 @@ function render() {
   app.innerHTML = `
     <section class="room">
       <header class="banner">
-        <p>Draft lab</p>
-        <span><a href="/helper">Helper</a> · <a href="/draft">Mock</a></span>
+        <div class="banner-inner">
+          ${brand()}
+          <nav class="links">
+            <a href="/helper">Helper</a>
+            <a href="/draft">Mock</a>
+          </nav>
+        </div>
       </header>
       <h1>What the room does to you.</h1>
       <p class="lede">Bots bid inside Stay–Stretch, and a few heat names go over. You sit in a nomination seat and pay Stay unless you switch the policy. A scenario is a filter on those rooms: Jokic to the field at $86, then what is left for you.</p>
