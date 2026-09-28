@@ -10,7 +10,7 @@ Standard counting z-scores:
 z = (stat - mean) / std_dev
 ```
 
-Negative stat (TO):
+Negative stats (TO, PF):
 
 ```
 z = -1 * (stat - mean) / std_dev
@@ -36,4 +36,4 @@ Use the player-pool population standard deviation (`ddof=0`). If a standard devi
 
 Support active punt strategies. If punt categories are passed, drop their z-scores from the final score sum. Punting changes the total only. Stored per-category z-scores stay intact.
 
-Category keys: PTS, REB, AST, STL, BLK, 3PM, FG%, FT%, TO.
+Category keys: MIN, FG%, FT%, 3PM, PTS, REB, AST, STL, BLK, TO, PF, DD.

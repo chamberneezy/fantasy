@@ -1,0 +1,154 @@
+:root {
+  --paper: #f3eee3;
+  --ink: #1a1a18;
+  --mute: #5c574e;
+  --rule: #cfc6b4;
+  --stay: #1f6b4a;
+  --stretch: #9a5b12;
+  --pass: #9b1c2c;
+  --mark: #9b1c2c;
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.sheet { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+.sheet header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 8px;
+}
+.sheet header p, .sheet header a { margin: 0; }
+.sheet header a { color: var(--ink); }
+.sheet h1 {
+  font-size: 2.4rem;
+  letter-spacing: -0.04em;
+  margin: 18px 0 8px;
+  max-width: 14ch;
+  line-height: 0.95;
+}
+.lede { color: var(--mute); max-width: 38rem; }
+.fields { display: flex; gap: 16px; margin: 18px 0; }
+label { display: grid; gap: 6px; color: var(--mute); font-size: 0.92rem; }
+input {
+  background: #fffdf7;
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 10px 12px;
+  min-height: 48px;
+}
+.go {
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  min-height: 48px;
+  padding: 0 18px;
+}
+.text { background: none; border: 0; text-decoration: underline; padding: 0; min-height: 44px; }
+.error { color: var(--pass); }
+
+.roomline {
+  color: var(--mute);
+  font-size: 0.88rem;
+  margin: 10px 0 0;
+  max-width: 46rem;
+  line-height: 1.35;
+}
+.feed {
+  display: grid;
+  margin: 22px 0 10px;
+}
+.feed input { font-size: 1.5rem; font-weight: 600; min-height: 56px; }
+.hint { color: var(--mute); margin: 0 0 18px; font-size: 0.92rem; }
+
+.board {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+}
+.board button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: baseline;
+  background: #fffdf7;
+  border: 1px solid var(--rule);
+  min-height: 0;
+  padding: 2px 7px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: left;
+}
+.board strong { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.meters button {
+  display: block;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+.hammer, .close {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.hammer { grid-template-columns: repeat(3, 1fr); }
+.close { grid-template-columns: 1fr 1fr; }
+.hammer button, .close button {
+  min-height: 56px;
+  border: 2px solid var(--ink);
+  background: #fffdf7;
+}
+.close .sold { font-weight: 600; }
+.close .me {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
+
+.card { border-top: 2px solid var(--ink); padding-top: 12px; }
+.card.call-stay { border-top-color: var(--stay); }
+.card.call-stretch { border-top-color: var(--stretch); }
+.card.call-pass { border-top-color: var(--pass); }
+.card header { border: 0; padding: 0; display: flex; justify-content: space-between; }
+.who { margin: 0; font-size: 2rem; font-weight: 700; letter-spacing: -0.04em; }
+.now { margin: 0; font-size: 2.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.meters {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+}
+.meters li { margin: 0; }
+.meters span { display: block; color: var(--mute); font-size: 0.8rem; }
+.meters strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.meters .on span { color: var(--mark); font-weight: 600; }
+.why { margin: 14px 0 0; max-width: 40rem; line-height: 1.4; }
+.markets { margin: 8px 0 0; color: var(--mute); }
+
+.wallet, .log { margin: 22px 0 0; padding: 0; list-style: none; }
+.wallet li, .log li { padding: 6px 0; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; }
+.actions { display: flex; gap: 16px; margin-top: 22px; }
+
+@media (max-width: 640px) {
+  .sheet h1 { font-size: 1.8rem; }
+  .meters { grid-template-columns: 1fr; }
+  .who { font-size: 1.5rem; }
+}

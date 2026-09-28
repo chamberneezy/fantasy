@@ -1,4 +1,4 @@
-"""9-category head-to-head fantasy basketball math."""
+"""12-category Pilsner head-to-head fantasy basketball math."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 COUNTING_CATEGORIES: dict[str, str] = {
+    "MIN": "mp",
     "PTS": "pts",
     "REB": "reb",
     "AST": "ast",
@@ -14,9 +15,11 @@ COUNTING_CATEGORIES: dict[str, str] = {
     "BLK": "blk",
     "3PM": "fg3m",
     "TO": "to",
+    "PF": "pf",
+    "DD": "dd",
 }
 
-NEGATIVE_CATEGORIES = frozenset({"TO"})
+NEGATIVE_CATEGORIES = frozenset({"TO", "PF"})
 
 PERCENTAGE_CATEGORIES: dict[str, tuple[str, str]] = {
     "FG%": ("fg_pct", "fga"),
@@ -24,15 +27,18 @@ PERCENTAGE_CATEGORIES: dict[str, tuple[str, str]] = {
 }
 
 ALL_CATEGORIES: tuple[str, ...] = (
+    "MIN",
+    "FG%",
+    "FT%",
+    "3PM",
     "PTS",
     "REB",
     "AST",
     "STL",
     "BLK",
-    "3PM",
-    "FG%",
-    "FT%",
     "TO",
+    "PF",
+    "DD",
 )
 
 DUAL_POSITION_MULTIPLIER = 1.12
@@ -54,7 +60,7 @@ def _volume_weighted_mean(rates: pd.Series, volume: pd.Series) -> float:
 
 
 class FantasyMathEngine:
-    """Load projections and rank players with 9-cat z-scores and punts."""
+    """Load projections and rank players with Pilsner 12-cat z-scores."""
 
     def __init__(self) -> None:
         self.df: pd.DataFrame | None = None
@@ -79,6 +85,10 @@ class FantasyMathEngine:
     def calculate_z_scores(self, df: pd.DataFrame) -> pd.DataFrame:
         """Add per-category z-scores and volume-weighted shooting impacts."""
         scored = df.copy()
+        for column in COUNTING_CATEGORIES.values():
+            if column not in scored.columns:
+                scored[column] = 0.0
+            scored[column] = pd.to_numeric(scored[column], errors="coerce").fillna(0.0)
 
         for category, column in COUNTING_CATEGORIES.items():
             z_score = _population_zscore(scored[column])
@@ -98,9 +108,14 @@ class FantasyMathEngine:
 
     def category_baselines(self, df: pd.DataFrame | None = None) -> dict:
         """Mean and spread of the current pool, used to score players outside it."""
-        pool = self.df if df is None else df
-        if pool is None:
+        source = self.df if df is None else df
+        if source is None:
             raise ValueError("No projections loaded. Call load_data() first.")
+        pool = source.copy()
+        for column in COUNTING_CATEGORIES.values():
+            if column not in pool.columns:
+                pool[column] = 0.0
+            pool[column] = pd.to_numeric(pool[column], errors="coerce").fillna(0.0)
         baselines: dict = {}
         for category, column in COUNTING_CATEGORIES.items():
             values = pool[column]
@@ -120,6 +135,10 @@ class FantasyMathEngine:
     def score_with_baselines(self, df: pd.DataFrame, baselines: dict) -> pd.DataFrame:
         """Score rows with a frozen pool baseline so newcomers do not move veteran ranks."""
         scored = df.copy()
+        for column in COUNTING_CATEGORIES.values():
+            if column not in scored.columns:
+                scored[column] = 0.0
+            scored[column] = pd.to_numeric(scored[column], errors="coerce").fillna(0.0)
         for category, column in COUNTING_CATEGORIES.items():
             mean = baselines[category]["mean"]
             std = baselines[category]["std"]

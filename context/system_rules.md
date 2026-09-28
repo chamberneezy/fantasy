@@ -1,37 +1,33 @@
-# 9-Category H2H NBA Fantasy Rules
+# Pilsner 12-category salary-cap draft
 
-## Categories
-
-Head-to-head matchups are scored across nine categories:
+Head-to-head matchups use twelve categories:
 
 | Category | Key | Direction |
 | --- | --- | --- |
+| Minutes | MIN | Higher is better |
+| Field goal percentage | FG% | Higher is better, volume-weighted |
+| Free throw percentage | FT% | Higher is better, volume-weighted |
+| Three-pointers made | 3PM | Higher is better |
 | Points | PTS | Higher is better |
 | Rebounds | REB | Higher is better |
 | Assists | AST | Higher is better |
 | Steals | STL | Higher is better |
 | Blocks | BLK | Higher is better |
-| Three-pointers made | 3PM | Higher is better |
-| Field goal percentage | FG% | Higher is better, volume-weighted |
-| Free throw percentage | FT% | Higher is better, volume-weighted |
 | Turnovers | TO | Lower is better |
+| Personal fouls | PF | Lower is better |
+| Double-doubles | DD | Higher is better |
 
 Counting-stat value is a z-score: `(stat - mean) / std_dev`.
 
-Turnovers are inverted: `-1 * (stat - mean) / std_dev`.
+Turnovers and personal fouls are inverted: `-1 * (stat - mean) / std_dev`.
 
-Shooting percentages are volume-weighted before they are standardized:
+Shooting percentages are volume-weighted before they are standardized.
 
-```
-FG_Impact = (FG% - Mean_FG%) * FGA
-FT_Impact = (FT% - Mean_FT%) * FTA
-```
+## Draft
 
-`Mean_FG%` is the attempt-weighted pool mean, `sum(FG% * FGA) / sum(FGA)`. `Mean_FT%` uses FTA the same way.
+16 teams. Salary-cap auction. Default mock budget $200. Ten players each. A player costs at least $1.
 
-## Roster composition
-
-Each roster has 10 slots:
+## Roster
 
 | Slot | Count |
 | --- | --- |
@@ -40,14 +36,11 @@ Each roster has 10 slots:
 | SF | 1 |
 | PF | 1 |
 | C | 1 |
-| Util | 2 |
-| Bench | 3 |
-| **Total** | **10** |
+| Bench | 5 |
+| **Drafted** | **10** |
 
-## Dual-position boost
+Injured list slots are in-season only and are not filled in the draft.
 
-A player eligible at more than one position receives a **1.12x** multiplier on total weighted value. Single-position players stay at 1.0x. The boost is applied after z-scores are summed, and after any active punt categories have been dropped from that sum.
+## Auction price
 
-## Punt strategies
-
-An active punt drops that category's z-score from the final value. The remaining categories are summed, then the dual-position multiplier is applied. Rankings are sorted by that custom weighted value, highest first.
+Listed dollars follow Yahoo's 2025-26 salary-cap board, then Hashtag Yahoo/ESPN sale averages and FantraxHQ recommended $. Stay is the median of those sources, never below Yahoo list. Stretch is the high sale average. Names Yahoo does not list stay on surplus. The live helper is `/helper` and does not share a session with the `/draft` mock. On `/helper`, pick a name, then Sold or Me. The dollar starts at Stay if you do not type one. Logged hammers update Stay by tier: one sale is noise, two in the same bucket move this room's Stay. Yahoo list and fair Stay stay on the card. `/lab` runs headless rooms with mixed bots (Stay–Stretch, plus a heat tail over Stretch) and answers sale scenarios.

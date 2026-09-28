@@ -27,6 +27,9 @@ COLUMNS = [
     "ft_pct",
     "fta",
     "to",
+    "mp",
+    "pf",
+    "dd",
 ]
 
 
@@ -45,6 +48,9 @@ def _player(name: str, positions: str = "C", **overrides: float) -> dict:
         "ft_pct": 0.75,
         "fta": 5.0,
         "to": 2.0,
+        "mp": 30.0,
+        "pf": 2.0,
+        "dd": 0.1,
     }
     row.update(overrides)
     return row
@@ -156,6 +162,18 @@ def test_ft_punt_reverses_rankings(tmp_path: Path) -> None:
     assert ace_punted["total_value"] == pytest.approx(summed_value(punted, "Ace", ["FT%"]))
 
 
+def test_personal_foul_z_score_is_inverted(tmp_path: Path) -> None:
+    rows = [
+        _player("Clean", pf=1),
+        _player("Average", pf=3),
+        _player("Hack", pf=5),
+    ]
+    _, scored = _engine_from(tmp_path / "fouls.csv", rows)
+    clean = scored.loc[scored["player_name"] == "Clean", "z_PF"].iloc[0]
+    hack = scored.loc[scored["player_name"] == "Hack", "z_PF"].iloc[0]
+    assert clean > hack
+
+
 def test_unknown_punt_raises(tmp_path: Path) -> None:
     engine, _ = _engine_from(tmp_path / "unknown.csv", [_player("A"), _player("B", pts=25)])
     with pytest.raises(ValueError, match="Unknown punt categories"):
@@ -167,7 +185,8 @@ def test_seed_projections_rank_player_pool() -> None:
     loaded = engine.load_data(ROOT / "data" / "projections.csv")
     assert len(loaded) > 400
     assert loaded["player_name"].is_unique
-    assert set(COLUMNS).issubset(loaded.columns)
+    required = [column for column in COLUMNS if column != "dd"]
+    assert set(required).issubset(loaded.columns)
 
     ranked = engine.get_ranked_players()
     assert len(ranked) == len(loaded)
