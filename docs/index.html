@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pilsner draft helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f3eee3;
+      --ink: #1a1a18;
+      --mute: #5c574e;
+      --rule: #cfc6b4;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: var(--ink); }
+    .sheet { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 8px;
+    }
+    header p, header a { margin: 0; }
+    h1 {
+      font-size: 2.4rem;
+      letter-spacing: -0.04em;
+      margin: 18px 0 8px;
+      max-width: 16ch;
+      line-height: 0.95;
+    }
+    .lede { color: var(--mute); max-width: 38rem; line-height: 1.45; }
+    pre {
+      background: #fffdf7;
+      border: 2px solid var(--ink);
+      padding: 16px 18px;
+      overflow: auto;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    .go {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 14px 20px;
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: 700;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header>
+      <p>Draft helper</p>
+      <a href="https://github.com/chamberneezy/fantasy">GitHub</a>
+    </header>
+    <h1>Run it on your machine. Then open /helper.</h1>
+    <p class="lede">GitHub Pages cannot host the live pad. This is a Flask app. Clone the repo, start the server, and use <strong>http://127.0.0.1:5340/helper</strong>. It does not open Yahoo and it does not bid. 3. Pilsner: Sold and Me. Budget is your draft dollars, default $200.</p>
+    <pre>git clone https://github.com/chamberneezy/fantasy.git
+cd fantasy
+git checkout cursor/3rd-league-draft-dollars
+python3 -m pip install -r requirements.txt
+python3 src/draft_server.py</pre>
+    <p class="lede">Then open the helper. Mock is <code>/draft</code>. Lab is <code>/lab</code>.</p>
+    <a class="go" href="https://github.com/chamberneezy/fantasy/tree/cursor/3rd-league-draft-dollars">Open the repo</a>
+  </main>
+</body>
+</html>
