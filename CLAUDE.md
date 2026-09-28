@@ -1,6 +1,8 @@
 # Pilsner draft tool — briefing for Claude
 
-Mario’s private unpublished helper for **Pilsner Fantasy**: 16-team Yahoo salary-cap, **$200**, **10 drafted seats** (PG/SG/SF/PF/C + 5 BN). IL+ is in-season only. Live draft is Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
+Mario’s private unpublished helper for **3. Pilsner Fantasy Liga** (Yahoo league 51867): 16-team salary-cap, **$200** default draft dollars, **10 drafted seats** (PG/SG/SF/PF/C + 5 BN). IL+ is in-season only. Live draft is Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
+
+Yahoo settings confirm the 12 H2H cats, 16 teams, 10 seats, 4 divisions, 8-team playoffs in weeks 18–20, daily lineup lock, 4 adds/week, no Yahoo waivers, commissioner trade review. **3rd league has no dynasty this draft** (Keep/Locked stay for 1st/2nd). Yahoo currently lists Draft Type as Offline; Pilsner pravila still describe a live salary-cap room — Mario types what happens either way. “Not a cash league” means Yahoo prize league is off, not that the $200 cap is gone.
 
 If you are double-checking work, treat `context/system_rules.md` and `.cursorrules` as the contract. This file is the map of what exists and what is trustworthy.
 
@@ -55,7 +57,7 @@ Logged Sold/Me hammers update **this room’s Stay** by tier (`star` ≥ $40, `m
 - League cash = `teams × $200 − spent`. If leftover per empty seat `< $8` after 8+ sales, warn the $1 endgame.
 - Second-star and leftover-$1 beat heat if they conflict.
 
-Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaults to Stay. Do not autofocus the search after those buttons.
+Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaults to Stay. Do not autofocus the search after those buttons. Budget is Pilsner draft dollars ($160–$240), the cap, not a payment. **3. Pilsner has no dynasty this year** — use Sold/Me. Keep/Locked remain for 1st/2nd dynasty nights only. Superstars cannot be dynasty.
 
 ## What to trust vs not
 

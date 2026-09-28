@@ -131,9 +131,9 @@ function gateHtml() {
         <a href="/lab">Lab</a>
       </header>
       <h1>Tap the name. Then Sold or Me.</h1>
-      <p class="lede">This page does not open Yahoo and does not bid. Type three letters or tap a remaining name. Sold and Me teach the room. One hammer is noise. Two in the same tier move Stay.</p>
+      <p class="lede">3. Pilsner Fantasy Liga. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. Third league has no dynasty this year, so use Sold and Me. Keep and Locked stay for a 1st/2nd night only.</p>
       <div class="fields">
-        <label>Budget <input id="budget" type="number" min="50" max="240" value="${state.budget || 200}"></label>
+        <label>Budget <input id="budget" type="number" min="160" max="240" value="${state.budget || 200}"></label>
         <label>Teams <input id="team-count" type="number" min="2" max="16" value="${state.team_count || 16}"></label>
       </div>
       <button class="go" id="open" type="button">Open the helper</button>
@@ -166,6 +166,8 @@ function deskHtml() {
       <div class="close">
         <button class="sold" id="sold" type="button">Sold</button>
         <button class="me" id="mine" type="button">Me</button>
+        <button class="keep" id="keep" type="button">Keep</button>
+        <button class="locked" id="locked" type="button">Locked</button>
       </div>
     </section>` : `<p class="lede">Type a few letters or tap a name. Sold is the room. Me is you.</p>`;
   const seats = (state.rosters && state.rosters[0] && state.rosters[0].slots) || [];
@@ -223,7 +225,7 @@ function bind() {
         render();
         return;
       }
-      if (/\b(sold|gone|taken|me|mine|got|you)\b/i.test(text)) {
+      if (/\b(sold|gone|taken|me|mine|got|you|keep|locked|dynasty)\b/i.test(text)) {
         line = "";
         await run(() => api("/helper/api/feed", { line: text }));
         return;
@@ -265,6 +267,10 @@ function bind() {
   if (sold) sold.addEventListener("click", () => closeNight("sold"));
   const mine = document.querySelector("#mine");
   if (mine) mine.addEventListener("click", () => closeNight("me"));
+  const keep = document.querySelector("#keep");
+  if (keep) keep.addEventListener("click", () => closeNight("keep"));
+  const locked = document.querySelector("#locked");
+  if (locked) locked.addEventListener("click", () => closeNight("locked"));
   const undo = document.querySelector("#undo");
   if (undo) undo.addEventListener("click", () => run(() => api("/helper/api/undo", {})));
   const reset = document.querySelector("#reset");

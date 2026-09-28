@@ -25,6 +25,8 @@ LAB_PATH = ROOT / "data" / "lab_report.json"
 TEAM_COUNT = 16
 ROSTER_SIZE = 10
 DEFAULT_BUDGET = 200
+MIN_BUDGET = 160
+MAX_BUDGET = 240
 ROUNDS = 10
 NOMINATE_SECONDS = 30
 BID_SECONDS = 20
@@ -69,7 +71,6 @@ SUPERSTARS = frozenset(
         "paolo banchero",
         "tyrese maxey",
         "kevin durant",
-        "lebron james",
         "devin booker",
         "kawhi leonard",
         "domantas sabonis",

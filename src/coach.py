@@ -100,6 +100,12 @@ def parse_feed(line: str) -> dict:
         if cleaned in {"me", "mine", "got", "you"}:
             action = "me"
             continue
+        if cleaned in {"keep", "dynasty"}:
+            action = "keep"
+            continue
+        if cleaned == "locked":
+            action = "locked"
+            continue
         if cleaned.startswith("$") and cleaned[1:].isdigit():
             amount = int(cleaned[1:])
             continue

@@ -85,8 +85,8 @@ class SidecarSession:
         return stay_price(listed, self.budget_left, self.spots_left(), self.owns_elite(), player)
 
     def close(self, action: str, amount: int | None = None) -> None:
-        if action not in {"sold", "me"}:
-            raise ValueError("Tap Sold or Me.")
+        if action not in {"sold", "me", "keep", "locked"}:
+            raise ValueError("Tap Sold, Me, Keep, or Locked.")
         if not self.focus:
             raise ValueError("Pick a name first.")
         name = self.focus["player_name"]
@@ -94,8 +94,24 @@ class SidecarSession:
         if already:
             raise ValueError(f"{name} is already logged at ${already['price']}.")
         player = self.players[name]
-        price = self.close_price(amount)
-        if action == "me":
+        listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
+        dynasty = action in {"keep", "locked"}
+        if dynasty and player.get("superstar"):
+            raise ValueError("Pilsner superstars cannot be dynasty. Log Sold or Me.")
+        price = listed if dynasty else self.close_price(amount)
+        stay, stretch = fair_marks(player, listed, self.budget)
+        stamp = {
+            "player_name": name,
+            "player": dict(player),
+            "price": price,
+            "auction_value": int(player.get("auction_value") or 1),
+            "listed": listed,
+            "fair_stay": stay,
+            "fair_stretch": stretch,
+            "yours": action in {"me", "keep"},
+            "kind": "dynasty" if dynasty else "sale",
+        }
+        if stamp["yours"]:
             if self.spots_left() <= 0:
                 raise ValueError("Your ten seats are full.")
             ceiling = self.budget_left - max(0, self.spots_left() - 1)
@@ -106,39 +122,13 @@ class SidecarSession:
                 slot_id = first_open_slot(player["positions"], filled)
             except ValueError:
                 slot_id = next(slot for slot, _label in SLOTS if slot not in filled)
-            labels = dict(SLOTS)
-            listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
-            stay, stretch = fair_marks(player, listed, self.budget)
-            pick = {
-                "player_name": name,
-                "player": dict(player),
-                "price": price,
-                "auction_value": int(player.get("auction_value") or 1),
-                "listed": listed,
-                "fair_stay": stay,
-                "fair_stretch": stretch,
-                "slot_id": slot_id,
-                "slot_label": labels[slot_id],
-                "yours": True,
-            }
-            self.picks.append(pick)
-            self.taken.append(pick)
+            stamp["slot_id"] = slot_id
+            stamp["slot_label"] = dict(SLOTS)[slot_id]
+            self.picks.append(stamp)
+            self.taken.append(stamp)
             self.budget_left -= price
         else:
-            listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
-            stay, stretch = fair_marks(player, listed, self.budget)
-            self.taken.append(
-                {
-                    "player_name": name,
-                    "player": dict(player),
-                    "price": price,
-                    "auction_value": int(player.get("auction_value") or 1),
-                    "listed": listed,
-                    "fair_stay": stay,
-                    "fair_stretch": stretch,
-                    "yours": False,
-                }
-            )
+            self.taken.append(stamp)
         self.focus = None
 
     def undo(self) -> None:
@@ -239,7 +229,7 @@ class SidecarSession:
             "log": [
                 {
                     "pick_number": index + 1,
-                    "team": "You" if item.get("yours") else "Room",
+                    "team": "You" if item.get("yours") else ("Locked" if item.get("kind") == "dynasty" else "Room"),
                     "player_name": item["player_name"],
                     "slot_label": item.get("slot_label") or "—",
                     "price": item["price"],
@@ -248,7 +238,8 @@ class SidecarSession:
             ],
             "guide": (
                 "This tab does not touch Yahoo. Type the name and the dollar you see. "
-                "Stay is market. Stretch is the last dollar that does not wreck the roster. After that, pass."
+                "Stay is market. Stretch is the last dollar that does not wreck the roster. After that, pass. "
+                "Keep is your dynasty at Yahoo list. Locked is someone else's. Neither teaches heat."
             ),
         }
 

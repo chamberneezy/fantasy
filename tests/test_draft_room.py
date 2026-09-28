@@ -193,6 +193,8 @@ def test_live_helper_reads_a_feed_line(tmp_path, monkeypatch) -> None:
     taken = [slot["player"] for slot in payload["rosters"][0]["slots"] if slot.get("player")]
     assert taken[0]["player_name"] == "Nikola Jokić"
     assert taken[0]["price"] == 72
+    cheap = client.post("/helper/api/start", json={"team_count": 16, "budget": 50})
+    assert cheap.status_code == 400
 
 
 def test_draft_page_starts_only_after_a_nomination_seat(tmp_path, monkeypatch) -> None:

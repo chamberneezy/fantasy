@@ -115,6 +115,7 @@ input {
   background: #fffdf7;
 }
 .close .sold { font-weight: 600; }
+.close .keep, .close .locked { font-weight: 600; }
 .close .me {
   background: var(--ink);
   color: var(--paper);

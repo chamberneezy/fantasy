@@ -11,7 +11,7 @@ SRC = Path(__file__).resolve().parent
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from draft_room import DEFAULT_BUDGET, HELPER_PATH, LAB_PATH, SESSION_PATH, TEAM_COUNT, build_pool
+from draft_room import DEFAULT_BUDGET, HELPER_PATH, LAB_PATH, MAX_BUDGET, MIN_BUDGET, SESSION_PATH, TEAM_COUNT, build_pool
 from lab import DEFAULT_RUNS, load_report, run_lab, save_report, scenario
 from sidecar import SidecarSession, load_sidecar, save_sidecar
 from yahoo_auction import DraftSession, load_session, save_session
@@ -204,6 +204,8 @@ def helper_start():
     try:
         team_count = int(body.get("team_count", TEAM_COUNT))
         budget = int(body.get("budget", DEFAULT_BUDGET))
+        if budget < MIN_BUDGET or budget > MAX_BUDGET:
+            raise ValueError("Draft dollars are $160–$240. That number is your cap, not a payment.")
         punts = [category for category in body.get("punts") or [] if category]
         session = SidecarSession(pool_for(punts, team_count, budget), team_count, punts, budget)
     except (KeyError, TypeError, ValueError) as exc:

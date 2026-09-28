@@ -52,6 +52,8 @@ def read_room(
         listed, stay, stretch = _sale_marks(item, budget)
         price = max(1, int(item.get("price") or 1))
         spent += price
+        if item.get("kind") == "dynasty":
+            continue
         samples[bucket(listed)].append(price / max(1, stay))
         if listed >= STAR and price > stretch:
             over_stretch_stars += 1

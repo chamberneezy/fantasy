@@ -27,6 +27,8 @@ def test_feed_lines_split_name_dollar_and_who() -> None:
     assert parse_feed("wemby 52") == {"query": "victor wembanyama", "amount": 52, "action": "lookup"}
     assert parse_feed("bambi 72 sold") == {"query": "victor wembanyama", "amount": 72, "action": "sold"}
     assert parse_feed("kd 40 me") == {"query": "kevin durant", "amount": 40, "action": "me"}
+    assert parse_feed("gobert keep") == {"query": "gobert", "amount": None, "action": "keep"}
+    assert parse_feed("sarr locked") == {"query": "sarr", "amount": None, "action": "locked"}
 
 
 def test_market_uses_yahoo_list_and_sale_averages() -> None:
@@ -175,3 +177,70 @@ def test_helper_learns_after_two_star_sales() -> None:
 
 def test_match_reads_a_nickname() -> None:
     assert match_player("sga", [{"player_name": "Shai Gilgeous-Alexander", "auction_value": 55}])["player_name"] == "Shai Gilgeous-Alexander"
+
+
+def test_dynasty_keep_pays_list_and_skips_heat() -> None:
+    session = SidecarSession(
+        [
+            {
+                "player_name": "Alex Sarr",
+                "positions": "C",
+                "auction_value": 18,
+                "yahoo_listed": 18,
+                "stay_market": 18,
+                "stretch_market": 22,
+                "total_value": 6,
+            },
+            {
+                "player_name": "Cade Cunningham",
+                "positions": "PG",
+                "auction_value": 57,
+                "yahoo_listed": 57,
+                "stay_market": 57,
+                "stretch_market": 57,
+                "total_value": 13,
+            },
+        ],
+        team_count=16,
+        budget=200,
+    )
+    session.pick("sarr")
+    session.close("keep")
+    assert session.picks[0]["price"] == 18
+    assert session.picks[0]["kind"] == "dynasty"
+    assert session.budget_left == 182
+    session.pick("cade")
+    session.close("locked")
+    assert session.taken[-1]["kind"] == "dynasty"
+    assert session.taken[-1]["yours"] is False
+    room = session.room()
+    assert room["counts"]["star"] == 0
+    assert room["factors"]["star"] == 1.0
+
+
+def test_dynasty_locked_stars_do_not_reprice_stay() -> None:
+    room = read_room(
+        [
+            {"price": 60, "listed": 60, "fair_stay": 72, "fair_stretch": 85, "kind": "dynasty"},
+            {"price": 61, "listed": 61, "fair_stay": 68, "fair_stretch": 74, "kind": "dynasty"},
+        ],
+        team_count=16,
+        budget=200,
+    )
+    assert room["counts"]["star"] == 0
+    assert room["factors"]["star"] == 1.0
+
+
+def test_superstar_cannot_be_dynasty() -> None:
+    session = SidecarSession(
+        [{**PLAYERS[0], "yahoo_listed": 60, "superstar": True}],
+        team_count=16,
+        budget=200,
+    )
+    session.pick("jokic")
+    try:
+        session.close("keep")
+    except ValueError as exc:
+        assert "superstar" in str(exc).lower()
+    else:
+        raise AssertionError("keep should reject a superstar")
