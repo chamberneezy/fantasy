@@ -70,32 +70,33 @@ button:focus-visible, input:focus-visible {
 .mark-wrap {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  padding: 2px;
+  padding: 3px;
   background: conic-gradient(from 200deg, #2b77e7, #e73f2b, #2b77e7);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.2),
-    0 0 16px rgba(43, 119, 231, 0.7),
-    0 0 28px rgba(231, 63, 43, 0.45);
+    0 0 18px rgba(43, 119, 231, 0.85),
+    0 0 36px rgba(231, 63, 43, 0.5);
 }
 .mark {
   display: block;
-  width: 38px;
-  height: 38px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   background: #070d1a;
 }
 .mark-hero {
-  width: 128px;
-  height: 128px;
-  padding: 4px;
-  margin: 8px 0 18px;
+  width: 160px;
+  height: 160px;
+  padding: 5px;
+  margin: 12px 0 20px;
 }
 .mark-hero .mark, .mark-hero.mark-wrap img {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
 }
 .wordmark {
   font-family: var(--display);
@@ -345,6 +346,6 @@ input {
   .sheet h1, .hero h1 { font-size: 2.2rem; }
   .meters { grid-template-columns: 1fr; }
   .who { font-size: 1.5rem; }
-  .mark-hero { width: 96px; height: 96px; }
-  .mark-hero.mark-wrap img { width: 88px; height: 88px; }
+  .mark-hero { width: 120px; height: 120px; }
+  .mark-hero.mark-wrap img { width: 110px; height: 110px; }
 }

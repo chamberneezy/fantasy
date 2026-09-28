@@ -37,7 +37,7 @@ let searchCaret = null;
 const MARK = "img/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="40" height="40" alt=""></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="3. Pilsner"></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
 }
 
 async function api(path, body) {
@@ -137,6 +137,7 @@ function gateHtml() {
           </nav>
         </div>
       </header>
+      <span class="mark-wrap mark-hero"><img class="mark" src="${MARK}" width="150" height="150" alt="3. Pilsner"></span>
       <h1>Tap the name. Then Sold or Me.</h1>
       <p class="lede">3. Pilsner Fantasy Liga. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. Third league has no dynasty this year, so use Sold and Me. Keep and Locked stay for a 1st/2nd night only.</p>
       <div class="fields">

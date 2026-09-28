@@ -9,7 +9,7 @@ let clock = null;
 const MARK = "img/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="40" height="40" alt=""></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="3. Pilsner"></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
 }
 
 async function api(path, body) {
