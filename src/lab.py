@@ -1,4 +1,4 @@
-"""Headless Pilsner auctions: mixed bots, a report, and sale scenarios."""
+"""Headless auctions: mixed bots, a report, and sale scenarios."""
 
 from __future__ import annotations
 

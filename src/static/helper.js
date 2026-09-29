@@ -37,7 +37,7 @@ let searchCaret = null;
 const MARK = "/static/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="3. Pilsner"></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="NBA Fantasy"></span><span class="wordmark">NBA Fantasy</span></div>`;
 }
 
 async function api(path, body) {
@@ -139,9 +139,9 @@ function gateHtml() {
           </nav>
         </div>
       </header>
-      <span class="mark-wrap mark-hero"><img class="mark" src="${MARK}" width="150" height="150" alt="3. Pilsner"></span>
+      <span class="mark-wrap mark-hero"><img class="mark" src="${MARK}" width="150" height="150" alt="NBA Fantasy"></span>
       <h1>Tap the name. Then Sold or Me.</h1>
-      <p class="lede">3. Pilsner Fantasy Liga. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. Third league has no dynasty this year, so use Sold and Me. Keep and Locked stay for a 1st/2nd night only.</p>
+      <p class="lede">This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me. Keep and Locked stay for a dynasty night only.</p>
       <div class="fields">
         <label>Budget <input id="budget" type="number" min="160" max="240" value="${state.budget || 200}"></label>
         <label>Teams <input id="team-count" type="number" min="2" max="16" value="${state.team_count || 16}"></label>

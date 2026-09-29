@@ -1,4 +1,4 @@
-"""Pilsner salary-cap mock: 16 teams, $200, 12 categories, 10 roster spots."""
+"""Salary-cap mock: 16 teams, $200, 12 categories, 10 roster spots."""
 
 from __future__ import annotations
 
@@ -199,7 +199,7 @@ def build_pool(
     roster_size: int = ROSTER_SIZE,
     budget: int = DEFAULT_BUDGET,
 ) -> list[dict]:
-    """Rank the Pilsner board and print a dollar price next to each name."""
+    """Rank the board and print a dollar price next to each name."""
     active_punts = list(punts or [])
     unknown = [category for category in active_punts if category not in ALL_CATEGORIES]
     if unknown:

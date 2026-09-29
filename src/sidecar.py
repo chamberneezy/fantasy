@@ -97,7 +97,7 @@ class SidecarSession:
         listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
         dynasty = action in {"keep", "locked"}
         if dynasty and player.get("superstar"):
-            raise ValueError("Pilsner superstars cannot be dynasty. Log Sold or Me.")
+            raise ValueError("Superstars cannot be dynasty. Log Sold or Me.")
         price = listed if dynasty else self.close_price(amount)
         stay, stretch = fair_marks(player, listed, self.budget)
         stamp = {

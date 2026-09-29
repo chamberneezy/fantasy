@@ -1,4 +1,4 @@
-const PilsnerDraft = (() => {
+const NBADraft = (() => {
   const NOMINATE_SECONDS = 30;
   const BID_SECONDS = 20;
   const BID_RESET = 10;
@@ -45,7 +45,7 @@ const PilsnerDraft = (() => {
     }
 
     spotsLeft(index) {
-      return Pilsner.ROSTER_SIZE - this.picks.filter((pick) => pick.team_index === index).length;
+      return NBA.ROSTER_SIZE - this.picks.filter((pick) => pick.team_index === index).length;
     }
 
     filled(index) {
@@ -61,11 +61,11 @@ const PilsnerDraft = (() => {
     }
 
     maxOffer(index) {
-      return Pilsner.leftoverMax(this.budgets[index], this.spotsLeft(index));
+      return NBA.leftoverMax(this.budgets[index], this.spotsLeft(index));
     }
 
     yourMax(player) {
-      return Pilsner.recommendedStay((player.auction_value || 1) | 0, this.maxOffer(this.your_team));
+      return NBA.recommendedStay((player.auction_value || 1) | 0, this.maxOffer(this.your_team));
     }
 
     ownsElite(index) {
@@ -83,7 +83,7 @@ const PilsnerDraft = (() => {
         if (listed >= 12) priced = Math.max(priced, Math.round(listed * MARKET_FLOOR));
       }
       priced = Math.min(priced, Math.round(this.budget * MAX_SHARE));
-      return Pilsner.capBid(Math.max(1, priced), this.budgets[index], this.spotsLeft(index));
+      return NBA.capBid(Math.max(1, priced), this.budgets[index], this.spotsLeft(index));
     }
 
     secondsLeft() {
@@ -219,11 +219,11 @@ const PilsnerDraft = (() => {
       const filled = this.filled(teamIndex);
       let slotId;
       try {
-        slotId = Pilsner.firstOpenSlot(player.positions, filled);
+        slotId = NBA.firstOpenSlot(player.positions, filled);
       } catch {
-        slotId = Pilsner.SLOTS.find(([id]) => !filled.has(id))[0];
+        slotId = NBA.SLOTS.find(([id]) => !filled.has(id))[0];
       }
-      const labels = Object.fromEntries(Pilsner.SLOTS);
+      const labels = Object.fromEntries(NBA.SLOTS);
       this.picks.push({
         pick_number: this.picks.length + 1,
         team_index: teamIndex,
@@ -285,8 +285,8 @@ const PilsnerDraft = (() => {
       if (!available.length) return { mode: "nominate", options: [], paragraph: "The board is empty." };
       const first = available[0];
       const second = available[1] || available[0];
-      const [firstLow, firstHigh] = Pilsner.typicalSale(first.auction_value | 0);
-      const [secondLow, secondHigh] = Pilsner.typicalSale(second.auction_value | 0);
+      const [firstLow, firstHigh] = NBA.typicalSale(first.auction_value | 0);
+      const [secondLow, secondHigh] = NBA.typicalSale(second.auction_value | 0);
       return {
         mode: "nominate",
         player_name: first.player_name,
@@ -304,7 +304,7 @@ const PilsnerDraft = (() => {
       const nxt = current + 1;
       const ceiling = Math.min(this.yourMax(player), this.maxOffer(this.your_team));
       const high = this.teamName(this.on_block.high_bidder | 0);
-      const [low, highSale] = Pilsner.typicalSale(player.auction_value | 0);
+      const [low, highSale] = NBA.typicalSale(player.auction_value | 0);
       return {
         mode: "bid",
         player_name: player.player_name,
@@ -322,7 +322,7 @@ const PilsnerDraft = (() => {
         name: this.teamName(index),
         is_you: index === this.your_team,
         budget: this.budgets[index],
-        slots: Pilsner.SLOTS.map(([id, label]) => {
+        slots: NBA.SLOTS.map(([id, label]) => {
           const pick = filed[id];
           return {
             id,
@@ -339,7 +339,7 @@ const PilsnerDraft = (() => {
       let block = null;
       if (this.on_block) {
         const player = this.players[this.on_block.player_name];
-        const [low, high] = Pilsner.typicalSale((player.auction_value || 1) | 0);
+        const [low, high] = NBA.typicalSale((player.auction_value || 1) | 0);
         block = {
           ...player,
           nominator: this.teamName(this.on_block.nominator),
@@ -356,15 +356,15 @@ const PilsnerDraft = (() => {
       let coach = null;
       if (this.on_block) {
         const player = this.players[this.on_block.player_name];
-        coach = Pilsner.buildCard(player, this.on_block.bid | 0, this.budgets[this.your_team], this.spotsLeft(this.your_team), this.ownsElite(this.your_team), this.available());
+        coach = NBA.buildCard(player, this.on_block.bid | 0, this.budgets[this.your_team], this.spotsLeft(this.your_team), this.ownsElite(this.your_team), this.available());
       }
       return {
         started: true,
         mode: "mock",
         complete,
         phase: complete ? "done" : this.phase,
-        categories: Pilsner.CATEGORIES,
-        filters: Pilsner.FILTERS,
+        categories: NBA.CATEGORIES,
+        filters: NBA.FILTERS,
         can_nominate: !complete && this.phase === "nominate" && this.nominator() === this.your_team,
         your_turn: !complete && this.waitingOnYou(),
         nomination_slot: this.draft_slot,
@@ -393,16 +393,16 @@ const PilsnerDraft = (() => {
   }
 
   function idle() {
-    return { started: false, categories: Pilsner.CATEGORIES, team_count: Pilsner.TEAM_COUNT, budget: Pilsner.DEFAULT_BUDGET };
+    return { started: false, categories: NBA.CATEGORIES, team_count: NBA.TEAM_COUNT, budget: NBA.DEFAULT_BUDGET };
   }
 
   function save() {
     if (!session) {
-      localStorage.removeItem("pilsner-draft");
+      localStorage.removeItem("nba-fantasy-draft");
       return;
     }
     localStorage.setItem(
-      "pilsner-draft",
+      "nba-fantasy-draft",
       JSON.stringify({
         team_count: session.team_count,
         draft_slot: session.draft_slot,
@@ -419,11 +419,11 @@ const PilsnerDraft = (() => {
   }
 
   function restore() {
-    const raw = localStorage.getItem("pilsner-draft");
+    const raw = localStorage.getItem("nba-fantasy-draft");
     if (!raw) return;
     try {
       const payload = JSON.parse(raw);
-      session = new DraftSession(Pilsner.pool(), payload.team_count, payload.draft_slot, payload.budget);
+      session = new DraftSession(NBA.pool(), payload.team_count, payload.draft_slot, payload.budget);
       session.picks = payload.picks || [];
       session.queue = payload.queue || [];
       session.budgets = payload.budgets || session.budgets;
@@ -431,9 +431,9 @@ const PilsnerDraft = (() => {
       session.phase = payload.phase || "nominate";
       session.clock_ends = payload.clock_ends || session.clock_ends;
       const taken = new Set(session.picks.map((pick) => pick.player_name));
-      session.players = Object.fromEntries(Pilsner.pool().filter((player) => !taken.has(player.player_name)).map((player) => [player.player_name, { ...player }]));
+      session.players = Object.fromEntries(NBA.pool().filter((player) => !taken.has(player.player_name)).map((player) => [player.player_name, { ...player }]));
       if (session.on_block && !session.players[session.on_block.player_name]) {
-        const found = Pilsner.pool().find((player) => player.player_name === session.on_block.player_name);
+        const found = NBA.pool().find((player) => player.player_name === session.on_block.player_name);
         if (found) session.players[found.player_name] = { ...found };
       }
     } catch {
@@ -456,7 +456,7 @@ const PilsnerDraft = (() => {
       const budget = (body.budget || 200) | 0;
       if (teams < 2) throw new Error("A draft needs at least two teams.");
       if (slot < 1 || slot > teams) throw new Error(`Your nomination order must be between 1 and ${teams}.`);
-      session = new DraftSession(Pilsner.pool(), teams, slot, budget);
+      session = new DraftSession(NBA.pool(), teams, slot, budget);
       save();
       return session.state();
     }

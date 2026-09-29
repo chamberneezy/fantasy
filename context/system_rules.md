@@ -1,4 +1,4 @@
-# Pilsner 12-category salary-cap draft
+# NBA Fantasy 12-category salary-cap draft
 
 Head-to-head matchups use twelve categories:
 
@@ -41,7 +41,7 @@ Shooting percentages are volume-weighted before they are standardized.
 
 Injured list slots are in-season only and are not filled in the draft.
 
-Confirmed Yahoo snapshot for **3. Pilsner Fantasy Liga** (id 51867): 16 teams, H2H categories, roster PG/SG/SF/PF/C + 5 BN, cats MIN, FG%, FT%, 3PTM, PTS, REB, AST, ST, BLK, TO, PF, DD. Daily lineup deadline. 4 adds per week. No waivers. No Yahoo trades (commissioner review). 4 divisions. Playoffs 8 teams, weeks 18–20. Not a Yahoo cash/prize league. 3rd league has no dynasty keepers this draft. Default draft dollars $200 unless the team row on the Pilsner DD table says otherwise.
+Confirmed Yahoo snapshot: 16 teams, H2H categories, roster PG/SG/SF/PF/C + 5 BN, cats MIN, FG%, FT%, 3PTM, PTS, REB, AST, ST, BLK, TO, PF, DD. Daily lineup deadline. 4 adds per week. No waivers. No Yahoo trades (commissioner review). 4 divisions. Playoffs 8 teams, weeks 18–20. Not a Yahoo cash/prize league. No dynasty keepers this draft. Default draft dollars $200.
 
 ## Auction price
 

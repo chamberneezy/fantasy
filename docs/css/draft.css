@@ -75,12 +75,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .wordmark {
   font-family: var(--display);
   font-weight: 600;
-  font-size: 1.45rem;
-  letter-spacing: 0.12em;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1;
 }
-.wordmark b { color: var(--nba-red); font-weight: 700; margin-right: 0.12em; }
 .banner .links { display: flex; gap: 16px; }
 .banner a { color: white; text-decoration: none; font-weight: 500; font-size: 0.92rem; letter-spacing: 0.04em; text-transform: uppercase; }
 .banner a:hover { color: #9cc4ff; }

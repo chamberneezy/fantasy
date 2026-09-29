@@ -1,4 +1,4 @@
-"""12-category Pilsner head-to-head fantasy basketball math."""
+"""12-category head-to-head fantasy basketball math."""
 
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def _volume_weighted_mean(rates: pd.Series, volume: pd.Series) -> float:
 
 
 class FantasyMathEngine:
-    """Load projections and rank players with Pilsner 12-cat z-scores."""
+    """Load projections and rank players with 12-cat z-scores."""
 
     def __init__(self) -> None:
         self.df: pd.DataFrame | None = None

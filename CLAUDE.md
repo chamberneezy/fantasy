@@ -1,8 +1,8 @@
-# Pilsner draft tool — briefing for Claude
+# NBA Fantasy draft tool — briefing for Claude
 
-Mario’s private unpublished helper for **3. Pilsner Fantasy Liga** (Yahoo league 51867): 16-team salary-cap, **$200** default draft dollars, **10 drafted seats** (PG/SG/SF/PF/C + 5 BN). IL+ is in-season only. Live draft is Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
+Mario’s private unpublished helper for an NBA salary-cap draft: 16 teams, **$200** default draft dollars, **10 drafted seats** (PG/SG/SF/PF/C + 5 BN). IL+ is in-season only. Live draft is Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
 
-Yahoo settings confirm the 12 H2H cats, 16 teams, 10 seats, 4 divisions, 8-team playoffs in weeks 18–20, daily lineup lock, 4 adds/week, no Yahoo waivers, commissioner trade review. **3rd league has no dynasty this draft** (Keep/Locked stay for 1st/2nd). Yahoo currently lists Draft Type as Offline; Pilsner pravila still describe a live salary-cap room — Mario types what happens either way. “Not a cash league” means Yahoo prize league is off, not that the $200 cap is gone.
+Yahoo settings confirm the 12 H2H cats, 16 teams, 10 seats, 4 divisions, 8-team playoffs in weeks 18–20, daily lineup lock, 4 adds/week, no Yahoo waivers, commissioner trade review. **No dynasty this draft** (Keep/Locked stay for other nights). Yahoo currently lists Draft Type as Offline; the helper types what happens either way. “Not a cash league” means Yahoo prize league is off, not that the $200 cap is gone.
 
 If you are double-checking work, treat `context/system_rules.md` and `.cursorrules` as the contract. This file is the map of what exists and what is trustworthy.
 
@@ -15,7 +15,7 @@ If you are double-checking work, treat `context/system_rules.md` and `.cursorrul
 - FG% / FT% are **volume-weighted** first (`(pct - mean_pct) * attempts`), then that impact is standardized like a counting z.
 - Punts drop categories from the **sum only**. Stored per-cat z stays intact.
 - Predicted games are informational. They must not lower rank.
-- Dual-position 1.12× exists in code and is unused on this Pilsner file.
+- Dual-position 1.12× exists in code and is unused on this file.
 
 Application math, ranking, and data loading live in `src/`. Not in tests, scripts, or notebooks.
 
@@ -57,7 +57,7 @@ Logged Sold/Me hammers update **this room’s Stay** by tier (`star` ≥ $40, `m
 - League cash = `teams × $200 − spent`. If leftover per empty seat `< $8` after 8+ sales, warn the $1 endgame.
 - Second-star and leftover-$1 beat heat if they conflict.
 
-Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaults to Stay. Do not autofocus the search after those buttons. Budget is Pilsner draft dollars ($160–$240), the cap, not a payment. **3. Pilsner has no dynasty this year** — use Sold/Me. Keep/Locked remain for 1st/2nd dynasty nights only. Superstars cannot be dynasty.
+Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaults to Stay. Do not autofocus the search after those buttons. Budget is draft dollars ($160–$240), the cap, not a payment. **No dynasty this year** — use Sold/Me. Keep/Locked remain for a dynasty night only. Superstars cannot be dynasty.
 
 ## What to trust vs not
 
@@ -74,7 +74,7 @@ Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaul
 - Surplus-only ranks that used to price Kawhi like a $50 star. If Yahoo lists $27, the list wins.
 - Health-trap “steals” on rate (Embiid $17, Ja $5) without looking at predicted games.
 
-A $25 list **can** project more 12-cat z than a $50 name (e.g. Kawhi $27 vs Cade $57 on current projections). That is surplus vs dollar, not last year’s Pilsner results. We do **not** have a full 2024-25 Pilsner sale tape.
+A $25 list **can** project more 12-cat z than a $50 name (e.g. Kawhi $27 vs Cade $57 on current projections). That is surplus vs dollar, not last year’s sale results. We do **not** have a full prior-year sale tape.
 
 ## Layout
 

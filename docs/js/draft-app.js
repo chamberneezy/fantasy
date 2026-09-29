@@ -9,12 +9,12 @@ let clock = null;
 const MARK = "img/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="3. Pilsner"></span><span class="wordmark"><b>3.</b> Pilsner</span></div>`;
+  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="NBA Fantasy"></span><span class="wordmark">NBA Fantasy</span></div>`;
 }
 
 async function api(path, body) {
   try {
-    return PilsnerDraft.api(path, body || {});
+    return NBADraft.api(path, body || {});
   } catch (exc) {
     throw new Error(exc.message || "The draft could not do that.");
   }
@@ -392,9 +392,9 @@ function escapeAttr(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }
 
-Pilsner.load()
+NBA.load()
   .then(() => {
-    PilsnerDraft.restore();
+    NBADraft.restore();
     return run(() => api("/draft/api/state"));
   })
   .then(() => armClock())

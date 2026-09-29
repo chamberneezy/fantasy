@@ -1,4 +1,4 @@
-"""Turn 12-category value into a Pilsner salary-cap price."""
+"""Turn 12-category value into a salary-cap price."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-const Pilsner = (() => {
+const NBA = (() => {
   const CATEGORIES = ["MIN", "FG%", "FT%", "3PM", "PTS", "REB", "AST", "STL", "BLK", "TO", "PF", "DD"];
   const SLOTS = [
     ["PG", "PG"],
@@ -408,7 +408,7 @@ const Pilsner = (() => {
       const player = this.players[name];
       const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
       const dynasty = action === "keep" || action === "locked";
-      if (dynasty && player.superstar) throw new Error("Pilsner superstars cannot be dynasty. Log Sold or Me.");
+      if (dynasty && player.superstar) throw new Error("Superstars cannot be dynasty. Log Sold or Me.");
       const price = dynasty ? listed : this.closePrice(amount);
       const [stay, stretch] = fairMarks(player, listed, this.budget);
       const stamp = {
@@ -532,14 +532,14 @@ const Pilsner = (() => {
 
   function saveHelper() {
     if (!helper) {
-      localStorage.removeItem("pilsner-helper");
+      localStorage.removeItem("nba-fantasy-helper");
       return;
     }
-    localStorage.setItem("pilsner-helper", JSON.stringify(helper.dump()));
+    localStorage.setItem("nba-fantasy-helper", JSON.stringify(helper.dump()));
   }
 
   function restoreHelper() {
-    const raw = localStorage.getItem("pilsner-helper");
+    const raw = localStorage.getItem("nba-fantasy-helper");
     if (!raw) return;
     try {
       helper = Sidecar.load(JSON.parse(raw), pool);
