@@ -6,6 +6,11 @@ Humans can bid leftover-$1; Yahoo's computer stops at 120% of listed.
 Yahoo / ESPN averages: Hashtag Basketball category auction table (28 Sep 2026).
 Fantrax column: FantraxHQ 2025-26 recommended $200 values.
 Mocks: NBC / Yahoo salary mock Jokić $69, SGA $62, Luka $62, Wemby $61.
+
+Published AAV is a 12-team conservative tape. This league is 16 teams, 10 seats,
+$200. Leftover-max on the first name is $191. Yahoo's computer stops at 120% of
+listed; humans do not. Apex names (listed ≥ $50) Stay at 1.80× listed and
+Stretch at 2.40× so $100 on Jokić / Luka is still Stay, not a pass.
 """
 
 from __future__ import annotations
@@ -316,6 +321,12 @@ def _player_key(name: str) -> str:
     return key
 
 
+# First-star humans in this room, not Yahoo's 120% computer.
+APEX_LISTED = 50
+APEX_STAY = 1.80
+APEX_STRETCH = 2.40
+
+
 def quote(player_name: str) -> dict | None:
     key = _player_key(player_name)
     samples = _samples(key)
@@ -325,6 +336,10 @@ def quote(player_name: str) -> dict | None:
     low, high = min(samples), max(samples)
     stay = max(listed, int(round(median(samples))))
     stretch = max(stay, high)
+    if listed >= APEX_LISTED:
+        stay = max(stay, int(round(listed * APEX_STAY)))
+        stretch = max(stretch, int(round(listed * APEX_STRETCH)))
+        high = max(high, stretch)
     return {
         "yahoo_listed": listed,
         "room_low": low,

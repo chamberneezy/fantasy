@@ -35,8 +35,9 @@ def test_market_uses_yahoo_list_and_sale_averages() -> None:
     jokic = quote("Nikola Jokić")
     kawhi = quote("Kawhi Leonard")
     assert jokic["yahoo_listed"] == 60
-    assert jokic["stay_market"] >= 70
-    assert jokic["stretch_market"] >= 80
+    assert jokic["stay_market"] >= 100
+    assert jokic["stretch_market"] >= 130
+    assert quote("Luka Dončić")["stay_market"] >= 100
     assert kawhi["yahoo_listed"] == 27
     assert kawhi["auction_value"] == 27
     assert quote("Justin Edwards") is None
@@ -53,6 +54,15 @@ def test_market_uses_yahoo_list_and_sale_averages() -> None:
 def test_jokic_stay_and_stretch_match_the_room() -> None:
     assert stay_price(71, 200, 10, False) == 75
     assert stretch_price(71, 200, 10, False) == 80
+    jokic = quote("jokic")
+    player = {"stay_market": jokic["stay_market"], "stretch_market": jokic["stretch_market"]}
+    stay = stay_price(60, 200, 10, False, player)
+    stretch = stretch_price(60, 200, 10, False, player)
+    assert stay >= 100
+    assert stretch >= 130
+    assert call_for(100, stay, stretch) == "stay"
+    assert call_for(stretch + 1, stay, stretch) == "pass"
+    assert stay_price(60, 80, 9, False, player) == 72
     assert call_for(68, 75, 80) == "stay"
     assert call_for(78, 75, 80) == "stretch"
     assert call_for(85, 75, 80) == "pass"
@@ -109,6 +119,68 @@ def test_one_star_hammer_does_not_reprice_the_tier() -> None:
     stay, stretch = apply_room(57, 57, 57, 200, 10, False, room)
     assert stay == 57
     assert stretch == 57
+
+
+def test_nuclear_first_star_reprices_the_rest_of_the_board() -> None:
+    room = read_room(
+        [
+            {
+                "player_name": "Nikola Jokić",
+                "price": 160,
+                "listed": 60,
+                "fair_stay": 108,
+                "fair_stretch": 144,
+                "auction_value": 60,
+            }
+        ],
+        team_count=16,
+        budget=200,
+    )
+    assert room["counts"]["star"] == 1
+    assert room["listening"] is True
+    assert room["factors"]["star"] > 1.08
+    assert room["anchor"]["price"] == 160
+    stay, stretch = apply_room(103, 137, 57, 200, 10, False, room)
+    assert stay > 103
+    assert "160" in room["note"]
+
+
+def test_helper_moves_cade_after_a_nuclear_jokic() -> None:
+    session = SidecarSession(
+        [
+            {
+                "player_name": "Nikola Jokić",
+                "positions": "C",
+                "auction_value": 60,
+                "yahoo_listed": 60,
+                "stay_market": 108,
+                "stretch_market": 144,
+                "typical_low": 60,
+                "typical_high": 144,
+                "total_value": 24,
+            },
+            {
+                "player_name": "Cade Cunningham",
+                "positions": "PG",
+                "auction_value": 57,
+                "yahoo_listed": 57,
+                "stay_market": 103,
+                "stretch_market": 137,
+                "typical_low": 57,
+                "typical_high": 137,
+                "total_value": 13,
+            },
+        ],
+        team_count=16,
+        budget=200,
+    )
+    session.feed("jokic 160 sold")
+    session.feed("cade")
+    card = session.state()["coach"]
+    assert card["fair_stay"] == 103
+    assert card["stay"] > 103
+    assert card["room_factor"] > 1.08
+    assert "160" in session.room()["note"]
 
 
 def test_two_hot_stars_lift_this_rooms_stay() -> None:

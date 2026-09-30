@@ -192,6 +192,13 @@ def build_card(
     fair_stretch = stretch_price(listed, budget_left, spots_left, owns_elite, player)
     stay, stretch = apply_room(fair_stay, fair_stretch, listed, budget_left, spots_left, owns_elite, room)
     factor = factor_for(listed, room)
+    ceiling = leftover_max(budget_left, spots_left)
+    if abs(factor - 1.0) >= 0.03 and not (owns_elite and listed >= ELITE_LISTED):
+        room_uncapped = max(1, int(round(fair_stay * factor)))
+        room_uncapped_stretch = max(room_uncapped, int(round(fair_stretch * factor)))
+    else:
+        room_uncapped = fair_stay
+        room_uncapped_stretch = fair_stretch
     low = int(player.get("typical_low") or typical_sale(listed)[0])
     high = int(player.get("typical_high") or typical_sale(listed)[1])
     signal = call_for(bid, stay, stretch)
@@ -203,8 +210,10 @@ def build_card(
     targets = next_targets(available, after, seats, owns_after, player["player_name"], room)
     second = owns_elite and listed >= ELITE_LISTED
     room_note = ""
-    if room and abs(factor - 1.0) >= 0.03 and not second:
-        room_note = f" Fair Stay ${fair_stay}. This room is at ${stay} ({factor:.2f}× on this tier)."
+    if room and abs(factor - 1.0) >= 0.03:
+        room_note = f" Fair Stay ${fair_stay}. This room is at ${room_uncapped} ({factor:.2f}× on this tier)."
+        if ceiling and ceiling < room_uncapped and not second:
+            room_note += f" You can pay ${ceiling}."
     if spots_left <= 0:
         why = "Your roster is full. Log the sale if someone else got him."
     elif second:
@@ -213,10 +222,18 @@ def build_card(
             f"Market on this name is ${low}–${high}. A second star wrecks the bench."
         )
     elif signal == "ready":
-        why = (
-            f"Yahoo lists ${listed}. Rooms pay ${low}–${high} (Hashtag / Fantrax / mocks). "
-            f"Stay ${stay}. Stretch ${stretch}. Past that is a tax on the last seats.{room_note}"
-        )
+        if listed >= 50:
+            computer = max(1, int(round(listed * 1.20)))
+            why = (
+                f"Yahoo lists ${listed}. Their computer stops at ${computer}. "
+                f"In this 16-team, 10-seat room humans Stay ${stay}. Stretch ${stretch}. "
+                f"$100 is still Stay.{room_note}"
+            )
+        else:
+            why = (
+                f"Yahoo lists ${listed}. Rooms pay ${low}–${high} (Hashtag / Fantrax / mocks). "
+                f"Stay ${stay}. Stretch ${stretch}. Past that is a tax on the last seats.{room_note}"
+            )
     elif signal == "stay":
         why = f"Pay this. After ${price} you have ${after} for {seats} seats.{room_note}"
     elif signal == "stretch":
@@ -241,7 +258,10 @@ def build_card(
         "stretch": stretch,
         "fair_stay": fair_stay,
         "fair_stretch": fair_stretch,
+        "room_stay": room_uncapped,
+        "room_stretch": room_uncapped_stretch,
         "room_factor": round(factor, 3),
+        "your_max": ceiling,
         "typical_low": low,
         "typical_high": high,
         "call": signal,

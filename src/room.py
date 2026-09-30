@@ -1,4 +1,9 @@
-"""Learn Stay / Stretch from hammers you log. One sale does not reprice the board."""
+"""Learn Stay / Stretch from hammers you log.
+
+A quiet first star is noise. A nuclear first $50+ hammer (well over Stay,
+or a steal) immediately marks remaining stars. Two sales in a tier always
+teach. Dynasty Keep/Locked do not. Leftover-$1 still caps what you can pay.
+"""
 
 from __future__ import annotations
 
@@ -9,9 +14,13 @@ from draft_room import DEFAULT_BUDGET, ROSTER_SIZE, TEAM_COUNT
 
 STAR = 40
 MID = 20
+APEX = 50
 MIN_SAMPLES = 2
 HEAT_FLOOR = 0.85
 HEAT_CEILING = 1.22
+HOT_STAY = 1.25
+COLD_STAY = 0.80
+HOT_STRETCH = 1.12
 
 
 def bucket(listed: int) -> str:
@@ -21,6 +30,19 @@ def bucket(listed: int) -> str:
     if price >= MID:
         return "mid"
     return "end"
+
+
+def _outlier(price: int, stay: int, stretch: int, listed: int) -> bool:
+    """A first Jokić / Luka / Wemby hammer that is not just the tape."""
+    if listed < APEX or stay <= 0:
+        return False
+    if price >= max(int(round(stay * HOT_STAY)), stay + 15):
+        return True
+    if price <= int(round(stay * COLD_STAY)):
+        return True
+    if stretch and price >= int(round(stretch * HOT_STRETCH)):
+        return True
+    return False
 
 
 def fair_marks(player: dict | None, listed: int, budget: int = DEFAULT_BUDGET) -> tuple[int, int]:
@@ -48,15 +70,20 @@ def read_room(
     samples: dict[str, list[float]] = {"star": [], "mid": [], "end": []}
     over_stretch_stars = 0
     spent = 0
+    anchor: dict | None = None
     for item in taken:
         listed, stay, stretch = _sale_marks(item, budget)
         price = max(1, int(item.get("price") or 1))
         spent += price
         if item.get("kind") == "dynasty":
             continue
-        samples[bucket(listed)].append(price / max(1, stay))
+        ratio = price / max(1, stay)
+        samples[bucket(listed)].append(ratio)
         if listed >= STAR and price > stretch:
             over_stretch_stars += 1
+        if anchor is None and _outlier(price, stay, stretch, listed):
+            last = (item.get("player_name") or (item.get("player") or {}).get("player_name") or "Star")
+            anchor = {"name": last, "price": price, "ratio": round(ratio, 2), "hot": price >= stay}
     counts = {key: len(values) for key, values in samples.items()}
     factors = {key: 1.0 for key in samples}
     for key, values in samples.items():
@@ -64,23 +91,35 @@ def read_room(
             continue
         heat = float(median(values))
         factors[key] = round(min(HEAT_CEILING, max(HEAT_FLOOR, heat)), 3)
+    if counts["star"] == 1 and anchor is not None and samples["star"]:
+        heat = float(samples["star"][0])
+        factors["star"] = round(min(HEAT_CEILING, max(HEAT_FLOOR, heat)), 3)
+        if factors["star"] > 1.08:
+            lift = 1.0 + 0.25 * (factors["star"] - 1.0)
+            factors["mid"] = round(min(HEAT_CEILING, max(factors["mid"], lift)), 3)
     if over_stretch_stars >= 3 and factors["star"] > 1.0:
         lift = 1.0 + 0.45 * (factors["star"] - 1.0)
         factors["mid"] = round(min(HEAT_CEILING, max(factors["mid"], lift)), 3)
     seats_left = max(0, team_count * roster_size - len(taken))
     cash = team_count * budget - spent
     per_seat = round(cash / seats_left, 1) if seats_left else 0.0
-    listening = any(count >= MIN_SAMPLES for count in counts.values())
+    listening = any(abs(factors[key] - 1.0) >= 0.03 for key in factors)
     if seats_left and per_seat < 8 and len(taken) >= 8:
         note = f"League leftover is ${per_seat} a seat. The $1 endgame is close."
+    elif anchor and counts["star"] == 1:
+        verb = "over" if anchor["hot"] else "under"
+        note = (
+            f"{anchor['name']} at ${anchor['price']} is {anchor['ratio']}× Stay ({verb}). "
+            f"Remaining $50+ names move with that. League cash ${cash}."
+        )
     elif listening and factors["star"] >= 1.08:
         note = f"Stars are going {factors['star']:.2f}× Stay. This room's Stay is marked up."
     elif listening and factors["star"] <= 0.92 and counts["star"] >= MIN_SAMPLES:
         note = f"Stars are going {factors['star']:.2f}× Stay. This room is cheaper than the tape."
     elif counts["star"] == 1:
-        note = "One star sale is noise. A second $40+ hammer teaches the tier."
+        note = "One quiet star sale is noise. A nuke or a second $40+ hammer teaches the tier."
     else:
-        note = "Stay is the published tape until two sales land in the same tier."
+        note = "Stay is the published tape until two sales land in the same tier, or one apex name goes nuclear."
     return {
         "factors": factors,
         "counts": counts,
@@ -90,6 +129,7 @@ def read_room(
         "per_seat": per_seat,
         "endgame": bool(seats_left and per_seat < 8 and len(taken) >= 8),
         "listening": listening,
+        "anchor": anchor,
         "note": note,
     }
 

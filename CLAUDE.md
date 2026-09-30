@@ -39,8 +39,8 @@ These sessions must not overwrite each other. Starting helper must not wipe a mo
 ## Prices (helper / coach)
 
 - **Yahoo list** (`src/market.py` `YAHOO_LISTED`) is the official 2025-26 salary-cap board dollar.
-- **Stay** = median of Yahoo list + Hashtag Y!/ESPN AAV + FantraxHQ, **never below Yahoo list**.
-- **Stretch** = high of those samples.
+- **Stay** = median of Yahoo list + Hashtag Y!/ESPN AAV + FantraxHQ, **never below Yahoo list**. For listed ≥ $50, also ≥ **1.80× listed** (Jokic Stay ≥ $100). Yahoo 120% is computer only.
+- **Stretch** = high of those samples, and ≥ **2.40× listed** on those apex names.
 - Unlisted names stay on surplus (`src/auction.py`, `SURPLUS_POWER = 0.74`). Last-name market match is **single-token only** (`jokic` → Jokic; `Justin Edwards` must not inherit Anthony Edwards).
 - After a **$40+** buy, the next elite is a pass (Stay ≈ 0.50× listed, leftover-$1 still binds).
 - Leftover rule: always leave **$1 per empty seat**.
@@ -50,7 +50,8 @@ These sessions must not overwrite each other. Starting helper must not wipe a mo
 Logged Sold/Me hammers update **this room’s Stay** by tier (`star` ≥ $40, `mid` ≥ $20, `end` else):
 
 - Heat = median(`hammer / fair Stay`) in that bucket, clamped 0.85–1.22.
-- **One** sale in a bucket is noise (factor stays 1.0).
+- **One quiet** sale in a bucket is noise (factor stays 1.0).
+- **One nuclear** first $50+ hammer (≈1.25× Stay, or a steal) marks remaining stars immediately.
 - **Two** sales in a bucket move that tier.
 - **Three** stars over fair Stretch also lift mid a bit.
 - Yahoo list and fair Stay stay on the card. The big Stay number is the room-adjusted call.
@@ -105,9 +106,9 @@ data/                   projections, sessions; do not commit secrets
 
 1. `pytest tests/ -q` with Xcode Python.
 2. Helper and mock session files still separate after a restart.
-3. Jokic list $60, Stay ≥ $70, Kawhi list $27.
+3. Jokic list $60, Stay ≥ $100, Stretch ≥ $130, Kawhi list $27. $100 on Jokic is Stay.
 4. `quote("Justin Edwards")` is `None`.
-5. One logged star sale does not raise Cade’s Stay; two hot star sales do.
+5. A quiet first star sale does not raise Cade’s Stay; a $160 Jokic does. Two hot star sales also do.
 6. Lab language: modal slot ≠ one room that happened.
 7. No exploit, scrape, or Yahoo-live wiring.
 

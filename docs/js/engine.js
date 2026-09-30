@@ -24,6 +24,10 @@ const NBA = (() => {
   const MIN_SAMPLES = 2;
   const HEAT_FLOOR = 0.85;
   const HEAT_CEILING = 1.22;
+  const APEX = 50;
+  const HOT_STAY = 1.25;
+  const COLD_STAY = 0.8;
+  const HOT_STRETCH = 1.12;
   const STAY_FACTOR = 1.05;
   const STRETCH_FACTOR = 1.12;
   const SECOND_STAR = 0.5;
@@ -146,23 +150,44 @@ const NBA = (() => {
     return [listed, stay, stretch];
   }
 
+  function isOutlier(price, stay, stretch, listed) {
+    if (listed < APEX || stay <= 0) return false;
+    if (price >= Math.max(Math.round(stay * HOT_STAY), stay + 15)) return true;
+    if (price <= Math.round(stay * COLD_STAY)) return true;
+    if (stretch && price >= Math.round(stretch * HOT_STRETCH)) return true;
+    return false;
+  }
+
   function readRoom(taken, teamCount, budget) {
     const samples = { star: [], mid: [], end: [] };
     let over = 0;
     let spent = 0;
+    let anchor = null;
     for (const item of taken) {
       const [listed, stay, stretch] = saleMarks(item, budget);
       const price = Math.max(1, (item.price || 1) | 0);
       spent += price;
       if (item.kind === "dynasty") continue;
-      samples[bucket(listed)].push(price / Math.max(1, stay));
+      const ratio = price / Math.max(1, stay);
+      samples[bucket(listed)].push(ratio);
       if (listed >= STAR && price > stretch) over += 1;
+      if (!anchor && isOutlier(price, stay, stretch, listed)) {
+        const name = item.player_name || (item.player && item.player.player_name) || "Star";
+        anchor = { name, price, ratio: Math.round(ratio * 100) / 100, hot: price >= stay };
+      }
     }
     const counts = { star: samples.star.length, mid: samples.mid.length, end: samples.end.length };
     const factors = { star: 1, mid: 1, end: 1 };
     for (const key of Object.keys(samples)) {
       if (samples[key].length < MIN_SAMPLES) continue;
       factors[key] = Math.round(Math.min(HEAT_CEILING, Math.max(HEAT_FLOOR, median(samples[key]))) * 1000) / 1000;
+    }
+    if (counts.star === 1 && anchor && samples.star.length) {
+      factors.star = Math.round(Math.min(HEAT_CEILING, Math.max(HEAT_FLOOR, samples.star[0])) * 1000) / 1000;
+      if (factors.star > 1.08) {
+        const lift = 1 + 0.25 * (factors.star - 1);
+        factors.mid = Math.round(Math.min(HEAT_CEILING, Math.max(factors.mid, lift)) * 1000) / 1000;
+      }
     }
     if (over >= 3 && factors.star > 1) {
       const lift = 1 + 0.45 * (factors.star - 1);
@@ -171,13 +196,15 @@ const NBA = (() => {
     const seatsLeft = Math.max(0, teamCount * ROSTER_SIZE - taken.length);
     const cash = teamCount * budget - spent;
     const perSeat = seatsLeft ? Math.round((cash / seatsLeft) * 10) / 10 : 0;
-    const listening = Object.values(counts).some((count) => count >= MIN_SAMPLES);
-    let note = "Stay is the published tape until two sales land in the same tier.";
+    const listening = Object.values(factors).some((value) => Math.abs(value - 1) >= 0.03);
+    let note = "Stay is the published tape until two sales land in the same tier, or one apex name goes nuclear.";
     if (seatsLeft && perSeat < 8 && taken.length >= 8) note = `League leftover is $${perSeat} a seat. The $1 endgame is close.`;
-    else if (listening && factors.star >= 1.08) note = `Stars are going ${factors.star.toFixed(2)}× Stay. This room's Stay is marked up.`;
+    else if (anchor && counts.star === 1) {
+      note = `${anchor.name} at $${anchor.price} is ${anchor.ratio}× Stay (${anchor.hot ? "over" : "under"}). Remaining $50+ names move with that. League cash $${cash}.`;
+    } else if (listening && factors.star >= 1.08) note = `Stars are going ${factors.star.toFixed(2)}× Stay. This room's Stay is marked up.`;
     else if (listening && factors.star <= 0.92 && counts.star >= MIN_SAMPLES) note = `Stars are going ${factors.star.toFixed(2)}× Stay. This room is cheaper than the tape.`;
-    else if (counts.star === 1) note = "One star sale is noise. A second $40+ hammer teaches the tier.";
-    return { factors, counts, cash, seats_left: seatsLeft, per_seat: perSeat, note };
+    else if (counts.star === 1) note = "One quiet star sale is noise. A nuke or a second $40+ hammer teaches the tier.";
+    return { factors, counts, cash, seats_left: seatsLeft, per_seat: perSeat, listening, anchor, note };
   }
 
   function factorFor(listed, room) {
@@ -294,6 +321,13 @@ const NBA = (() => {
     const fairStretch = stretchPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
     const [stay, stretch] = applyRoom(fairStay, fairStretch, listed, budgetLeft, spotsLeft, ownsElite, room);
     const factor = factorFor(listed, room);
+    const ceiling = leftoverMax(budgetLeft, spotsLeft);
+    const roomUncapped = Math.abs(factor - 1) >= 0.03 && !(ownsElite && listed >= ELITE)
+      ? Math.max(1, Math.round(fairStay * factor))
+      : fairStay;
+    const roomUncappedStretch = Math.abs(factor - 1) >= 0.03 && !(ownsElite && listed >= ELITE)
+      ? Math.max(roomUncapped, Math.round(fairStretch * factor))
+      : fairStretch;
     const low = (player.typical_low || typicalSale(listed)[0]) | 0;
     const high = (player.typical_high || typicalSale(listed)[1]) | 0;
     const signal = callFor(bid, stay, stretch);
@@ -305,13 +339,21 @@ const NBA = (() => {
     const targets = nextTargets(available, after, seats, ownsAfter, player.player_name, room);
     const second = ownsElite && listed >= ELITE;
     let roomNote = "";
-    if (room && Math.abs(factor - 1) >= 0.03 && !second) {
-      roomNote = ` Fair Stay $${fairStay}. This room is at $${stay} (${factor.toFixed(2)}× on this tier).`;
+    if (room && Math.abs(factor - 1) >= 0.03) {
+      roomNote = ` Fair Stay $${fairStay}. This room is at $${roomUncapped} (${factor.toFixed(2)}× on this tier).`;
+      if (ceiling && ceiling < roomUncapped && !second) roomNote += ` You can pay $${ceiling}.`;
     }
     let why;
     if (spotsLeft <= 0) why = "Your roster is full. Log the sale if someone else got him.";
     else if (second) why = `You already have a $${ELITE}+ player. Stay is $${stay} only if he is a steal. Market on this name is $${low}–$${high}. A second star wrecks the bench.`;
-    else if (signal === "ready") why = `Yahoo lists $${listed}. Rooms pay $${low}–$${high}. Stay $${stay}. Stretch $${stretch}. Past that is a tax on the last seats.${roomNote}`;
+    else if (signal === "ready") {
+      if (listed >= 50) {
+        const computer = Math.max(1, Math.round(listed * 1.2));
+        why = `Yahoo lists $${listed}. Their computer stops at $${computer}. In this 16-team, 10-seat room humans Stay $${stay}. Stretch $${stretch}. $100 is still Stay.${roomNote}`;
+      } else {
+        why = `Yahoo lists $${listed}. Rooms pay $${low}–$${high}. Stay $${stay}. Stretch $${stretch}. Past that is a tax on the last seats.${roomNote}`;
+      }
+    }
     else if (signal === "stay") why = `Pay this. After $${price} you have $${after} for ${seats} seats.${roomNote}`;
     else if (signal === "stretch") why = `$${tax} over stay. You can, then $${after} for ${seats} seats. The next $${ELITE}+ name is a pass.${roomNote}`;
     else why = `Pass. Tax $${tax} on a $${listed} name. If you still pay $${price} you have $${after} for ${seats} seats and you are in stars-and-scrubs.${roomNote}`;
@@ -327,7 +369,10 @@ const NBA = (() => {
       stretch,
       fair_stay: fairStay,
       fair_stretch: fairStretch,
+      room_stay: roomUncapped,
+      room_stretch: roomUncappedStretch,
       room_factor: Math.round(factor * 1000) / 1000,
+      your_max: ceiling,
       typical_low: low,
       typical_high: high,
       call: signal,

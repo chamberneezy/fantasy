@@ -75,7 +75,7 @@ def test_listed_stars_sit_in_a_real_room() -> None:
     assert jokic["auction_value"] == 60
     assert doncic["auction_value"] == 59
     assert kawhi["auction_value"] == 27
-    assert jokic["stay_market"] >= 70
+    assert jokic["stay_market"] >= 100
     assert porter["yahoo_listed"] == 3
     assert porter["auction_value"] == 3
     assert ware["yahoo_listed"] == 16

@@ -165,7 +165,7 @@ function deskHtml() {
         <li class="${call === "stretch" ? "on" : ""}"><button type="button" data-set="${coach.stretch}"><span>Stretch</span><strong>${money(coach.stretch)}</strong></button></li>
         <li class="${call === "pass" ? "on" : ""}"><span>Pass</span><strong>over ${money(coach.stretch)}</strong></li>
       </ol>
-      <p class="markets">Yahoo list ${money(coach.listed)} · fair ${money(coach.fair_stay)}–${money(coach.fair_stretch)} · rooms ${money(coach.typical_low)}–${money(coach.typical_high)}${coach.room_factor && Math.abs(coach.room_factor - 1) >= 0.03 ? ` · this room ${coach.room_factor.toFixed(2)}×` : ""}</p>
+      <p class="markets">Yahoo list ${money(coach.listed)} · fair ${money(coach.fair_stay)}–${money(coach.fair_stretch)}${coach.room_factor && Math.abs(coach.room_factor - 1) >= 0.03 ? ` · this room ${money(coach.room_stay || coach.stay)} (${Number(coach.room_factor).toFixed(2)}×)` : ""}${coach.your_max != null && coach.room_stay != null && coach.your_max < coach.room_stay ? ` · you ${money(coach.your_max)}` : ""} · tape ${money(coach.typical_low)}–${money(coach.typical_high)}</p>
       <p class="why">${coach.why}</p>
       <div class="hammer">
         <button type="button" data-nudge="-1">−1</button>
