@@ -3,18 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#070d1a">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("nba-fantasy-theme") === "dark" ? "dark" : "light";
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="theme-color" content="#f6f8fc">
   <title>NBA Fantasy helper</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="apple-touch-icon" href="img/mark.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/helper.css?v=nba">
+  <link rel="stylesheet" href="css/helper.css?v=home">
+  <link rel="stylesheet" href="css/motion.css?v=home">
 </head>
 <body>
   <main id="app"></main>
-  <script src="js/engine.js?v=nba"></script>
-  <script src="js/helper-app.js?v=nba"></script>
+  <script src="js/theme.js?v=home"></script>
+  <script src="js/motion.js?v=home"></script>
+  <script src="js/engine.js?v=home"></script>
+  <script src="js/helper-app.js?v=home"></script>
 </body>
 </html>

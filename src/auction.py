@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from market import apply_market_prices
 
-# Surplus only fills names Yahoo does not list. Market names keep Yahoo's $.
+# Surplus fills the $200 board, then Yahoo list overwrites. Unlisted names
+# fall back to $1 (see apply_market_prices). They are not $30 mids.
 SURPLUS_POWER = 0.74
 LISTED_STAR_CAP = 76
 

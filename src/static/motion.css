@@ -1,0 +1,255 @@
+/* Bid-hammer motion. Plays on press and pick, not on every keystroke. */
+:root {
+  --snap: 140ms cubic-bezier(.18, .9, .22, 1);
+  --glide: 320ms cubic-bezier(.22, 1, .36, 1);
+  --deal: 420ms cubic-bezier(.18, .9, .22, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  html {
+    transition: background-color var(--glide), color var(--glide);
+  }
+  body {
+    transition: background var(--glide);
+  }
+
+  .banner {
+    position: relative;
+  }
+  .banner::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--nba-red);
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: stripe-drop 520ms cubic-bezier(.22, 1, .36, 1) 60ms both;
+  }
+
+  button,
+  .picks a,
+  a.go-link,
+  .theme-toggle,
+  .slot-choice,
+  .primary,
+  .text-button,
+  .go,
+  td button,
+  a.brand {
+    transition:
+      transform var(--snap),
+      box-shadow var(--snap),
+      background-color var(--snap),
+      border-color var(--snap),
+      color var(--snap),
+      filter var(--snap);
+  }
+
+  button:active,
+  .picks a:active,
+  a.go-link:active,
+  .theme-toggle:active,
+  .slot-choice:active,
+  .primary:active,
+  .text-button:active,
+  .go:active {
+    transform: translateY(1px) scale(0.97);
+  }
+
+  .go,
+  .primary,
+  a.go-link {
+    position: relative;
+    overflow: hidden;
+  }
+  .go::after,
+  .primary::after,
+  a.go-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--nba-red);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 220ms cubic-bezier(.18, .9, .22, 1);
+    pointer-events: none;
+  }
+  .go:hover::after,
+  .primary:hover::after,
+  a.go-link:hover::after,
+  .go:focus-visible::after,
+  .primary:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .go:hover,
+  .primary:hover,
+  .close .me:hover,
+  a.go-link:hover,
+  .theme-toggle:hover {
+    filter: brightness(1.06);
+  }
+
+  .picks a:not(.go-link):hover {
+    border-color: var(--nba-blue);
+    box-shadow: 0 10px 28px rgba(29, 66, 138, 0.1);
+  }
+
+  .board button:hover,
+  .slot-choice:hover {
+    border-color: var(--nba-blue);
+  }
+
+  input,
+  select {
+    transition: box-shadow var(--snap), border-color var(--snap), background-color var(--snap);
+  }
+  input:focus,
+  select:focus {
+    border-color: var(--nba-blue);
+    box-shadow:
+      inset 3px 0 0 var(--nba-red),
+      0 0 0 3px rgba(43, 119, 231, 0.2);
+  }
+  .feed input {
+    border-left: 3px solid transparent;
+  }
+  .feed input:focus {
+    border-left-color: var(--nba-red);
+    box-shadow: 0 0 0 3px rgba(43, 119, 231, 0.2);
+  }
+
+  a.brand {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .mark-wrap {
+    transition: transform var(--glide), filter var(--glide);
+  }
+  a.brand:hover .mark-wrap,
+  .mark-wrap:hover {
+    transform: rotate(-8deg) scale(1.05);
+    filter: saturate(1.1);
+  }
+  a.brand:active .mark-wrap,
+  a.brand:active .mark-hero {
+    transform: rotate(0deg) scale(0.92);
+    filter: saturate(1.2);
+  }
+  .mark-hero:hover {
+    transform: rotate(-6deg) scale(1.03);
+  }
+
+  .links a,
+  .banner a,
+  .text,
+  .lede a,
+  td button {
+    transition: color var(--snap), opacity var(--snap);
+  }
+
+  .meters li,
+  .bug li {
+    transition: background-color var(--snap), color var(--snap);
+  }
+
+  body[data-motion="hit"] .card,
+  body[data-motion="hit"] .bug,
+  body[data-motion="hit"] .picks a {
+    animation: hammer-in 340ms cubic-bezier(.18, .9, .22, 1) both;
+  }
+
+  body[data-motion="hit"] .squad li,
+  body[data-motion="deal"] .squad li {
+    animation: deal-row var(--deal) both;
+  }
+  body[data-motion="hit"] .squad li:nth-child(1),
+  body[data-motion="deal"] .squad li:nth-child(1) { animation-delay: 0ms; }
+  body[data-motion="hit"] .squad li:nth-child(2),
+  body[data-motion="deal"] .squad li:nth-child(2) { animation-delay: 28ms; }
+  body[data-motion="hit"] .squad li:nth-child(3),
+  body[data-motion="deal"] .squad li:nth-child(3) { animation-delay: 56ms; }
+  body[data-motion="hit"] .squad li:nth-child(4),
+  body[data-motion="deal"] .squad li:nth-child(4) { animation-delay: 84ms; }
+  body[data-motion="hit"] .squad li:nth-child(5),
+  body[data-motion="deal"] .squad li:nth-child(5) { animation-delay: 112ms; }
+  body[data-motion="hit"] .squad li:nth-child(6),
+  body[data-motion="deal"] .squad li:nth-child(6) { animation-delay: 140ms; }
+  body[data-motion="hit"] .squad li:nth-child(7),
+  body[data-motion="deal"] .squad li:nth-child(7) { animation-delay: 168ms; }
+  body[data-motion="hit"] .squad li:nth-child(8),
+  body[data-motion="deal"] .squad li:nth-child(8) { animation-delay: 196ms; }
+  body[data-motion="hit"] .squad li:nth-child(9),
+  body[data-motion="deal"] .squad li:nth-child(9) { animation-delay: 224ms; }
+  body[data-motion="hit"] .squad li:nth-child(10),
+  body[data-motion="deal"] .squad li:nth-child(10) { animation-delay: 252ms; }
+
+  .now,
+  .bug-bid {
+    transition: transform var(--snap);
+  }
+  body[data-motion="nudge"] .now,
+  body[data-motion="nudge"] .bug-bid {
+    animation: tick-up 180ms cubic-bezier(.18, .9, .22, 1);
+  }
+}
+
+@keyframes stripe-drop {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes hammer-in {
+  0% {
+    transform: scale(0.985) translateY(6px);
+    box-shadow:
+      0 0 0 3px rgba(231, 63, 43, 0.45),
+      0 16px 40px rgba(43, 119, 231, 0.28);
+  }
+  58% {
+    transform: scale(1.012);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes deal-row {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+    box-shadow: inset 4px 0 0 var(--nba-red);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@keyframes tick-up {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

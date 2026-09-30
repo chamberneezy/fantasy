@@ -31,7 +31,8 @@ def main() -> None:
     players = []
     for player in build_pool():
         row = {key: player.get(key) for key in KEEP}
-        row["yahoo_listed"] = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
+        listed = player.get("yahoo_listed")
+        row["yahoo_listed"] = int(listed) if listed not in (None, "") else None
         row["auction_value"] = int(player.get("auction_value") or 1)
         players.append(row)
     out = ROOT / "docs" / "data" / "pool.json"

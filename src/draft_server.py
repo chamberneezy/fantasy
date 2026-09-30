@@ -68,6 +68,10 @@ def current_helper() -> SidecarSession | None:
 
 
 @app.get("/")
+def home_page():
+    return render_template("index.html")
+
+
 @app.get("/draft")
 def draft_page():
     return render_template("draft.html")
@@ -308,6 +312,13 @@ def lab_run():
     LAB["report"] = report
     save_report(report)
     return jsonify({**report, "ready": True, "drafts": []})
+
+
+@app.post("/lab/api/reset")
+def lab_reset():
+    LAB["report"] = None
+    save_report(None)
+    return jsonify({"ready": False, "n": 0, "draft_slot": 5, "policy": "stay"})
 
 
 @app.post("/lab/api/scenario")

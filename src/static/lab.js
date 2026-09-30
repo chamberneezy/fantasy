@@ -3,13 +3,15 @@ let report = { ready: false, n: 0, draft_slot: 5, policy: "stay" };
 let card = null;
 let error = "";
 let running = "";
+let seat = 5;
+let policy = "stay";
 let player = "jokic";
 let buyer = "room";
 let price = 86;
 const MARK = "/static/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="NBA Fantasy"></span><span class="wordmark">NBA Fantasy</span></div>`;
+  return `<a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
 }
 
 async function api(path, body) {
@@ -27,6 +29,36 @@ function pct(value) {
   return `${Math.round((value || 0) * 100)}%`;
 }
 
+function policyLine(value) {
+  return value === "stretch" ? "stretch on the first star" : "stay";
+}
+
+function statusLine() {
+  if (running) {
+    return `Running ${Number(running).toLocaleString()} rooms. Seat ${seat}. You follow ${policyLine(policy)}.`;
+  }
+  if (report.ready) {
+    return `${report.n.toLocaleString()} rooms. Seat ${report.draft_slot}. You follow ${policyLine(report.policy)}.`;
+  }
+  return "No tape yet. Run a batch.";
+}
+
+function readControls() {
+  const seatEl = document.querySelector("#seat");
+  const policyEl = document.querySelector("#policy");
+  if (seatEl) {
+    const next = Number(seatEl.value);
+    if (Number.isFinite(next) && next >= 1) seat = Math.min(16, Math.max(1, Math.round(next)));
+  }
+  if (policyEl) policy = policyEl.value === "stretch" ? "stretch" : "stay";
+}
+
+function adoptReport(payload) {
+  report = payload;
+  if (report.draft_slot) seat = report.draft_slot;
+  if (report.policy) policy = report.policy;
+}
+
 function money(value) {
   return value == null ? "—" : `$${value}`;
 }
@@ -40,34 +72,36 @@ function render() {
           <nav class="links">
             <a href="/helper">Helper</a>
             <a href="/draft">Mock</a>
+            ${themeToggleHtml()}
           </nav>
         </div>
       </header>
       <h1>What the room does to you.</h1>
       <p class="lede">Bots bid inside Stay–Stretch, and a few heat names go over. You sit in a nomination seat and pay Stay unless you switch the policy. A scenario is a filter on those rooms: Jokic to the field at $86, then what is left for you.</p>
       <div class="tools">
-        <label>Seat <input id="seat" type="number" min="1" max="16" value="${report.draft_slot || 5}"></label>
+        <label>Seat <input id="seat" type="number" min="1" max="16" value="${seat}"></label>
         <label>Policy
           <select id="policy">
-            <option value="stay" ${report.policy === "stay" ? "selected" : ""}>Stay</option>
-            <option value="stretch" ${report.policy === "stretch" ? "selected" : ""}>Stretch first star</option>
+            <option value="stay" ${policy === "stay" ? "selected" : ""}>Stay</option>
+            <option value="stretch" ${policy === "stretch" ? "selected" : ""}>Stretch first star</option>
           </select>
         </label>
-        <button class="go" id="run-2k" type="button">${running === "2000" ? "Running…" : "Run 2,000"}</button>
-        <button class="go quiet" id="run-10k" type="button">${running === "10000" ? "Running…" : "Run 10,000"}</button>
+        <button class="go" id="run-2k" type="button" ${running ? "disabled" : ""}>${running === "2000" ? "Running…" : "Run 2,000"}</button>
+        <button class="go quiet" id="run-10k" type="button" ${running ? "disabled" : ""}>${running === "10000" ? "Running…" : "Run 10,000"}</button>
       </div>
-      <p class="lede">${report.ready ? `${report.n.toLocaleString()} rooms. Seat ${report.draft_slot}. You follow ${report.policy}.` : "No tape yet. Run a batch."}</p>
+      <p class="lede">${statusLine()}</p>
       <p class="error">${error}</p>
       ${report.ready ? bodyHtml() : ""}
     </section>`;
   bind();
 }
 
-function squadHtml(rows, title) {
+function squadHtml(rows, title, note) {
   if (!rows || !rows.length) return "";
   return `
     <section class="squad">
       <h2>${title}</h2>
+      ${note ? `<p class="lede">${note}</p>` : ""}
       <ol>
         ${rows.map((row) => `
           <li>
@@ -104,10 +138,12 @@ function bodyHtml() {
       <ul class="next">
         ${(card.next || []).map((item) => `<li><span>${item.name}</span><span>${pct(item.p)}</span></li>`).join("")}
       </ul>
-      ${squadHtml(card.squad, "Your squad in these rooms")}
+      ${squadHtml(card.squad, "Your seats in these rooms", "Each seat is its own count. Not one roster.")}
     </section>` : "";
+  const often = (you.common || []).slice(0, 8).map((row) => `${row.name} ${pct(row.p)}`).join(" · ");
   return `
-    ${squadHtml(you.squad, "Most probable squad")}
+    ${squadHtml(you.squad, "Most common name at each seat", "Each seat is counted on its own across rooms. Same name cannot sit twice. Stretching a star leaves $1 seats.")}
+    ${often ? `<p class="lede">Names you actually roster most often: ${often}.</p>` : ""}
     <ol class="plays">${plays}</ol>
     <div class="tools">
       <label>Name <input id="who" value="${player}"></label>
@@ -134,6 +170,10 @@ function bodyHtml() {
 }
 
 function bind() {
+  const seatEl = document.querySelector("#seat");
+  const policyEl = document.querySelector("#policy");
+  if (seatEl) seatEl.addEventListener("change", readControls);
+  if (policyEl) policyEl.addEventListener("change", readControls);
   const run2 = document.querySelector("#run-2k");
   const run10 = document.querySelector("#run-10k");
   if (run2) run2.addEventListener("click", () => startRun(2000));
@@ -151,18 +191,19 @@ function bind() {
 }
 
 async function startRun(n) {
+  readControls();
   running = String(n);
   error = "";
+  card = null;
   render();
   try {
-    const seat = Number(document.querySelector("#seat").value);
-    const policy = document.querySelector("#policy").value;
-    report = await api("/lab/api/run", { n, draft_slot: seat, policy });
+    adoptReport(await api("/lab/api/run", { n, draft_slot: seat, policy }));
   } catch (exc) {
     error = exc.message;
   }
   running = "";
   render();
+  if (report.ready && window.NBAMotion) window.NBAMotion.pulse("deal", 900);
 }
 
 async function askRooms() {
@@ -180,8 +221,9 @@ async function askRooms() {
 }
 
 api("/lab/api/report").then((payload) => {
-  report = payload;
+  adoptReport(payload);
   render();
+  if (payload.ready && window.NBAMotion) window.NBAMotion.pulse("deal", 900);
 }).catch((exc) => {
   error = exc.message;
   render();

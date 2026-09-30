@@ -1,7 +1,9 @@
 """Yahoo listed prices and published sale averages for a $200 room.
 
-Yahoo salary-cap listed values: basketball.fantasysports.yahoo.com prerank, 2025-26.
-Yahoo / ESPN averages: Hashtag Basketball (Jokić Y! $85 / ESPN $70; 2024-25 Y! Wemby $70, Jokić $72).
+Yahoo salary-cap listed values: basketball.fantasysports.yahoo.com prerank, 2025-26
+(checked 29 Sep 2026). $0 on that board is stored as $1 — the live minimum bid.
+Humans can bid leftover-$1; Yahoo's computer stops at 120% of listed.
+Yahoo / ESPN averages: Hashtag Basketball category auction table (28 Sep 2026).
 Fantrax column: FantraxHQ 2025-26 recommended $200 values.
 Mocks: NBC / Yahoo salary mock Jokić $69, SGA $62, Luka $62, Wemby $61.
 """
@@ -109,12 +111,117 @@ YAHOO_LISTED = {
     "cj mccollum": 4,
     "john collins": 3,
     "kevin porter": 3,
+    "kel'el ware": 16,
+    "ryan rollins": 15,
+    "vj edgecombe": 12,
+    "matas buzelis": 12,
+    "cedric coward": 12,
+    "caleb wilson": 11,
+    "day'ron sharpe": 9,
+    "ty jerome": 9,
+    "dylan harper": 6,
+    "derik queen": 6,
+    "andrew wiggins": 5,
+    "aj dybantsa": 5,
+    "isaiah hartenstein": 5,
+    "jalen suggs": 5,
+    "wendell carter": 5,
+    "mark williams": 5,
+    "jusuf nurkic": 4,
+    "peyton watson": 4,
+    "davion mitchell": 3,
+    "ayo dosunmu": 3,
+    "collin murray-boyles": 3,
+    "sandro mamukelashvili": 3,
+    "darryn peterson": 2,
+    "jakob poeltl": 2,
+    "khaman maluach": 2,
+    "brandin podziemski": 2,
+    "darius acuff": 2,
+    "reed sheppard": 1,
+    "neemias queta": 1,
+    "aaron gordon": 1,
+    "kyshawn george": 1,
+    "jaime jaquez": 1,
+    "keegan murray": 1,
+    "fred vanvleet": 1,
+    "jimmy butler": 1,
+    "nikola vucevic": 1,
+    "devin vassell": 1,
+    "yaxel lendeborg": 1,
+    "jalen green": 1,
+    "cason wallace": 1,
+    "tre jones": 1,
+    "ajay mitchell": 1,
+    "rj barrett": 1,
+    "jrue holiday": 1,
+    "maxime raynaud": 1,
+    "collin gillespie": 1,
+    "paul reed": 1,
+    "tari eason": 1,
+    "bobby portis": 1,
+    "draymond green": 1,
+    "christian braun": 1,
+    "moussa diabate": 1,
+    "saddiq bey": 1,
+    "aaron nesmith": 1,
+    "tobias harris": 1,
+    "herbert jones": 1,
+    "dillon brooks": 1,
+    "pj washington": 1,
+    "ace bailey": 1,
+    "anthony black": 1,
+    "daniss jenkins": 1,
+    "jeremiah fears": 1,
+    "kelly oubre": 1,
+    "quentin grimes": 1,
+    "morez johnson": 1,
+    "grayson allen": 1,
+    "collin sexton": 1,
+    "bennedict mathurin": 1,
+    "jerami grant": 1,
+    "egor demin": 1,
+    "brook lopez": 1,
+    "yves missi": 1,
+    "sam hauser": 1,
+    "isaiah stewart": 1,
+    "scoot henderson": 1,
+    "daniel gafford": 1,
+    "oso ighodaro": 1,
+    "cameron johnson": 1,
+    "santi aldama": 1,
+    "jordan poole": 1,
+    "dereck lively": 1,
+    "kyle filipowski": 1,
+    "de'andre hunter": 1,
+    "mitchell robinson": 1,
+    "julian champagnie": 1,
+    "kyle kuzma": 1,
+    "anfernee simons": 1,
+    "andre drummond": 1,
+    "deandre ayton": 1,
+    "max strus": 1,
+    "jaylen wells": 1,
+    "rui hachimura": 1,
+    "aaron wiggins": 1,
+    "brayden burries": 1,
+    "de'anthony melton": 1,
+    "bilal coulibaly": 1,
+    "scotty pippen": 1,
+    "klay thompson": 1,
+    "cam whitmore": 1,
+    "obi toppin": 1,
+    "miles mcbride": 1,
+    "luguentz dort": 1,
+    "tj mcconnell": 1,
+    "keldon johnson": 1,
+    "jalen smith": 1,
 }
 
 # Published sale averages / expert $200 values. Missing means we only have Yahoo list.
 YAHOO_AAV = {
-    "nikola jokic": 85,  # Hashtag 2025-26 Y!
-    "victor wembanyama": 70,  # Hashtag 2024-25 Y!; 2025-26 mocks $61
+    "nikola jokic": 70,  # Hashtag category Y! avg, 28 Sep 2026
+    "victor wembanyama": 70,
     "luka doncic": 72,
     "shai gilgeous-alexander": 68,
     "giannis antetokounmpo": 55,
@@ -123,8 +230,8 @@ YAHOO_AAV = {
     "jalen johnson": 49,
 }
 ESPN_AAV = {
-    "nikola jokic": 70,
-    "victor wembanyama": 74,
+    "nikola jokic": 83,
+    "victor wembanyama": 80,
     "luka doncic": 68,
     "shai gilgeous-alexander": 66,
     "cooper flagg": 25,
@@ -183,17 +290,25 @@ def _samples(key: str) -> list[int]:
     return values
 
 
+def _in_tables(key: str) -> bool:
+    return any(key in table for table in (YAHOO_LISTED, FANTRAX, YAHOO_AAV, ESPN_AAV))
+
+
 def _player_key(name: str) -> str:
     key = name_key(name)
-    if key in YAHOO_LISTED or key in FANTRAX or key in YAHOO_AAV:
+    if _in_tables(key):
         return key
-    loose = key
-    for suffix in (" jr", " sr", " ii", " iii", " iv"):
-        if loose.endswith(suffix):
-            loose = loose[: -len(suffix)].strip()
-    if loose in YAHOO_LISTED or loose in FANTRAX or loose in YAHOO_AAV:
+    loose = " ".join(key.replace(".", "").split())
+    if _in_tables(loose):
         return loose
-    parts = loose.split()
+    stripped = loose
+    for suffix in (" jr", " sr", " ii", " iii", " iv"):
+        if stripped.endswith(suffix):
+            stripped = stripped[: -len(suffix)].strip()
+            break
+    if _in_tables(stripped):
+        return stripped
+    parts = stripped.split()
     if len(parts) == 1:
         hits = [item for item in YAHOO_LISTED if item.split()[-1] == parts[0]]
         if len(hits) == 1:
@@ -221,10 +336,25 @@ def quote(player_name: str) -> dict | None:
 
 
 def apply_market_prices(players: list[dict]) -> list[dict]:
-    """Stamp Yahoo / sale-average numbers. Unlisted names keep surplus dollars."""
+    """Stamp Yahoo / sale-average numbers.
+
+    On a Yahoo-backed board, unlisted names are $1 endgame flyers. Surplus is
+    only a starting guess; it must not turn a four-game two-way into a $30 mid.
+    A synthetic pool with no Yahoo names keeps surplus so tests still spend the cap.
+    """
+    found_by_name = {player["player_name"]: quote(player["player_name"]) for player in players}
+    stamped = sum(1 for found in found_by_name.values() if found)
     for player in players:
-        found = quote(player["player_name"])
-        if not found:
+        found = found_by_name[player["player_name"]]
+        if found:
+            player.update(found)
             continue
-        player.update(found)
+        if not stamped:
+            continue
+        player["auction_value"] = 1
+        player.pop("yahoo_listed", None)
+        player.pop("stay_market", None)
+        player.pop("stretch_market", None)
+        player.pop("room_low", None)
+        player.pop("room_high", None)
     return players

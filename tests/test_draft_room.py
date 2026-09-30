@@ -68,11 +68,25 @@ def test_listed_stars_sit_in_a_real_room() -> None:
     doncic = next(player for player in players if "don" in player["player_name"].lower() and "luka" in player["player_name"].lower())
     jokic = next(player for player in players if "joki" in player["player_name"].lower())
     kawhi = next(player for player in players if "kawhi" in player["player_name"].lower())
+    porter = next(player for player in players if "kevin porter" in player["player_name"].lower())
+    ware = next(player for player in players if "ware" in player["player_name"].lower() and "kel" in player["player_name"].lower())
+    butler = next(player for player in players if player["player_name"].lower().startswith("jimmy butler"))
     assert wemby["auction_value"] == 61
     assert jokic["auction_value"] == 60
     assert doncic["auction_value"] == 59
     assert kawhi["auction_value"] == 27
     assert jokic["stay_market"] >= 70
+    assert porter["yahoo_listed"] == 3
+    assert porter["auction_value"] == 3
+    assert ware["yahoo_listed"] == 16
+    assert butler["yahoo_listed"] == 1
+    assert butler["auction_value"] == 1
+    alondes = next(player for player in players if player["player_name"] == "Alondes Williams")
+    kadary = next(player for player in players if player["player_name"] == "Kadary Richmond")
+    assert alondes.get("yahoo_listed") in (None, 0)
+    assert alondes["auction_value"] == 1
+    assert kadary["auction_value"] == 1
+    assert alondes["total_value"] > 8
 
 
 def test_a_star_does_not_sell_for_a_dollar() -> None:

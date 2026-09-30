@@ -11,6 +11,7 @@ from statistics import median
 from auction import cap_bid
 from coach import leftover_max, match_player, stay_price, stretch_price
 from draft_room import DEFAULT_BUDGET, LAB_PATH, ROSTER_SIZE, SLOTS, TEAM_COUNT, first_open_slot
+from market import quote
 
 ELITE = 40
 WATCH_LISTED = 24
@@ -218,25 +219,71 @@ def _iter_yours(draft: dict):
         yield {"name": name, "price": price, "slot_id": rest[0] if rest else ""}
 
 
+def _draftable(player: dict) -> bool:
+    """Lab board: Yahoo names, real rookies, rotation vets. Not 4-game two-ways."""
+    if player.get("yahoo_listed") or quote(player["player_name"]):
+        return True
+    games = int(player.get("predicted_games") or 0)
+    if player.get("rookie"):
+        return games >= 20
+    return games >= 40
+
+
 def _squad(drafts: list[dict]) -> list[dict]:
     rooms = max(1, len(drafts))
     counts = {slot_id: Counter() for slot_id, _label in SLOTS}
     paid = {slot_id: {} for slot_id, _label in SLOTS}
+    overall = Counter()
+    overall_paid: dict[str, list[int]] = {}
     for draft in drafts:
         for item in _iter_yours(draft):
+            name = item["name"]
+            price = int(item["price"])
+            overall[name] += 1
+            overall_paid.setdefault(name, []).append(price)
             slot_id = item.get("slot_id")
             if slot_id not in counts:
                 continue
-            counts[slot_id][item["name"]] += 1
-            paid[slot_id].setdefault(item["name"], []).append(int(item["price"]))
+            counts[slot_id][name] += 1
+            paid[slot_id].setdefault(name, []).append(price)
+    claims = [
+        (count, slot_id, name)
+        for slot_id, _label in SLOTS
+        for name, count in counts[slot_id].items()
+    ]
+    claims.sort(key=lambda row: (-row[0], row[1], row[2]))
+    taken_slots: dict[str, tuple[str, int]] = {}
+    taken_names: set[str] = set()
+    for count, slot_id, name in claims:
+        if slot_id in taken_slots or name in taken_names:
+            continue
+        taken_slots[slot_id] = (name, count)
+        taken_names.add(name)
+    for slot_id, _label in SLOTS:
+        if slot_id in taken_slots:
+            continue
+        leftover = next((item for item in counts[slot_id].most_common() if item[0] not in taken_names), None)
+        if leftover:
+            taken_slots[slot_id] = leftover
+            taken_names.add(leftover[0])
+            continue
+        spare = next((item for item in overall.most_common() if item[0] not in taken_names), None)
+        if spare:
+            taken_slots[slot_id] = (spare[0], counts[slot_id][spare[0]])
+            taken_names.add(spare[0])
     rows = []
     for slot_id, label in SLOTS:
-        top = counts[slot_id].most_common(4)
-        if not top:
+        pick = taken_slots.get(slot_id)
+        if not pick or not pick[0]:
             rows.append({"id": slot_id, "label": label, "name": "", "p": 0, "price": 0, "alts": []})
             continue
-        name, count = top[0]
-        prices = paid[slot_id].get(name) or [0]
+        name, count = pick
+        prices = paid[slot_id].get(name) or overall_paid.get(name) or [0]
+        alts = [
+            item
+            for item in counts[slot_id].most_common()
+            if item[0] != name and item[0] not in taken_names
+        ][:3]
         rows.append(
             {
                 "id": slot_id,
@@ -246,7 +293,7 @@ def _squad(drafts: list[dict]) -> list[dict]:
                 "price": int(median(prices)),
                 "alts": [
                     {"name": other, "p": round(other_count / rooms, 3)}
-                    for other, other_count in top[1:]
+                    for other, other_count in alts
                 ],
             }
         )
@@ -273,7 +320,7 @@ def _plays(stars: list[dict], you: dict) -> list[str]:
     starters = [row for row in you.get("squad") or [] if row.get("name") and not str(row.get("id", "")).startswith("BN")]
     if len(starters) == 5:
         five = " / ".join(row["name"].split()[-1] for row in starters)
-        lines.append(f"Most probable five: {five}. Those are the modal names at each slot, not one single room.")
+        lines.append(f"Most common five: {five}. Each seat is its own count, not one single room.")
     return lines
 
 
@@ -356,7 +403,8 @@ def run_lab(
         raise ValueError("Policy is stay or stretch.")
     if not 1 <= draft_slot <= TEAM_COUNT:
         raise ValueError(f"Nomination seat must be 1–{TEAM_COUNT}.")
-    pieces = [_piece(player) for player in players]
+    board = [player for player in players if _draftable(player)][:BOARD_SIZE]
+    pieces = [_piece(player) for player in board]
     drafts = [
         simulate_draft(pieces, draft_slot=draft_slot, policy=policy, seed=seed + index)
         for index in range(count)
@@ -448,4 +496,10 @@ def save_report(report: dict | None, path: Path = LAB_PATH) -> None:
 def load_report(path: Path = LAB_PATH) -> dict | None:
     if not path.exists():
         return None
-    return json.loads(path.read_text())
+    report = json.loads(path.read_text())
+    compact = report.get("drafts") or []
+    if compact and isinstance(report.get("you"), dict):
+        you = dict(report["you"])
+        you["squad"] = _squad(compact)
+        report["you"] = you
+    return report

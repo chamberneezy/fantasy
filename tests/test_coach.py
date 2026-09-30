@@ -42,6 +42,12 @@ def test_market_uses_yahoo_list_and_sale_averages() -> None:
     assert quote("Justin Edwards") is None
     assert quote("Thanasis Antetokounmpo") is None
     assert quote("jokic")["yahoo_listed"] == 60
+    assert quote("Kevin Porter Jr.")["yahoo_listed"] == 3
+    assert quote("Jaren Jackson Jr.")["yahoo_listed"] == 24
+    assert quote("Kel'el Ware")["yahoo_listed"] == 16
+    assert quote("VJ Edgecombe")["yahoo_listed"] == 12
+    assert quote("Jimmy Butler")["yahoo_listed"] == 1
+    assert quote("Nikola Vučević")["yahoo_listed"] == 1
 
 
 def test_jokic_stay_and_stretch_match_the_room() -> None:

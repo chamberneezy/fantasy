@@ -9,7 +9,7 @@ let clock = null;
 const MARK = "/static/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="NBA Fantasy"></span><span class="wordmark">NBA Fantasy</span></div>`;
+  return `<a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
 }
 
 async function api(path, body) {
@@ -44,6 +44,7 @@ function setupHtml() {
           <nav class="links">
             <a href="/helper">Helper</a>
             <a href="/lab">Lab</a>
+            ${themeToggleHtml()}
           </nav>
         </div>
       </header>
@@ -108,6 +109,7 @@ function boardHtml() {
           <nav class="links">
             <a href="/helper">Helper</a>
             <a href="/lab">Lab</a>
+            ${themeToggleHtml()}
           </nav>
         </div>
       </header>

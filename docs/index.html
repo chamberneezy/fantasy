@@ -3,32 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#070d1a">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("nba-fantasy-theme") === "dark" ? "dark" : "light";
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="theme-color" content="#f6f8fc">
   <title>NBA Fantasy</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
   <link rel="apple-touch-icon" href="img/mark.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/helper.css?v=nba">
+  <link rel="stylesheet" href="css/helper.css?v=home">
+  <link rel="stylesheet" href="css/motion.css?v=home">
 </head>
 <body>
   <main class="sheet">
     <header class="banner">
       <div class="banner-inner">
-        <div class="brand">
-          <span class="mark-wrap"><img class="mark" src="img/mark.png" width="64" height="64" alt="NBA Fantasy"></span>
+        <a class="brand" href="index.html" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab.">
+          <span class="mark-wrap"><img class="mark" src="img/mark.png" width="64" height="64" alt=""></span>
           <span class="wordmark">NBA Fantasy</span>
-        </div>
+        </a>
         <nav class="links">
           <a href="index.html">Home</a>
           <a href="helper.html">Helper</a>
           <a href="draft.html">Mock draft</a>
+          <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
         </nav>
       </div>
     </header>
     <div class="hero">
-      <span class="mark-wrap mark-hero"><img class="mark" src="img/mark.png" width="150" height="150" alt="NBA Fantasy"></span>
+      <a class="mark-wrap mark-hero" href="index.html" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><img class="mark" src="img/mark.png" width="150" height="150" alt=""></a>
       <h1>Open the helper. Practice the mock.</h1>
       <p class="lede">This runs in your browser. No clone, no localhost, no Yahoo login. Sold and Me on live night. Mock draft is the practice room with clocks.</p>
     </div>
@@ -37,5 +46,7 @@
       <a href="draft.html"><strong>Mock draft</strong><span>Practice nomination, $1 opens, 20-second raises. Computers fill the other seats.</span></a>
     </div>
   </main>
+  <script src="js/theme.js?v=home"></script>
+  <script src="js/motion.js?v=home"></script>
 </body>
 </html>

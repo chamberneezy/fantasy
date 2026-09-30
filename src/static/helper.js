@@ -37,7 +37,7 @@ let searchCaret = null;
 const MARK = "/static/mark.png";
 
 function brand() {
-  return `<div class="brand"><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt="NBA Fantasy"></span><span class="wordmark">NBA Fantasy</span></div>`;
+  return `<a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
 }
 
 async function api(path, body) {
@@ -136,10 +136,11 @@ function gateHtml() {
           <nav class="links">
             <a href="/draft">Practice mock</a>
             <a href="/lab">Lab</a>
+            ${themeToggleHtml()}
           </nav>
         </div>
       </header>
-      <span class="mark-wrap mark-hero"><img class="mark" src="${MARK}" width="150" height="150" alt="NBA Fantasy"></span>
+      <a class="mark-wrap mark-hero" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><img class="mark" src="${MARK}" width="150" height="150" alt=""></a>
       <h1>Tap the name. Then Sold or Me.</h1>
       <p class="lede">This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me. Keep and Locked stay for a dynasty night only.</p>
       <div class="fields">
@@ -186,6 +187,7 @@ function deskHtml() {
       <header class="banner">
         <div class="banner-inner">
           ${brand()}
+          <nav class="links">${themeToggleHtml()}</nav>
           <span class="budget">${money(state.budget_left)} · ${state.spots_left} seats</span>
         </div>
       </header>

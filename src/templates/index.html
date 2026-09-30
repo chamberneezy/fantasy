@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("nba-fantasy-theme") === "dark" ? "dark" : "light";
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="theme-color" content="#f6f8fc">
+  <title>NBA Fantasy</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="apple-touch-icon" href="/static/mark.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/helper.css?v=home">
+  <link rel="stylesheet" href="/static/motion.css?v=home">
+</head>
+<body>
+  <main class="sheet">
+    <header class="banner">
+      <div class="banner-inner">
+        <a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab.">
+          <span class="mark-wrap"><img class="mark" src="/static/mark.png" width="64" height="64" alt=""></span>
+          <span class="wordmark">NBA Fantasy</span>
+        </a>
+        <nav class="links">
+          <a href="/helper">Helper</a>
+          <a href="/draft">Mock draft</a>
+          <a href="/lab">Lab</a>
+          <button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark mode">Dark</button>
+        </nav>
+      </div>
+    </header>
+    <div class="hero">
+      <a class="mark-wrap mark-hero" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab.">
+        <img class="mark" src="/static/mark.png" width="150" height="150" alt="">
+      </a>
+      <h1>Open the helper. Practice the mock.</h1>
+      <p class="lede">Sold and Me on live night. Mock draft is the practice room with clocks. Lab is what the room does to you. The logo always takes you home and clears the night.</p>
+    </div>
+    <div class="picks">
+      <a class="go-link" href="/helper"><strong>Helper</strong><span>Tap a name. Sold is the room. Me is you. Default $200 draft dollars.</span></a>
+      <a href="/draft"><strong>Mock draft</strong><span>Practice nomination, $1 opens, 20-second raises. Computers fill the other seats.</span></a>
+      <a href="/lab"><strong>Lab</strong><span>2,000 or 10,000 rooms. Seat, Stay or stretch the first star, then read the tape.</span></a>
+    </div>
+  </main>
+  <script src="/static/theme.js?v=home"></script>
+  <script src="/static/motion.js?v=home"></script>
+</body>
+</html>
