@@ -300,27 +300,44 @@ const NBA = (() => {
     return scored[0][1];
   }
 
+  function priceRow(player, budgetLeft, spotsLeft, ownsElite, room) {
+    const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
+    if (listed <= 1) return null;
+    const ceiling = leftoverMax(budgetLeft, spotsLeft);
+    let tape = stayPrice(listed, 2000, Math.max(1, spotsLeft), ownsElite, player);
+    let tapeStretch = stretchPrice(listed, 2000, Math.max(1, spotsLeft), ownsElite, player);
+    [tape, tapeStretch] = applyRoom(tape, tapeStretch, listed, 2000, Math.max(1, spotsLeft), ownsElite, room);
+    let stay = stayPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
+    let stretch = stretchPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
+    [stay, stretch] = applyRoom(stay, stretch, listed, budgetLeft, spotsLeft, ownsElite, room);
+    if (stay <= 0 || ceiling <= 0) return null;
+    const [low, high] = typicalSale(listed);
+    return {
+      player_name: player.player_name,
+      positions: player.positions || "",
+      listed,
+      stay,
+      stretch,
+      tape,
+      your_max: ceiling,
+      short: ceiling < tape,
+      second: Boolean(ownsElite && listed >= ELITE),
+      afford: ceiling >= tape,
+      typical_low: low,
+      typical_high: high,
+      auction_value: (player.auction_value || listed) | 0,
+    };
+  }
+
   function nextTargets(available, budgetLeft, spotsLeft, ownsElite, skip, room) {
     const chosen = [];
     for (const player of available) {
       if (player.player_name === skip) continue;
       const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
       if (ownsElite && listed >= ELITE) continue;
-      let stay = stayPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
-      let stretch = stretchPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
-      [stay, stretch] = applyRoom(stay, stretch, listed, budgetLeft, spotsLeft, ownsElite, room);
-      if (stay <= 0) continue;
-      if (listed <= 1) continue;
-      const [low, high] = typicalSale(listed);
-      chosen.push({
-        player_name: player.player_name,
-        positions: player.positions || "",
-        listed,
-        stay,
-        stretch,
-        typical_low: low,
-        typical_high: high,
-      });
+      const row = priceRow(player, budgetLeft, spotsLeft, ownsElite, room);
+      if (!row) continue;
+      chosen.push(row);
       if (chosen.length === 5) break;
     }
     return chosen;
@@ -421,20 +438,7 @@ const NBA = (() => {
     board() {
       const room = this.room();
       return this.available()
-        .map((player) => {
-          const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
-          if (listed <= 1) return null;
-          let stay = stayPrice(listed, this.budget, ROSTER_SIZE, false, player);
-          const factor = factorFor(listed, room);
-          if (Math.abs(factor - 1) >= 0.03) stay = Math.max(1, Math.round(stay * factor));
-          return {
-            player_name: player.player_name,
-            positions: player.positions || "",
-            listed,
-            stay,
-            auction_value: (player.auction_value || listed) | 0,
-          };
-        })
+        .map((player) => priceRow(player, this.budget_left, this.spotsLeft(), this.ownsElite(), room))
         .filter(Boolean);
     }
 

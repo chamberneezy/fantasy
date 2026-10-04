@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from coach import build_card, match_player, next_targets, parse_feed, stay_price
+from coach import build_card, match_player, next_targets, parse_feed, price_row, stay_price
 from room import fair_marks, factor_for, read_room
 from draft_room import DEFAULT_BUDGET, FILTERS, HELPER_PATH, ROSTER_SIZE, SLOTS, TEAM_COUNT, first_open_slot
 from math_engine import ALL_CATEGORIES
@@ -200,25 +200,12 @@ class SidecarSession:
         )
 
     def board(self) -> list[dict]:
-        rows = []
         room = self.room()
+        rows = []
         for player in self.available_players():
-            listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
-            if listed <= 1:
-                continue
-            stay, _stretch = fair_marks(player, listed, self.budget)
-            factor = factor_for(listed, room)
-            if abs(factor - 1.0) >= 0.03:
-                stay = max(1, int(round(stay * factor)))
-            rows.append(
-                {
-                    "player_name": player["player_name"],
-                    "positions": player.get("positions") or "",
-                    "listed": listed,
-                    "stay": stay,
-                    "auction_value": int(player.get("auction_value") or listed),
-                }
-            )
+            row = price_row(player, self.budget_left, self.spots_left(), self.owns_elite(), room)
+            if row:
+                rows.append(row)
         return rows
 
     def room(self) -> dict:

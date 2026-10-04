@@ -140,6 +140,46 @@ def match_player(query: str, players: list[dict]) -> dict:
     return scored[0][1]
 
 
+def price_row(
+    player: dict,
+    budget_left: int,
+    spots_left: int,
+    owns_elite: bool,
+    room: dict | None = None,
+) -> dict | None:
+    """Stay you can actually pay tonight, after leftover and a second star."""
+    from room import apply_room
+
+    listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
+    if listed <= 1:
+        return None
+    ceiling = leftover_max(budget_left, spots_left)
+    tape = stay_price(listed, 2000, max(1, spots_left), owns_elite, player)
+    stretch_tape = stretch_price(listed, 2000, max(1, spots_left), owns_elite, player)
+    tape, stretch_tape = apply_room(tape, stretch_tape, listed, 2000, max(1, spots_left), owns_elite, room)
+    stay = stay_price(listed, budget_left, spots_left, owns_elite, player)
+    stretch = stretch_price(listed, budget_left, spots_left, owns_elite, player)
+    stay, stretch = apply_room(stay, stretch, listed, budget_left, spots_left, owns_elite, room)
+    if stay <= 0 or ceiling <= 0:
+        return None
+    low, high = typical_sale(listed)
+    return {
+        "player_name": player["player_name"],
+        "positions": player.get("positions") or "",
+        "listed": listed,
+        "stay": stay,
+        "stretch": stretch,
+        "tape": tape,
+        "your_max": ceiling,
+        "short": ceiling < tape,
+        "second": bool(owns_elite and listed >= ELITE_LISTED),
+        "afford": ceiling >= tape,
+        "typical_low": low,
+        "typical_high": high,
+        "auction_value": int(player.get("auction_value") or listed),
+    }
+
+
 def next_targets(
     available: list[dict],
     budget_left: int,
@@ -148,8 +188,6 @@ def next_targets(
     skip: str = "",
     room: dict | None = None,
 ) -> list[dict]:
-    from room import apply_room
-
     chosen = []
     for player in available:
         if player["player_name"] == skip:
@@ -157,25 +195,10 @@ def next_targets(
         listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
         if owns_elite and listed >= ELITE_LISTED:
             continue
-        stay = stay_price(listed, budget_left, spots_left, owns_elite, player)
-        stretch = stretch_price(listed, budget_left, spots_left, owns_elite, player)
-        stay, stretch = apply_room(stay, stretch, listed, budget_left, spots_left, owns_elite, room)
-        if stay <= 0:
+        row = price_row(player, budget_left, spots_left, owns_elite, room)
+        if not row:
             continue
-        if listed <= 1:
-            continue
-        low, high = typical_sale(listed)
-        chosen.append(
-            {
-                "player_name": player["player_name"],
-                "positions": player.get("positions") or "",
-                "listed": listed,
-                "stay": stay,
-                "stretch": stretch,
-                "typical_low": low,
-                "typical_high": high,
-            }
-        )
+        chosen.append(row)
         if len(chosen) == 5:
             break
     return chosen

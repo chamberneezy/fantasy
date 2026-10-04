@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from coach import build_card, call_for, match_player, next_targets, parse_feed, stay_price, stretch_price
+from coach import leftover_max, build_card, call_for, match_player, next_targets, parse_feed, stay_price, stretch_price
 from market import quote
 from room import apply_room, read_room
 from sidecar import SidecarSession
@@ -78,6 +78,25 @@ def test_paying_eighty_for_jokic_locks_the_second_star() -> None:
     assert card["seats_after"] == 9
     assert card["call"] == "stretch"
     assert all(item["listed"] < 40 or item["player_name"] != "Victor Wembanyama" for item in card["next"])
+
+
+def test_board_stay_follows_leftover_after_a_buy() -> None:
+    session = SidecarSession(PLAYERS, team_count=16, budget=200, draft_slot=5)
+    session.pick("jokic")
+    session.close("me", 88)
+    assert session.budget_left == 112
+    assert session.spots_left() == 9
+    ceiling = leftover_max(112, 9)
+    assert ceiling == 104
+    board = {row["player_name"]: row for row in session.state()["board"]}
+    kd = board["Kevin Durant"]
+    assert kd["your_max"] == 104
+    assert kd["stay"] <= 104
+    assert kd["afford"] is True
+    wemby = board["Victor Wembanyama"]
+    assert wemby["second"] is True
+    assert wemby["stay"] <= 104
+    assert all(row["listed"] < 40 for row in session.state()["next"])
 
 
 def test_sold_and_me_work_without_a_dollar() -> None:

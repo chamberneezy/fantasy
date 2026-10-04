@@ -88,12 +88,15 @@ function typedAmount(text) {
   return match ? Number(match[1]) : null;
 }
 
+function priced() {
+  return state.board || [];
+}
+
 function suggestions() {
   const query = typedQuery(line);
-  const pool = available();
+  const pool = priced();
   if (query) return pool.filter((player) => matchesPlayer(player, query)).slice(0, 8);
-  const next = state.next || [];
-  if (next.length) return next;
+  if (state.next && state.next.length) return state.next;
   return pool.slice(0, 8);
 }
 
@@ -225,11 +228,11 @@ function namesHtml() {
       <p class="next-head">${typedQuery(line) ? "Matches" : "Stay names"}</p>
       <ul>
         ${names.map((player) => `
-          <li>
+          <li class="${player.short ? "short" : ""}">
             <button type="button" data-pick="${escapeAttr(player.player_name)}">
               <span class="next-who">${player.player_name}</span>
-              <span class="next-meta">${player.positions || ""} · list ${money(player.listed || player.auction_value)}</span>
-              <strong>Stay ${money(player.stay || player.stay_market)}</strong>
+              <span class="next-meta">${player.positions || ""} · list ${money(player.listed)}${player.your_max != null ? ` · leftover ${money(player.your_max)}` : ""}${player.second ? " · second star" : ""}${player.short ? " · leftover binds" : ""}</span>
+              <strong>${player.short ? "You" : "Stay"} ${money(player.stay)}</strong>
             </button>
             <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
           </li>`).join("")}
