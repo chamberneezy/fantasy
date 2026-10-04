@@ -27,6 +27,7 @@ def test_feed_lines_split_name_dollar_and_who() -> None:
     assert parse_feed("jokic")["query"] == "nikola jokic"
     assert parse_feed("jokić")["query"] == "nikola jokic"
     assert parse_feed("wemby 52") == {"query": "victor wembanyama", "amount": 52, "action": "lookup"}
+    assert parse_feed("jokic 160") == {"query": "nikola jokic", "amount": 160, "action": "lookup"}
     assert parse_feed("bambi 72 sold") == {"query": "victor wembanyama", "amount": 72, "action": "sold"}
     assert parse_feed("kd 40 me") == {"query": "kevin durant", "amount": 40, "action": "me"}
     assert parse_feed("gobert keep") == {"query": "gobert", "amount": None, "action": "keep"}
@@ -341,6 +342,9 @@ def test_helper_next_names_and_table_seat() -> None:
 
 def test_gone_crosses_off_at_stay_and_undo_restores() -> None:
     session = SidecarSession(PLAYERS, team_count=16, budget=200, draft_slot=5)
+    session.gone("jokic", 160)
+    assert session.taken[0]["price"] == 160
+    session.undo()
     session.gone("jokic")
     assert session.focus is None
     assert session.taken[0]["player_name"] == "Nikola Jokić"

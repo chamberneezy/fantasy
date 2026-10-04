@@ -78,10 +78,20 @@ function available() {
   return state.available || [];
 }
 
+function typedQuery(text) {
+  return String(text || "").replace(/(?:^|\s)\$?\d+\s*$/, "").trim();
+}
+
+function typedAmount(text) {
+  const match = String(text || "").match(/(?:^|\s)\$?(\d+)\s*$/);
+  return match ? Number(match[1]) : null;
+}
+
 function suggestions() {
-  const query = line.trim();
-  if (!query) return [];
-  return available().filter((player) => matchesPlayer(player, query)).slice(0, 8);
+  const query = typedQuery(line);
+  const pool = available();
+  if (!query) return pool.slice(0, 12);
+  return pool.filter((player) => matchesPlayer(player, query)).slice(0, 8);
 }
 
 function roomLine() {
@@ -197,7 +207,7 @@ function deskHtml() {
       ${roomLine()}
       ${nextHtml()}
       <form class="feed" id="feed-form">
-        <input id="feed" autocomplete="off" placeholder="jok + Enter = Gone" value="${escapeAttr(line)}">
+        <input id="feed" autocomplete="off" placeholder="jokic 160 + Enter, or tap Gone" value="${escapeAttr(line)}">
       </form>
       <ul class="board">
         ${hits.map((player) => `
@@ -254,7 +264,7 @@ function nextHtml() {
 
 function gonePool() {
   const rows = state.board || [];
-  const query = line.trim();
+  const query = typedQuery(line);
   if (!query) return rows;
   return rows.filter((player) => matchesPlayer(player, query));
 }
@@ -330,10 +340,11 @@ function bind() {
         await run(() => api("/helper/api/feed", { line: text }));
         return;
       }
-      const first = suggestions()[0] || gonePool()[0];
-      const dollar = text.match(/(?:^|\s)\$?(\d+)\s*$/);
+      const dollar = typedAmount(text);
+      const name = typedQuery(text);
+      const first = available().find((player) => matchesPlayer(player, name)) || gonePool()[0];
       line = "";
-      await markGone(first ? first.player_name : text, dollar ? Number(dollar[1]) : null);
+      await markGone(first ? first.player_name : name, dollar);
     });
     input.addEventListener("input", () => {
       line = input.value;
@@ -424,3 +435,4 @@ NBA.load()
     error = exc.message || "Could not load the board.";
     render();
   });
+
