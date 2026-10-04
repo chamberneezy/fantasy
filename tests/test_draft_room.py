@@ -189,9 +189,13 @@ def test_live_helper_reads_a_feed_line(tmp_path, monkeypatch) -> None:
         {**PLAYERS[3], "auction_value": 8},
     ])
     client = draft_server.app.test_client()
-    started = client.post("/helper/api/start", json={"team_count": 4, "budget": 200})
+    started = client.post("/helper/api/start", json={"team_count": 4, "budget": 200, "draft_slot": 3})
     assert started.status_code == 200
-    assert started.get_json()["mode"] == "live"
+    opened = started.get_json()
+    assert opened["mode"] == "live"
+    assert opened["nomination_slot"] == 3
+    assert opened["your_turn"] is False
+    assert opened["next"]
     lookup = client.post("/helper/api/feed", json={"line": "jokic 68"})
     assert lookup.status_code == 200
     coach = lookup.get_json()["coach"]
@@ -209,6 +213,24 @@ def test_live_helper_reads_a_feed_line(tmp_path, monkeypatch) -> None:
     assert taken[0]["price"] == 72
     cheap = client.post("/helper/api/start", json={"team_count": 16, "budget": 50})
     assert cheap.status_code == 400
+    seated = client.post("/helper/api/start", json={"team_count": 4, "budget": 200, "draft_slot": 3})
+    moved = client.post("/helper/api/seat", json={"draft_slot": 1})
+    assert moved.status_code == 200
+    assert moved.get_json()["nomination_slot"] == 1
+    assert moved.get_json()["your_turn"] is True
+    script = client.get("/static/helper.js")
+    assert b"Where do you sit?" in script.data
+    assert b"You nominate" in script.data
+    assert b"data-gone" in script.data
+    gone = client.post("/helper/api/gone", json={"player_name": "jokic"})
+    assert gone.status_code == 200
+    payload = gone.get_json()
+    assert payload["log"][-1]["player_name"] == "Nikola Jokić"
+    assert payload["log"][-1]["team"] == "Room"
+    assert all(row["player_name"] != "Nikola Jokić" for row in payload["board"])
+    undone = client.post("/helper/api/undo", json={})
+    assert undone.status_code == 200
+    assert any(row["player_name"] == "Nikola Jokić" for row in undone.get_json()["board"])
 
 
 def test_draft_page_starts_only_after_a_nomination_seat(tmp_path, monkeypatch) -> None:

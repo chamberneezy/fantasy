@@ -308,9 +308,18 @@ const NBA = (() => {
       let stretch = stretchPrice(listed, budgetLeft, spotsLeft, ownsElite, player);
       [stay, stretch] = applyRoom(stay, stretch, listed, budgetLeft, spotsLeft, ownsElite, room);
       if (stay <= 0) continue;
+      if (listed <= 1) continue;
       const [low, high] = typicalSale(listed);
-      chosen.push({ player_name: player.player_name, listed, stay, typical_low: low, typical_high: high });
-      if (chosen.length === 3) break;
+      chosen.push({
+        player_name: player.player_name,
+        positions: player.positions || "",
+        listed,
+        stay,
+        stretch,
+        typical_low: low,
+        typical_high: high,
+      });
+      if (chosen.length === 5) break;
     }
     return chosen;
   }
@@ -386,15 +395,50 @@ const NBA = (() => {
   }
 
   class Sidecar {
-    constructor(players, teamCount, budget) {
+    constructor(players, teamCount, budget, draftSlot = 1) {
       this.players = Object.fromEntries(players.map((player) => [player.player_name, { ...player }]));
       this.team_count = teamCount;
       this.budget = budget;
+      this.draft_slot = draftSlot;
       this.budget_left = budget;
       this.picks = [];
       this.taken = [];
       this.focus = null;
       this.queue = [];
+    }
+
+    nominator() {
+      return (this.taken.length % this.team_count) + 1;
+    }
+
+    nextNames() {
+      const skip = this.focus?.player_name || "";
+      return nextTargets(this.available(), this.budget_left, this.spotsLeft(), this.ownsElite(), skip, this.room());
+    }
+
+    board() {
+      const room = this.room();
+      return this.available()
+        .map((player) => {
+          const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
+          if (listed <= 1) return null;
+          let stay = stayPrice(listed, this.budget, ROSTER_SIZE, false, player);
+          const factor = factorFor(listed, room);
+          if (Math.abs(factor - 1) >= 0.03) stay = Math.max(1, Math.round(stay * factor));
+          return {
+            player_name: player.player_name,
+            positions: player.positions || "",
+            listed,
+            stay,
+            auction_value: (player.auction_value || listed) | 0,
+          };
+        })
+        .filter(Boolean);
+    }
+
+    gone(query, amount) {
+      this.pick(query, amount);
+      this.close("sold", amount);
     }
 
     spotsLeft() {
@@ -436,12 +480,18 @@ const NBA = (() => {
       this.close(command.action, command.amount);
     }
 
-    closePrice(amount) {
+    closePrice(amount, yours = false) {
       if (!this.focus) throw new Error("Pick a name first.");
       const player = this.players[this.focus.player_name];
       if (amount != null) return Math.max(1, amount | 0);
       if (this.focus.bid != null) return Math.max(1, this.focus.bid | 0);
       const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
+      if (!yours) {
+        let [stay] = fairMarks(player, listed, this.budget);
+        const factor = factorFor(listed, this.room());
+        if (Math.abs(factor - 1) >= 0.03) stay = Math.max(1, Math.round(stay * factor));
+        return stay;
+      }
       return stayPrice(listed, this.budget_left, this.spotsLeft(), this.ownsElite(), player);
     }
 
@@ -454,7 +504,7 @@ const NBA = (() => {
       const listed = (player.yahoo_listed || player.auction_value || 1) | 0;
       const dynasty = action === "keep" || action === "locked";
       if (dynasty && player.superstar) throw new Error("Superstars cannot be dynasty. Log Sold or Me.");
-      const price = dynasty ? listed : this.closePrice(amount);
+      const price = dynasty ? listed : this.closePrice(amount, action === "me" || action === "keep");
       const [stay, stretch] = fairMarks(player, listed, this.budget);
       const stamp = {
         player_name: name,
@@ -536,8 +586,14 @@ const NBA = (() => {
         budget: this.budget,
         budget_left: this.budget_left,
         spots_left: this.spotsLeft(),
+        your_turn: this.nominator() === this.draft_slot,
+        nomination_slot: this.draft_slot,
+        nominator: this.nominator(),
+        team_count: this.team_count,
         coach,
         room,
+        next: this.nextNames(),
+        board: this.board(),
         available: this.available(),
         rosters: [{ name: "You", is_you: true, budget: this.budget_left, slots }],
         log: this.taken.map((item, index) => ({
@@ -554,6 +610,7 @@ const NBA = (() => {
       return {
         team_count: this.team_count,
         budget: this.budget,
+        draft_slot: this.draft_slot,
         budget_left: this.budget_left,
         picks: this.picks,
         taken: this.taken,
@@ -562,7 +619,7 @@ const NBA = (() => {
     }
 
     static load(payload, players) {
-      const session = new Sidecar(players, payload.team_count, payload.budget);
+      const session = new Sidecar(players, payload.team_count, payload.budget, payload.draft_slot || 1);
       session.budget_left = payload.budget_left ?? payload.budget;
       session.picks = payload.picks || [];
       session.taken = payload.taken || [];
@@ -572,7 +629,7 @@ const NBA = (() => {
   }
 
   function idleHelper() {
-    return { started: false, categories: CATEGORIES, team_count: TEAM_COUNT, budget: DEFAULT_BUDGET };
+    return { started: false, categories: CATEGORIES, team_count: TEAM_COUNT, budget: DEFAULT_BUDGET, draft_slot: 1 };
   }
 
   function saveHelper() {
@@ -600,13 +657,21 @@ const NBA = (() => {
       const budget = (body.budget ?? DEFAULT_BUDGET) | 0;
       const teams = (body.team_count ?? TEAM_COUNT) | 0;
       if (budget < MIN_BUDGET || budget > MAX_BUDGET) throw new Error("Draft dollars are $160–$240. That number is your cap, not a payment.");
-      helper = new Sidecar(pool, teams, budget);
+      const slot = (body.draft_slot || 1) | 0;
+      if (slot < 1 || slot > teams) throw new Error(`Your table seat must be 1–${teams}.`);
+      helper = new Sidecar(pool, teams, budget, slot);
       saveHelper();
       return helper.state();
     }
     if (!helper) return idleHelper();
     if (route === "pick") helper.pick(body.player_name, body.amount);
     else if (route === "feed") helper.feed(body.line);
+    else if (route === "gone") helper.gone(body.player_name, body.amount);
+    else if (route === "seat") {
+      const slot = (body.draft_slot || 0) | 0;
+      if (slot < 1 || slot > helper.team_count) throw new Error(`Your table seat must be 1–${helper.team_count}.`);
+      helper.draft_slot = slot;
+    }
     else if (route === "close") helper.close(String(body.action || ""), body.amount);
     else if (route === "undo") helper.undo();
     else if (route === "reset") {

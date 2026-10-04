@@ -1,0 +1,31 @@
+---
+description: NBA Fantasy salary-cap pad — Stay, heat, sessions, lab
+alwaysApply: true
+---
+
+# NBA Fantasy pad
+
+Mario’s unpublished 12-cat H2H helper. Brand is **NBA Fantasy**, not Pilsner. Live draft Sunday 4 Oct 2026. No Yahoo API, no auto-bid, no scrape. Full briefing: `CLAUDE.md`.
+
+## Stay / Stretch
+
+- Yahoo list is the board dollar. Stay = median(list + AAV + Fantrax), never below list.
+- Listed ≥ $50: Stay ≥ 1.80× listed, Stretch ≥ 2.40× listed. Jokic $60 → Stay $108 Stretch $144. **$100 is still Stay**. 120% listed is Yahoo’s computer, not the human cap.
+- Leftover $1 per empty seat always caps **your** bid. Heat can mark remaining stars; leftover may still show “you $84” under room Stay.
+
+## Room heat
+
+- Quiet first star (e.g. $87 Jokic) = noise.
+- Nuclear first $50+ hammer: ≥ max(1.25× Stay, Stay+$15), or ≤ 0.80× Stay, or ≥ 1.12× Stretch. Remaining $50+ names move immediately, clamp 0.85–1.22.
+- Two sales in a tier always teach. Dynasty Keep/Locked do not.
+
+## Unlisted / lab
+
+- Yahoo-backed board: unlisted = **$1**, not surplus. Alondes-style rate mirages must not sit as $30 mids.
+- Lab squad is unique greedy “most common name at each seat”. Never two of the same player.
+
+## UX
+
+- `/` home, `/helper` live, `/draft` mock, `/lab` batch. Separate sessions.
+- Logo click (`data-home-reset`) resets helper + mock + lab and goes home.
+- Card: Yahoo list · fair Stay–Stretch · this room · you leftover.

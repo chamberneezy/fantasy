@@ -55,7 +55,7 @@
       pulse(NUDGE, 220);
       return;
     }
-    if (target.closest("[data-pick], [data-set], #sold, #mine, #open, #start, .go, .primary, .slot-choice, .close .me, .close .sold, .go-link")) {
+    if (target.closest("[data-pick], [data-set], [data-gone], #sold, #mine, #open, #start, .go, .primary, .slot-choice, .close .me, .close .sold, .go, .gone, .go-link")) {
       pulse(HIT, 900);
     }
   });

@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from coach import build_card, match_player, parse_feed, stay_price
-from room import fair_marks, read_room
+from coach import build_card, match_player, next_targets, parse_feed, stay_price
+from room import fair_marks, factor_for, read_room
 from draft_room import DEFAULT_BUDGET, FILTERS, HELPER_PATH, ROSTER_SIZE, SLOTS, TEAM_COUNT, first_open_slot
 from math_engine import ALL_CATEGORIES
 
@@ -20,16 +20,34 @@ class SidecarSession:
         team_count: int = TEAM_COUNT,
         punts: list[str] | None = None,
         budget: int = DEFAULT_BUDGET,
+        draft_slot: int = 1,
     ) -> None:
+        if not 1 <= int(draft_slot) <= int(team_count):
+            raise ValueError(f"Your table seat must be 1–{team_count}.")
         self.players = {player["player_name"]: dict(player) for player in players}
         self.team_count = team_count
         self.punts = list(punts or [])
         self.budget = budget
+        self.draft_slot = int(draft_slot)
         self.budget_left = budget
         self.picks: list[dict] = []
         self.taken: list[dict] = []
         self.focus: dict | None = None
         self.queue: list[str] = []
+
+    def nominator(self) -> int:
+        return (len(self.taken) % self.team_count) + 1
+
+    def next_names(self) -> list[dict]:
+        skip = (self.focus or {}).get("player_name") or ""
+        return next_targets(
+            self.available_players(),
+            self.budget_left,
+            self.spots_left(),
+            self.owns_elite(),
+            skip,
+            self.room(),
+        )
 
     def spots_left(self) -> int:
         return ROSTER_SIZE - len(self.picks)
@@ -73,7 +91,11 @@ class SidecarSession:
             raise ValueError("Pick a name first.")
         self.focus["bid"] = max(1, int(amount))
 
-    def close_price(self, amount: int | None = None) -> int:
+    def gone(self, query: str, amount: int | None = None) -> None:
+        self.pick(query, amount)
+        self.close("sold", amount)
+
+    def close_price(self, amount: int | None = None, *, yours: bool = False) -> int:
         if not self.focus:
             raise ValueError("Pick a name first.")
         player = self.players[self.focus["player_name"]]
@@ -82,6 +104,12 @@ class SidecarSession:
         if self.focus.get("bid") is not None:
             return max(1, int(self.focus["bid"]))
         listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
+        if not yours:
+            stay, _stretch = fair_marks(player, listed, self.budget)
+            factor = factor_for(listed, self.room())
+            if abs(factor - 1.0) >= 0.03:
+                stay = max(1, int(round(stay * factor)))
+            return stay
         return stay_price(listed, self.budget_left, self.spots_left(), self.owns_elite(), player)
 
     def close(self, action: str, amount: int | None = None) -> None:
@@ -98,7 +126,7 @@ class SidecarSession:
         dynasty = action in {"keep", "locked"}
         if dynasty and player.get("superstar"):
             raise ValueError("Superstars cannot be dynasty. Log Sold or Me.")
-        price = listed if dynasty else self.close_price(amount)
+        price = listed if dynasty else self.close_price(amount, yours=action in {"me", "keep"})
         stay, stretch = fair_marks(player, listed, self.budget)
         stamp = {
             "player_name": name,
@@ -171,6 +199,28 @@ class SidecarSession:
             self.room(),
         )
 
+    def board(self) -> list[dict]:
+        rows = []
+        room = self.room()
+        for player in self.available_players():
+            listed = int(player.get("yahoo_listed") or player.get("auction_value") or 1)
+            if listed <= 1:
+                continue
+            stay, _stretch = fair_marks(player, listed, self.budget)
+            factor = factor_for(listed, room)
+            if abs(factor - 1.0) >= 0.03:
+                stay = max(1, int(round(stay * factor)))
+            rows.append(
+                {
+                    "player_name": player["player_name"],
+                    "positions": player.get("positions") or "",
+                    "listed": listed,
+                    "stay": stay,
+                    "auction_value": int(player.get("auction_value") or listed),
+                }
+            )
+        return rows
+
     def room(self) -> dict:
         return read_room(self.taken, self.team_count, self.budget)
 
@@ -199,6 +249,12 @@ class SidecarSession:
         focused = None
         if self.focus and self.focus["player_name"] in self.players:
             focused = {**self.players[self.focus["player_name"]], "bid": self.focus.get("bid")}
+        targets = self.next_names()
+        your_turn = self.nominator() == self.draft_slot
+        if your_turn:
+            paragraph = "You nominate. Tap a Stay name and throw him up at $1."
+        else:
+            paragraph = f"Seat {self.nominator()} nominates. You sit {self.draft_slot}. Be ready on these Stay names."
         return {
             "started": True,
             "mode": "live",
@@ -206,10 +262,11 @@ class SidecarSession:
             "phase": "live",
             "categories": list(ALL_CATEGORIES),
             "filters": list(FILTERS),
-            "can_nominate": False,
-            "your_turn": False,
-            "nomination_slot": None,
-            "on_clock": "",
+            "can_nominate": your_turn,
+            "your_turn": your_turn,
+            "nomination_slot": self.draft_slot,
+            "nominator": self.nominator(),
+            "on_clock": "You" if your_turn else f"Seat {self.nominator()}",
             "budget": self.budget,
             "budget_left": self.budget_left,
             "spots_left": self.spots_left(),
@@ -217,11 +274,13 @@ class SidecarSession:
             "on_block": None,
             "coach": coach,
             "room": self.room(),
+            "next": targets,
+            "board": self.board(),
             "focus": focused,
             "suggestion": {
                 "mode": "live",
-                "options": [],
-                "paragraph": coach["why"] if coach else "Tap a name. Sold is the room. Me is you. The dollar starts at Stay.",
+                "options": targets,
+                "paragraph": coach["why"] if coach else paragraph,
             },
             "available": self.available_players(),
             "rosters": [self._roster()],
@@ -237,6 +296,7 @@ class SidecarSession:
                 for index, item in enumerate(self.taken)
             ],
             "guide": (
+                f"You sit in nomination seat {self.draft_slot}. "
                 "This tab does not touch Yahoo. Type the name and the dollar you see. "
                 "Stay is market. Stretch is the last dollar that does not wreck the roster. After that, pass. "
                 "Keep is your dynasty at Yahoo list. Locked is someone else's. Neither teaches heat."
@@ -249,6 +309,7 @@ class SidecarSession:
             "team_count": self.team_count,
             "punts": self.punts,
             "budget": self.budget,
+            "draft_slot": self.draft_slot,
             "budget_left": self.budget_left,
             "picks": self.picks,
             "taken": self.taken,
@@ -263,6 +324,7 @@ class SidecarSession:
             team_count=int(payload.get("team_count") or TEAM_COUNT),
             punts=list(payload.get("punts") or []),
             budget=int(payload.get("budget") or DEFAULT_BUDGET),
+            draft_slot=int(payload.get("draft_slot") or 1),
         )
         session.budget_left = int(payload.get("budget_left") or session.budget)
         session.picks = list(payload.get("picks") or [])

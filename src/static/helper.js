@@ -83,9 +83,8 @@ function available() {
 
 function suggestions() {
   const query = line.trim();
-  const pool = available();
-  if (query) return pool.filter((player) => matchesPlayer(player, query)).slice(0, 8);
-  return pool.slice(0, 8);
+  if (!query) return [];
+  return available().filter((player) => matchesPlayer(player, query)).slice(0, 8);
 }
 
 function roomLine() {
@@ -141,8 +140,9 @@ function gateHtml() {
         </div>
       </header>
       <a class="mark-wrap mark-hero" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><img class="mark" src="${MARK}" width="150" height="150" alt=""></a>
-      <h1>Tap the name. Then Sold or Me.</h1>
-      <p class="lede">This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me. Keep and Locked stay for a dynasty night only.</p>
+      <h1>Where do you sit?</h1>
+      <p class="lede">Pick your nomination seat, 1 through 16. You throw a name when that number is up. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me.</p>
+      <div class="slots" id="slot-choices"></div>
       <div class="fields">
         <label>Budget <input id="budget" type="number" min="160" max="240" value="${state.budget || 200}"></label>
         <label>Teams <input id="team-count" type="number" min="2" max="16" value="${state.team_count || 16}"></label>
@@ -155,7 +155,6 @@ function gateHtml() {
 function deskHtml() {
   const coach = state.coach;
   const call = liveCall(coach);
-  const names = suggestions();
   const card = coach ? `
     <section class="card call-${call}">
       <header>
@@ -180,8 +179,9 @@ function deskHtml() {
         <button class="keep" id="keep" type="button">Keep</button>
         <button class="locked" id="locked" type="button">Locked</button>
       </div>
-    </section>` : `<p class="lede">Type a few letters or tap a name. Sold is the room. Me is you.</p>`;
+    </section>` : `<p class="lede">Gone crosses him off at Stay. Tap the name only if you want him.</p>`;
   const seats = (state.rosters && state.rosters[0] && state.rosters[0].slots) || [];
+  const hits = suggestions();
   return `
     <section class="sheet">
       <header class="banner">
@@ -189,22 +189,31 @@ function deskHtml() {
           ${brand()}
           <nav class="links">${themeToggleHtml()}</nav>
           <span class="budget">${money(state.budget_left)} · ${state.spots_left} seats</span>
+          <label class="seat-now">You sit
+            <select id="live-seat">${Array.from({ length: state.team_count || 16 }, (_, index) => {
+              const number = index + 1;
+              return `<option value="${number}" ${number === Number(state.nomination_slot) ? "selected" : ""}>${number}</option>`;
+            }).join("")}</select>
+          </label>
         </div>
       </header>
       ${roomLine()}
+      ${nextHtml()}
       <form class="feed" id="feed-form">
-        <input id="feed" autocomplete="off" placeholder="jok" value="${escapeAttr(line)}">
+        <input id="feed" autocomplete="off" placeholder="jok + Enter = Gone" value="${escapeAttr(line)}">
       </form>
       <ul class="board">
-        ${names.map((player) => `
+        ${hits.map((player) => `
           <li>
             <button type="button" data-pick="${escapeAttr(player.player_name)}" title="${escapeAttr(player.player_name)}">
               <span>${chipName(player.player_name)}</span>
-              <strong>${money(player.auction_value)}</strong>
+              <strong>${money(player.stay_market || player.auction_value)}</strong>
             </button>
+            <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
           </li>`).join("")}
       </ul>
       ${card}
+      ${goneBoardHtml()}
       <p class="error">${error}</p>
       <ul class="wallet">
         ${seats.map((slot) => `<li><span>${slot.label}</span><span>${slot.player ? `${slot.player.player_name} ${money(slot.player.price)}` : "—"}</span></li>`).join("")}
@@ -219,13 +228,93 @@ function deskHtml() {
     </section>`;
 }
 
+function nextHtml() {
+  const names = state.next || [];
+  const yourTurn = Boolean(state.your_turn);
+  const seat = state.nomination_slot || "—";
+  const heading = yourTurn
+    ? "You nominate — tap who to throw up"
+    : `Seat ${state.nominator || "—"} nominates · you sit ${seat}`;
+  if (!names.length) {
+    return `<section class="nexts ${yourTurn ? "your-turn" : ""}"><p class="next-head">${heading}</p><p class="lede">No Stay names left that fit leftover.</p></section>`;
+  }
+  return `
+    <section class="nexts ${yourTurn ? "your-turn" : ""}">
+      <p class="next-head">${heading}</p>
+      <ul>
+        ${names.map((player) => `
+          <li>
+            <button type="button" data-pick="${escapeAttr(player.player_name)}">
+              <span class="next-who">${player.player_name}</span>
+              <span class="next-meta">${player.positions || ""} · list ${money(player.listed)}</span>
+              <strong>Stay ${money(player.stay)}</strong>
+            </button>
+            <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
+          </li>`).join("")}
+      </ul>
+    </section>`;
+}
+
+function gonePool() {
+  const rows = state.board || [];
+  const query = line.trim();
+  if (!query) return rows;
+  return rows.filter((player) => matchesPlayer(player, query));
+}
+
+function goneBoardHtml() {
+  const rows = gonePool();
+  if (!rows.length) return "";
+  return `
+    <section class="gone-board">
+      <p class="next-head">Gone board · one tap crosses him off</p>
+      <ul>
+        ${rows.map((player) => `
+          <li>
+            <button type="button" class="gone-name" data-pick="${escapeAttr(player.player_name)}">
+              <span>${chipName(player.player_name)}</span>
+              <strong>${money(player.stay)}</strong>
+            </button>
+            <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
+          </li>`).join("")}
+      </ul>
+    </section>`;
+}
+
+function drawSlotChoices(count) {
+  const holder = document.querySelector("#slot-choices");
+  if (!holder) return;
+  const teams = Math.max(2, Math.min(16, Number(count) || 16));
+  const current = Number(holder.querySelector(".selected")?.dataset.pick || state.draft_slot || 1);
+  const pick = Math.min(Math.max(1, current), teams);
+  holder.innerHTML = Array.from({ length: teams }, (_, index) => {
+    const number = index + 1;
+    return `<button type="button" class="slot-choice ${number === pick ? "selected" : ""}" data-pick="${number}">${number}</button>`;
+  }).join("");
+  holder.querySelectorAll(".slot-choice").forEach((button) => {
+    button.addEventListener("click", () => {
+      holder.querySelectorAll(".slot-choice").forEach((item) => item.classList.remove("selected"));
+      button.classList.add("selected");
+    });
+  });
+}
+
 function bind() {
   const open = document.querySelector("#open");
   if (open) {
+    const teamCount = document.querySelector("#team-count");
+    drawSlotChoices(Number(teamCount && teamCount.value));
+    if (teamCount) teamCount.addEventListener("input", () => drawSlotChoices(Number(teamCount.value)));
     open.addEventListener("click", async () => {
+      const draftSlot = document.querySelector(".slot-choice.selected")?.dataset.pick;
       const budget = Number(document.querySelector("#budget").value);
-      const teamCount = Number(document.querySelector("#team-count").value);
-      await run(() => api("/helper/api/start", { budget, team_count: teamCount, punts: [] }));
+      const teams = Number(document.querySelector("#team-count").value);
+      if (!draftSlot) {
+        error = "Choose your table seat.";
+        render();
+        return;
+      }
+      await run(() => api("/helper/api/start", { budget, team_count: teams, draft_slot: Number(draftSlot), punts: [] }));
     });
   }
   const form = document.querySelector("#feed-form");
@@ -239,14 +328,15 @@ function bind() {
         render();
         return;
       }
-      if (/\b(sold|gone|taken|me|mine|got|you|keep|locked|dynasty)\b/i.test(text)) {
+      if (/\b(me|mine|got|you|keep|locked|dynasty)\b/i.test(text)) {
         line = "";
         await run(() => api("/helper/api/feed", { line: text }));
         return;
       }
-      const first = suggestions()[0];
+      const first = suggestions()[0] || gonePool()[0];
+      const dollar = text.match(/(?:^|\s)\$?(\d+)\s*$/);
       line = "";
-      await run(() => api("/helper/api/pick", { player_name: first ? first.player_name : text }));
+      await markGone(first ? first.player_name : text, dollar ? Number(dollar[1]) : null);
     });
     input.addEventListener("input", () => {
       line = input.value;
@@ -259,6 +349,9 @@ function bind() {
       searchCaret = null;
     }
   }
+  app.querySelectorAll("[data-gone]").forEach((button) => {
+    button.addEventListener("click", () => markGone(button.dataset.gone));
+  });
   app.querySelectorAll("[data-pick]").forEach((button) => {
     button.addEventListener("click", async () => {
       line = "";
@@ -277,6 +370,10 @@ function bind() {
       render();
     });
   });
+  const liveSeat = document.querySelector("#live-seat");
+  if (liveSeat) {
+    liveSeat.addEventListener("change", () => run(() => api("/helper/api/seat", { draft_slot: Number(liveSeat.value) })));
+  }
   const sold = document.querySelector("#sold");
   if (sold) sold.addEventListener("click", () => closeNight("sold"));
   const mine = document.querySelector("#mine");
@@ -291,8 +388,17 @@ function bind() {
   if (reset) reset.addEventListener("click", () => run(() => api("/helper/api/reset", {})));
 }
 
+async function markGone(playerName, amount) {
+  line = "";
+  searchCaret = null;
+  const body = { player_name: playerName };
+  if (amount != null && amount !== "") body.amount = amount;
+  await run(() => api("/helper/api/gone", body));
+}
+
 async function closeNight(action) {
   line = "";
+  searchCaret = null;
   await run(() => api("/helper/api/close", { action, amount: hammer }));
 }
 

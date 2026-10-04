@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from coach import build_card, call_for, match_player, parse_feed, stay_price, stretch_price
+from coach import build_card, call_for, match_player, next_targets, parse_feed, stay_price, stretch_price
 from market import quote
 from room import apply_room, read_room
 from sidecar import SidecarSession
@@ -307,6 +307,53 @@ def test_dynasty_locked_stars_do_not_reprice_stay() -> None:
     )
     assert room["counts"]["star"] == 0
     assert room["factors"]["star"] == 1.0
+
+
+def test_helper_next_names_and_table_seat() -> None:
+    session = SidecarSession(PLAYERS, team_count=16, budget=200, draft_slot=7)
+    state = session.state()
+    assert state["nomination_slot"] == 7
+    assert state["nominator"] == 1
+    assert state["your_turn"] is False
+    assert state["next"][0]["player_name"] == "Nikola Jokić"
+    assert state["next"][0]["stay"] >= 1
+    session.pick("jokic")
+    session.close("sold")
+    after = session.state()
+    assert after["nominator"] == 2
+    assert after["your_turn"] is False
+    assert all(item["player_name"] != "Nikola Jokić" for item in after["next"])
+    for _ in range(5):
+        session.taken.append({"player_name": f"filler-{len(session.taken)}", "price": 1, "listed": 1, "fair_stay": 1, "fair_stretch": 1})
+    assert session.state()["nominator"] == 7
+    assert session.state()["your_turn"] is True
+    cheap = next_targets(
+        [{**PLAYERS[0], "yahoo_listed": 1, "auction_value": 1}, PLAYERS[3]],
+        200,
+        10,
+        False,
+    )
+    assert [item["player_name"] for item in cheap] == ["Kevin Durant"]
+    assert state["board"][0]["player_name"] == "Nikola Jokić"
+
+
+def test_gone_crosses_off_at_stay_and_undo_restores() -> None:
+    session = SidecarSession(PLAYERS, team_count=16, budget=200, draft_slot=5)
+    session.gone("jokic")
+    assert session.focus is None
+    assert session.taken[0]["player_name"] == "Nikola Jokić"
+    assert session.taken[0]["yours"] is False
+    assert session.taken[0]["price"] == 75
+    assert "Nikola Jokić" not in {row["player_name"] for row in session.state()["board"]}
+    session.undo()
+    assert session.taken == []
+    assert any(row["player_name"] == "Nikola Jokić" for row in session.state()["board"])
+    session.pick("jokic")
+    session.close("me")
+    session.gone("wemby")
+    assert session.taken[-1]["player_name"] == "Victor Wembanyama"
+    assert session.taken[-1]["yours"] is False
+    assert session.taken[-1]["price"] == 70
 
 
 def test_superstar_cannot_be_dynasty() -> None:

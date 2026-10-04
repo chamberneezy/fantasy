@@ -161,17 +161,21 @@ def next_targets(
         stay, stretch = apply_room(stay, stretch, listed, budget_left, spots_left, owns_elite, room)
         if stay <= 0:
             continue
+        if listed <= 1:
+            continue
         low, high = typical_sale(listed)
         chosen.append(
             {
                 "player_name": player["player_name"],
+                "positions": player.get("positions") or "",
                 "listed": listed,
                 "stay": stay,
+                "stretch": stretch,
                 "typical_low": low,
                 "typical_high": high,
             }
         )
-        if len(chosen) == 3:
+        if len(chosen) == 5:
             break
     return chosen
 

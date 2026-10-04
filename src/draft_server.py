@@ -32,7 +32,13 @@ def pool_for(punts: list[str], team_count: int = TEAM_COUNT, budget: int = DEFAU
 
 
 def idle_state() -> dict:
-    return {"started": False, "categories": list(ALL_CATEGORIES), "team_count": TEAM_COUNT, "budget": DEFAULT_BUDGET}
+    return {
+        "started": False,
+        "categories": list(ALL_CATEGORIES),
+        "team_count": TEAM_COUNT,
+        "budget": DEFAULT_BUDGET,
+        "draft_slot": 1,
+    }
 
 
 def current_session() -> DraftSession | None:
@@ -211,7 +217,14 @@ def helper_start():
         if budget < MIN_BUDGET or budget > MAX_BUDGET:
             raise ValueError("Draft dollars are $160–$240. That number is your cap, not a payment.")
         punts = [category for category in body.get("punts") or [] if category]
-        session = SidecarSession(pool_for(punts, team_count, budget), team_count, punts, budget)
+        draft_slot = int(body.get("draft_slot") or 1)
+        session = SidecarSession(
+            pool_for(punts, team_count, budget),
+            team_count,
+            punts,
+            budget,
+            draft_slot,
+        )
     except (KeyError, TypeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 400
     HELPER["current"] = session
@@ -242,6 +255,38 @@ def helper_pick():
     try:
         amount = body.get("amount")
         session.pick(str(body.get("player_name") or ""), None if amount in (None, "") else int(amount))
+    except (TypeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 400
+    save_sidecar(session)
+    return jsonify(session.state())
+
+
+@app.post("/helper/api/gone")
+def helper_gone():
+    session = current_helper()
+    if session is None:
+        return jsonify(idle_state())
+    body = request.get_json(force=True, silent=True) or {}
+    try:
+        amount = body.get("amount")
+        session.gone(str(body.get("player_name") or ""), None if amount in (None, "") else int(amount))
+    except (TypeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 400
+    save_sidecar(session)
+    return jsonify(session.state())
+
+
+@app.post("/helper/api/seat")
+def helper_seat():
+    session = current_helper()
+    if session is None:
+        return jsonify(idle_state())
+    body = request.get_json(force=True, silent=True) or {}
+    try:
+        draft_slot = int(body.get("draft_slot") or 0)
+        if not 1 <= draft_slot <= session.team_count:
+            raise ValueError(f"Your table seat must be 1–{session.team_count}.")
+        session.draft_slot = draft_slot
     except (TypeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 400
     save_sidecar(session)
