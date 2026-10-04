@@ -220,7 +220,7 @@ def test_live_helper_reads_a_feed_line(tmp_path, monkeypatch) -> None:
     assert moved.get_json()["your_turn"] is True
     script = client.get("/static/helper.js")
     assert b"Where do you sit?" in script.data
-    assert b"You nominate" in script.data
+    assert b"Stay names" in script.data
     assert b"data-gone" in script.data
     assert b"data-seat=" in script.data
     assert b'data-pick="${number}"' not in script.data

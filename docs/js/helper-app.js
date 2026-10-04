@@ -91,16 +91,16 @@ function typedAmount(text) {
 function suggestions() {
   const query = typedQuery(line);
   const pool = available();
-  if (!query) return pool.slice(0, 12);
-  return pool.filter((player) => matchesPlayer(player, query)).slice(0, 8);
+  if (query) return pool.filter((player) => matchesPlayer(player, query)).slice(0, 8);
+  const next = state.next || [];
+  if (next.length) return next;
+  return pool.slice(0, 8);
 }
 
 function roomLine() {
   const room = state.room;
-  if (!room) return "";
-  const star = room.factors && room.factors.star != null ? Number(room.factors.star).toFixed(2) : "1.00";
-  const sales = room.counts && room.counts.star != null ? room.counts.star : 0;
-  return `<p class="roomline">${money(room.cash)} league · ${money(room.per_seat)}/seat · stars ${star}× (${sales} ${sales === 1 ? "sale" : "sales"})${room.note ? ` · ${room.note}` : ""}</p>`;
+  if (!room || !room.listening) return "";
+  return `<p class="roomline">${room.note || ""}</p>`;
 }
 
 function chipName(name) {
@@ -149,7 +149,7 @@ function gateHtml() {
       </header>
       <a class="mark-wrap mark-hero" href="index.html" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><img class="mark" src="${MARK}" width="150" height="150" alt=""></a>
       <h1>Where do you sit?</h1>
-      <p class="lede">Pick your nomination seat, 1 through 16. You throw a name when that number is up. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me.</p>
+      <p class="lede">Your nomination seat, 1–16. Then Open. This page does not bid.</p>
       <div class="slots" id="slot-choices">${seatButtons(state.team_count || 16)}</div>
       <div class="fields">
         <label>Budget <input id="budget" type="number" min="160" max="240" value="${state.budget || 200}"></label>
@@ -182,46 +182,27 @@ function deskHtml() {
         <button type="button" data-nudge="5">+5</button>
       </div>
       <div class="close">
-        <button class="sold" id="sold" type="button">Sold</button>
+        <button class="sold" id="sold" type="button">Gone</button>
         <button class="me" id="mine" type="button">Me</button>
-        <button class="keep" id="keep" type="button">Keep</button>
-        <button class="locked" id="locked" type="button">Locked</button>
       </div>
-    </section>` : `<p class="lede">Gone crosses him off at Stay. Tap the name only if you want him.</p>`;
+    </section>` : "";
   const seats = (state.rosters && state.rosters[0] && state.rosters[0].slots) || [];
-  const hits = suggestions();
   return `
     <section class="sheet">
       <header class="banner">
         <div class="banner-inner">
           ${brand()}
           <nav class="links">${themeToggleHtml()}</nav>
-          <span class="budget">${money(state.budget_left)} · ${state.spots_left} seats</span>
-          <label class="seat-now">You sit
-            <select id="live-seat">${Array.from({ length: state.team_count || 16 }, (_, index) => {
-              const number = index + 1;
-              return `<option value="${number}" ${number === Number(state.nomination_slot) ? "selected" : ""}>${number}</option>`;
-            }).join("")}</select>
-          </label>
+          <span class="budget">${money(state.budget_left)} · ${state.spots_left} left · sit ${state.nomination_slot || seatPick}</span>
         </div>
       </header>
       ${roomLine()}
-      ${nextHtml()}
+      <p class="lede">Gone = room got him. Tap the name only if you want him. Optional: jokic 160 + Enter.</p>
       <form class="feed" id="feed-form">
-        <input id="feed" autocomplete="off" placeholder="jokic 160 + Enter, or tap Gone" value="${escapeAttr(line)}">
+        <input id="feed" autocomplete="off" placeholder="name or name 160" value="${escapeAttr(line)}">
       </form>
-      <ul class="board">
-        ${hits.map((player) => `
-          <li>
-            <button type="button" data-pick="${escapeAttr(player.player_name)}" title="${escapeAttr(player.player_name)}">
-              <span>${chipName(player.player_name)}</span>
-              <strong>${money(player.stay_market || player.auction_value)}</strong>
-            </button>
-            <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
-          </li>`).join("")}
-      </ul>
+      ${namesHtml()}
       ${card}
-      ${goneBoardHtml()}
       <p class="error">${error}</p>
       <ul class="wallet">
         ${seats.map((slot) => `<li><span>${slot.label}</span><span>${slot.player ? `${slot.player.player_name} ${money(slot.player.price)}` : "—"}</span></li>`).join("")}
@@ -236,52 +217,19 @@ function deskHtml() {
     </section>`;
 }
 
-function nextHtml() {
-  const names = state.next || [];
-  const yourTurn = Boolean(state.your_turn);
-  const seat = state.nomination_slot || "—";
-  const heading = yourTurn
-    ? "You nominate — tap who to throw up"
-    : `Seat ${state.nominator || "—"} nominates · you sit ${seat}`;
-  if (!names.length) {
-    return `<section class="nexts ${yourTurn ? "your-turn" : ""}"><p class="next-head">${heading}</p><p class="lede">No Stay names left that fit leftover.</p></section>`;
-  }
+function namesHtml() {
+  const names = suggestions();
+  if (!names.length) return `<p class="lede">${typedQuery(line) ? "No name matches that." : "Board is empty."}</p>`;
   return `
-    <section class="nexts ${yourTurn ? "your-turn" : ""}">
-      <p class="next-head">${heading}</p>
+    <section class="nexts">
+      <p class="next-head">${typedQuery(line) ? "Matches" : "Stay names"}</p>
       <ul>
         ${names.map((player) => `
           <li>
             <button type="button" data-pick="${escapeAttr(player.player_name)}">
               <span class="next-who">${player.player_name}</span>
-              <span class="next-meta">${player.positions || ""} · list ${money(player.listed)}</span>
-              <strong>Stay ${money(player.stay)}</strong>
-            </button>
-            <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
-          </li>`).join("")}
-      </ul>
-    </section>`;
-}
-
-function gonePool() {
-  const rows = state.board || [];
-  const query = typedQuery(line);
-  if (!query) return rows;
-  return rows.filter((player) => matchesPlayer(player, query));
-}
-
-function goneBoardHtml() {
-  const rows = gonePool();
-  if (!rows.length) return "";
-  return `
-    <section class="gone-board">
-      <p class="next-head">Gone board · one tap crosses him off</p>
-      <ul>
-        ${rows.map((player) => `
-          <li>
-            <button type="button" class="gone-name" data-pick="${escapeAttr(player.player_name)}">
-              <span>${chipName(player.player_name)}</span>
-              <strong>${money(player.stay)}</strong>
+              <span class="next-meta">${player.positions || ""} · list ${money(player.listed || player.auction_value)}</span>
+              <strong>Stay ${money(player.stay || player.stay_market)}</strong>
             </button>
             <button type="button" class="gone" data-gone="${escapeAttr(player.player_name)}">Gone</button>
           </li>`).join("")}
@@ -347,7 +295,7 @@ function bind() {
       }
       const dollar = typedAmount(text);
       const name = typedQuery(text);
-      const first = available().find((player) => matchesPlayer(player, name)) || gonePool()[0];
+      const first = available().find((player) => matchesPlayer(player, name)) || suggestions()[0];
       line = "";
       await markGone(first ? first.player_name : name, dollar);
     });
@@ -383,18 +331,10 @@ function bind() {
       render();
     });
   });
-  const liveSeat = document.querySelector("#live-seat");
-  if (liveSeat) {
-    liveSeat.addEventListener("change", () => run(() => api("/helper/api/seat", { draft_slot: Number(liveSeat.value) })));
-  }
   const sold = document.querySelector("#sold");
   if (sold) sold.addEventListener("click", () => closeNight("sold"));
   const mine = document.querySelector("#mine");
   if (mine) mine.addEventListener("click", () => closeNight("me"));
-  const keep = document.querySelector("#keep");
-  if (keep) keep.addEventListener("click", () => closeNight("keep"));
-  const locked = document.querySelector("#locked");
-  if (locked) locked.addEventListener("click", () => closeNight("locked"));
   const undo = document.querySelector("#undo");
   if (undo) undo.addEventListener("click", () => run(() => api("/helper/api/undo", {})));
   const reset = document.querySelector("#reset");
