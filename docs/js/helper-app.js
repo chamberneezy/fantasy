@@ -418,4 +418,9 @@ function escapeAttr(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }
 
-run(() => api("/helper/api/state"));
+NBA.load()
+  .then(() => run(() => api("/helper/api/state")))
+  .catch((exc) => {
+    error = exc.message || "Could not load the board.";
+    render();
+  });

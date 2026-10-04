@@ -279,11 +279,13 @@ const NBA = (() => {
     }
     if (!names.length) throw new Error("Type the player name first.");
     const query = names.join(" ");
-    return { query: ALIASES[query] || query, amount, action };
+    const folded = nameKey(query);
+    return { query: ALIASES[folded] || ALIASES[query] || query, amount, action };
   }
 
   function matchPlayer(query, players) {
-    const needle = nameKey(ALIASES[query] || query);
+    const folded = nameKey(query);
+    const needle = nameKey(ALIASES[folded] || ALIASES[query] || query);
     if (!needle) throw new Error("Type a player name.");
     const scored = [];
     for (const player of players) {
@@ -654,6 +656,7 @@ const NBA = (() => {
     const route = path.split("/helper/api/")[1] || path;
     if (route === "state") return helper ? helper.state() : idleHelper();
     if (route === "start") {
+      if (!pool || !pool.length) throw new Error("The board is still loading. Wait a second and open again.");
       const budget = (body.budget ?? DEFAULT_BUDGET) | 0;
       const teams = (body.team_count ?? TEAM_COUNT) | 0;
       if (budget < MIN_BUDGET || budget > MAX_BUDGET) throw new Error("Draft dollars are $160–$240. That number is your cap, not a payment.");

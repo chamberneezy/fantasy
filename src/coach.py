@@ -116,7 +116,8 @@ def parse_feed(line: str) -> dict:
     if not names:
         raise ValueError("Type the player name first.")
     query = " ".join(names)
-    return {"query": ALIASES.get(query, query), "amount": amount, "action": action}
+    folded = name_key(query)
+    return {"query": ALIASES.get(folded, ALIASES.get(query, query)), "amount": amount, "action": action}
 
 
 def match_player(query: str, players: list[dict]) -> dict:

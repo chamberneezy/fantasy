@@ -24,6 +24,8 @@ PLAYERS = [
 
 def test_feed_lines_split_name_dollar_and_who() -> None:
     assert parse_feed("wemby") == {"query": "victor wembanyama", "amount": None, "action": "lookup"}
+    assert parse_feed("jokic")["query"] == "nikola jokic"
+    assert parse_feed("jokić")["query"] == "nikola jokic"
     assert parse_feed("wemby 52") == {"query": "victor wembanyama", "amount": 52, "action": "lookup"}
     assert parse_feed("bambi 72 sold") == {"query": "victor wembanyama", "amount": 72, "action": "sold"}
     assert parse_feed("kd 40 me") == {"query": "kevin durant", "amount": 40, "action": "me"}
