@@ -28,12 +28,13 @@ const ALIASES = {
   wembanyama: "victor wembanyama",
 };
 
-let state = { started: false, categories: [], team_count: 16, budget: 200 };
+let state = { started: false, categories: [], team_count: 16, budget: 200, draft_slot: 1 };
 let error = "";
 let line = "";
 let hammer = null;
 let lastPlayer = "";
 let searchCaret = null;
+let seatPick = 1;
 const MARK = "/static/mark.png";
 
 function brand() {
@@ -152,7 +153,7 @@ function gateHtml() {
       <a class="mark-wrap mark-hero" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, and lab."><img class="mark" src="${MARK}" width="150" height="150" alt=""></a>
       <h1>Where do you sit?</h1>
       <p class="lede">Pick your nomination seat, 1 through 16. You throw a name when that number is up. This page does not open Yahoo and does not bid. Budget is your draft dollars ($160–$240) — the cap, not a payment. Default $200. No dynasty this year, so use Sold and Me.</p>
-      <div class="slots" id="slot-choices"></div>
+      <div class="slots" id="slot-choices">${seatButtons(state.team_count || 16)}</div>
       <div class="fields">
         <label>Budget <input id="budget" type="number" min="160" max="240" value="${state.budget || 200}"></label>
         <label>Teams <input id="team-count" type="number" min="2" max="16" value="${state.team_count || 16}"></label>
@@ -291,20 +292,29 @@ function goneBoardHtml() {
     </section>`;
 }
 
+function seatButtons(count) {
+  const teams = Math.max(2, Math.min(16, Number(count) || 16));
+  const pick = Math.min(Math.max(1, Number(seatPick) || 1), teams);
+  return Array.from({ length: teams }, (_, index) => {
+    const number = index + 1;
+    return `<button type="button" class="slot-choice ${number === pick ? "selected" : ""}" data-seat="${number}">${number}</button>`;
+  }).join("");
+}
+
 function drawSlotChoices(count) {
   const holder = document.querySelector("#slot-choices");
   if (!holder) return;
   const teams = Math.max(2, Math.min(16, Number(count) || 16));
-  const current = Number(holder.querySelector(".selected")?.dataset.pick || state.draft_slot || 1);
-  const pick = Math.min(Math.max(1, current), teams);
-  holder.innerHTML = Array.from({ length: teams }, (_, index) => {
-    const number = index + 1;
-    return `<button type="button" class="slot-choice ${number === pick ? "selected" : ""}" data-pick="${number}">${number}</button>`;
-  }).join("");
-  holder.querySelectorAll(".slot-choice").forEach((button) => {
+  seatPick = Math.min(Math.max(1, Number(seatPick) || 1), teams);
+  holder.innerHTML = seatButtons(teams);
+  bindSeats();
+}
+
+function bindSeats() {
+  document.querySelectorAll("[data-seat]").forEach((button) => {
     button.addEventListener("click", () => {
-      holder.querySelectorAll(".slot-choice").forEach((item) => item.classList.remove("selected"));
-      button.classList.add("selected");
+      seatPick = Number(button.dataset.seat);
+      document.querySelectorAll("[data-seat]").forEach((item) => item.classList.toggle("selected", Number(item.dataset.seat) === seatPick));
     });
   });
 }
@@ -313,18 +323,13 @@ function bind() {
   const open = document.querySelector("#open");
   if (open) {
     const teamCount = document.querySelector("#team-count");
-    drawSlotChoices(Number(teamCount && teamCount.value));
     if (teamCount) teamCount.addEventListener("input", () => drawSlotChoices(Number(teamCount.value)));
+    bindSeats();
     open.addEventListener("click", async () => {
-      const draftSlot = document.querySelector(".slot-choice.selected")?.dataset.pick;
       const budget = Number(document.querySelector("#budget").value);
       const teams = Number(document.querySelector("#team-count").value);
-      if (!draftSlot) {
-        error = "Choose your table seat.";
-        render();
-        return;
-      }
-      await run(() => api("/helper/api/start", { budget, team_count: teams, draft_slot: Number(draftSlot), punts: [] }));
+      const draftSlot = Math.min(Math.max(1, Number(seatPick) || 1), Math.max(2, Math.min(16, teams || 16)));
+      await run(() => api("/helper/api/start", { budget, team_count: teams, draft_slot: draftSlot, punts: [] }));
     });
   }
   const form = document.querySelector("#feed-form");
@@ -417,6 +422,8 @@ async function run(action) {
   try {
     error = "";
     state = await action();
+    if (state.nomination_slot) seatPick = Number(state.nomination_slot);
+    else if (state.draft_slot) seatPick = Number(state.draft_slot);
     if (!state.coach) {
       hammer = null;
       lastPlayer = "";

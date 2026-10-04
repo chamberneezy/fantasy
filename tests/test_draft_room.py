@@ -222,6 +222,8 @@ def test_live_helper_reads_a_feed_line(tmp_path, monkeypatch) -> None:
     assert b"Where do you sit?" in script.data
     assert b"You nominate" in script.data
     assert b"data-gone" in script.data
+    assert b"data-seat=" in script.data
+    assert b'data-pick="${number}"' not in script.data
     gone = client.post("/helper/api/gone", json={"player_name": "jokic"})
     assert gone.status_code == 200
     payload = gone.get_json()
