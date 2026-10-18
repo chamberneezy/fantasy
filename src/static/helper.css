@@ -480,6 +480,86 @@ input {
 .wallet li span:first-child { color: var(--text-link); font-weight: 500; }
 .actions { display: flex; gap: 16px; margin-top: 22px; }
 
+.cats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 18px 0 8px;
+  padding: 0;
+}
+.cats li {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.cats span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cats strong { font-family: var(--display); font-size: 1.2rem; }
+.cats .win { border-color: var(--nba-blue); }
+.cats .hole { border-color: var(--nba-red); }
+.cats .hole strong { color: var(--nba-red); }
+.season-roster li span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.season-acts { margin-top: 8px; }
+.slate { margin: 18px 0 4px; }
+.slate-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.slate-head span { display: flex; gap: 14px; }
+.slate-scroll { overflow-x: auto; }
+.slate table { width: 100%; border-collapse: collapse; font-size: 0.84rem; font-variant-numeric: tabular-nums; }
+.slate th, .slate td { border-bottom: 1px solid var(--line); padding: 6px 4px; text-align: center; white-space: nowrap; }
+.slate tbody th { text-align: left; font-weight: 600; color: var(--text-link); padding-left: 0; }
+.slate tbody th span { display: block; color: var(--muted); font-size: 0.72rem; font-weight: 500; }
+.slate thead button {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  min-width: 46px;
+  min-height: 44px;
+  padding: 4px 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.slate thead strong { font-family: var(--display); font-size: 1.05rem; color: var(--ink); }
+.slate thead .today button { border-color: var(--line); }
+.slate thead .on button { border-color: var(--nba-blue); color: var(--ink); }
+.slate thead .over strong { color: var(--nba-red); }
+.slate td.on { background: var(--glow-blue); }
+.slate td.game { color: var(--ink); font-weight: 500; }
+.slate td.b2b { text-decoration: underline; text-underline-offset: 3px; }
+.slate .past { opacity: 0.5; }
+.slate td.start { font-weight: 700; }
+.slate td.bench { color: var(--muted); font-weight: 400; }
+.matchup td, .matchup thead th { text-align: right; }
+.matchup tbody th { color: var(--ink); }
+.matchup .win strong { color: var(--nba-blue); }
+.matchup .hole strong { color: var(--nba-red); }
+.dayline .seat { font-style: normal; font-family: var(--display); color: var(--nba-blue); margin-right: 4px; }
+.dayline .seat.sit { color: var(--nba-red); }
+.dayline .benched { opacity: 0.72; }
+.dayline .text { display: inline; width: auto; min-height: 28px; padding: 0; border: 0; border-radius: 0; background: none; color: var(--text-link); font-size: 0.8rem; }
+.slate-key { color: var(--muted); font-size: 0.78rem; line-height: 1.4; margin: 8px 0 0; }
+.dayline li { grid-template-columns: 1fr auto; border-bottom: 1px solid var(--line); padding: 8px 0; }
+.dayline li div { display: grid; gap: 2px; }
+.dayline li strong { grid-row: auto; font-family: var(--display); font-size: 1.2rem; }
+
 @media (max-width: 640px) {
   .sheet { padding: 0 14px 48px; }
   .sheet h1, .hero h1 { font-size: 2.2rem; }
@@ -487,4 +567,5 @@ input {
   .who { font-size: 1.5rem; }
   .mark-hero { width: 120px; height: 120px; }
   .mark-hero.mark-wrap img { width: 110px; height: 110px; }
+  .cats { grid-template-columns: repeat(2, 1fr); }
 }

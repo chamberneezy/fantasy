@@ -1,11 +1,23 @@
 ---
-description: NBA Fantasy salary-cap pad — Stay, heat, sessions, lab
+description: NBA Fantasy salary-cap pad — Stay, heat, sessions, Yahoo 51867 roster
 alwaysApply: true
 ---
 
 # NBA Fantasy pad
 
-Mario’s unpublished 12-cat H2H helper. Brand is **NBA Fantasy**, not Pilsner. Live draft Sunday 4 Oct 2026. No Yahoo API, no auto-bid, no scrape. Full briefing: `CLAUDE.md`.
+Mario’s unpublished 12-cat H2H helper. Brand is **NBA Fantasy**, not Pilsner. Yahoo league name is **3. Pilsner Fantasy Liga** (ID **51867**). Live draft was Sunday 4 Oct 2026. No Yahoo API, no auto-bid, no scrape. Full briefing: `CLAUDE.md`. Live settings: `context/league.md`.
+
+## League (Settings 5 Oct 2026)
+
+- 16 teams, 10 seats (PG/SG/SF/PF/C + 5 BN). **No IL. No IL+.**
+- Daily – Today. Lock benched players: **No**. 4 adds/week, no waivers, FA instant.
+- Playoffs 8 teams, **weeks 19–21**. Custom per-team draft dollars ($199–$226). No dynasty.
+
+## Mario’s 10 (week 1)
+
+PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jrue Holiday, Neemias Queta, Dillon Brooks, Tre Jones.
+
+**Hezonja stays.** 1 of 4 adds used (Davion Mitchell dropped for Tre Jones). Holes: TO, PF. A DNP costs a drop.
 
 ## Stay / Stretch
 
@@ -26,6 +38,6 @@ Mario’s unpublished 12-cat H2H helper. Brand is **NBA Fantasy**, not Pilsner. 
 
 ## UX
 
-- `/` home, `/helper` live, `/draft` mock, `/lab` batch. Separate sessions.
-- Logo click (`data-home-reset`) resets helper + mock + lab and goes home.
+- `/` home, `/season` in-season, `/helper` live, `/draft` mock, `/lab` batch. Separate sessions.
+- Logo click (`data-home-reset`) resets helper + mock + lab + season and goes home.
 - Card: Yahoo list · fair Stay–Stretch · this room · you leftover.

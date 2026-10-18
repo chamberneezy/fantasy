@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import sys
+from datetime import date
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request
@@ -16,11 +18,14 @@ from lab import DEFAULT_RUNS, load_report, run_lab, save_report, scenario
 from sidecar import SidecarSession, load_sidecar, save_sidecar
 from yahoo_auction import DraftSession, load_session, save_session
 from math_engine import ALL_CATEGORIES
+import nba_feed
+import season as season_pad
 
 app = Flask(__name__, template_folder=str(SRC / "templates"), static_folder=str(SRC / "static"))
 SESSION: dict[str, DraftSession | None] = {"current": None}
 HELPER: dict[str, SidecarSession | None] = {"current": None}
 LAB: dict[str, dict | None] = {"report": None}
+SEASON: dict[str, season_pad.SeasonSession | None] = {"current": None}
 POOLS: dict[tuple, list[dict]] = {}
 
 
@@ -91,6 +96,11 @@ def helper_page():
 @app.get("/lab")
 def lab_page():
     return render_template("lab.html")
+
+
+@app.get("/season")
+def season_page():
+    return render_template("season.html")
 
 
 @app.get("/draft/api/state")
@@ -357,6 +367,118 @@ def lab_run():
     LAB["report"] = report
     save_report(report)
     return jsonify({**report, "ready": True, "drafts": []})
+
+
+def current_season() -> season_pad.SeasonSession | None:
+    if SEASON["current"] is None and season_pad.SEASON_PATH.exists():
+        try:
+            SEASON["current"] = season_pad.load_season(pool_for([]))
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            SEASON["current"] = None
+    return SEASON["current"]
+
+
+def _season_state(session: season_pad.SeasonSession) -> dict:
+    """State for the day in ``?date=``. A missing or unreadable date means today."""
+    try:
+        day = date.fromisoformat(str(request.args.get("date") or ""))
+    except ValueError:
+        day = None
+    return session.state(day)
+
+
+@app.get("/season/api/state")
+def season_state():
+    session = current_season()
+    if session is None:
+        return jsonify(season_pad.idle_season())
+    return jsonify(_season_state(session))
+
+
+@app.post("/season/api/start")
+def season_start():
+    session = current_season()
+    if session is None:
+        session = season_pad.SeasonSession(pool_for([]))
+        SEASON["current"] = session
+        season_pad.save_season(session)
+    return jsonify(_season_state(session))
+
+
+def _season_act(action):
+    session = current_season()
+    if session is None:
+        return jsonify({"error": "Start the season pad first."}), 400
+    body = request.get_json(force=True, silent=True) or {}
+    try:
+        action(session, str(body.get("query") or ""))
+    except (TypeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 400
+    season_pad.save_season(session)
+    return jsonify(_season_state(session))
+
+
+@app.post("/season/api/add")
+def season_add():
+    return _season_act(lambda session, query: session.add(query))
+
+
+@app.post("/season/api/drop")
+def season_drop():
+    return _season_act(lambda session, query: session.drop(query))
+
+
+@app.post("/season/api/il")
+def season_il():
+    return _season_act(lambda session, query: session.to_il(query))
+
+
+@app.post("/season/api/activate")
+def season_activate():
+    return _season_act(lambda session, query: session.from_il(query))
+
+
+@app.post("/season/api/status")
+def season_status():
+    session = current_season()
+    if session is None:
+        return jsonify({"error": "Start the season pad first."}), 400
+    body = request.get_json(force=True, silent=True) or {}
+    try:
+        session.set_status(str(body.get("query") or ""), str(body.get("status") or ""))
+    except (TypeError, ValueError) as exc:
+        return jsonify({"error": str(exc)}), 400
+    season_pad.save_season(session)
+    return jsonify(_season_state(session))
+
+
+@app.post("/season/api/week")
+def season_week():
+    session = current_season()
+    if session is None:
+        return jsonify({"error": "Start the season pad first."}), 400
+    session.new_week()
+    season_pad.save_season(session)
+    return jsonify(_season_state(session))
+
+
+@app.post("/season/api/refresh")
+def season_refresh():
+    """Pull schedule, rosters and game logs from the free NBA feed."""
+    session = current_season()
+    if session is None:
+        return jsonify({"error": "Start the season pad first."}), 400
+    report = nba_feed.refresh()
+    if report["errors"] and not report["rows"]:
+        return jsonify({"error": "The NBA feed did not answer. The pad kept its last copy."}), 502
+    return jsonify(_season_state(session))
+
+
+@app.post("/season/api/reset")
+def season_reset():
+    SEASON["current"] = None
+    season_pad.reset_season()
+    return jsonify(season_pad.idle_season())
 
 
 @app.post("/lab/api/reset")

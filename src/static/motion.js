@@ -28,6 +28,7 @@
       fetch("/helper/api/reset", body),
       fetch("/draft/api/reset", body),
       fetch("/lab/api/reset", body),
+      fetch("/season/api/reset", body),
     ]);
     await Promise.race([calls, new Promise((resolve) => window.setTimeout(resolve, 1200))]);
     try {
