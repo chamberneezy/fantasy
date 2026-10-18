@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import json
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import pandas as pd
@@ -244,6 +245,28 @@ def pull_comebacks(feed_dir: Path) -> int:
     if added:
         pd.concat([frame for frame in [older, *added] if len(frame)], ignore_index=True).to_csv(older_path, index=False)
     return sum(len(frame) for frame in added)
+
+
+# A game is about 2h15 tip to buzzer; the stats feed posts its box score a little after.
+GAME_LENGTH = timedelta(hours=2, minutes=30)
+EASTERN = ZoneInfo("America/New_York")
+
+
+def night_status(schedule: pd.DataFrame, logs: pd.DataFrame, now: datetime) -> dict:
+    """Last night's games (US Eastern date before ``now``): are they over, and all in the logs?
+
+    ``due`` is when the last one should be over. ``done`` means every game of the
+    night is in the logs, so a morning pull has nothing left to fetch.
+    """
+    night = (now.astimezone(EASTERN).date() - timedelta(days=1)).isoformat()
+    games = schedule.loc[schedule["date"] == night] if len(schedule) else schedule
+    if games.empty:
+        return {"night": night, "games": 0, "due": None, "done": True}
+    tips = pd.to_datetime(games["tip_utc"], utc=True)
+    due = tips.max().to_pydatetime() + GAME_LENGTH
+    logged = set(logs["game_id"].astype(str)) if len(logs) else set()
+    missing = sorted(set(games["game_id"].astype(str)) - logged)
+    return {"night": night, "games": int(len(games)), "due": due, "done": not missing, "missing": len(missing)}
 
 
 def refresh(feed_dir: Path | None = None, last_season: bool | None = None) -> dict:

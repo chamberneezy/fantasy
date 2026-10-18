@@ -365,7 +365,7 @@ function myTeam() {
 function publishedLine() {
   if (!published) return "";
   const when = new Date(published.published_at).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-  return `<p class="slate-key">Read-only copy, published ${when} from the laptop pad (after each refresh at 08:00, 18:00 and 23:30). Changes to your roster or lineup are made there.</p>`;
+  return `<p class="slate-key">Read-only copy, published ${when} from the laptop pad (right after last night's final game, around 06:30–07:30, and at 18:00 and 23:30). Changes to your roster or lineup are made there.</p>`;
 }
 
 function desk() {

@@ -8,5 +8,4 @@ Type=oneshot
 WorkingDirectory=%h/Projects/fantasy
 # gh (for starting the Pages build, and as git's GitHub credential helper) comes from mise.
 Environment=PATH=%h/.local/share/mise/shims:/usr/local/bin:/usr/bin:/bin
-ExecStart=%h/Projects/fantasy/.venv/bin/python scripts/refresh_season.py
-ExecStart=%h/Projects/fantasy/.venv/bin/python scripts/publish_season.py
+ExecStart=%h/Projects/fantasy/.venv/bin/python scripts/refresh_season.py --publish

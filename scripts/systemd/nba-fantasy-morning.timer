@@ -1,0 +1,12 @@
+[Unit]
+Description=NBA Fantasy: check every 15 min, 06:00-09:45 Zurich, for last night's final box scores
+
+[Timer]
+# West-coast games tip at 04:00-05:00 Zurich time and end around 06:30-07:30.
+# Each run pulls only once the night's last game should be over (tip + 2h30)
+# and does nothing once every game of that night is in the logs.
+OnCalendar=*-*-* 06..09:00/15 Europe/Zurich
+Persistent=true
+
+[Install]
+WantedBy=timers.target

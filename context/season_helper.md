@@ -32,7 +32,7 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 ## Refresh (automated)
 
-A systemd user timer runs `scripts/refresh_season.py` daily at **08:00** (box scores final), **18:00** and **23:30** (injury news before US tip-off), local time. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
+Two systemd user timers, Zurich time. **Morning** (`nba-fantasy-morning`): every 15 min 06:00–09:45 runs `refresh_season.py --morning --publish`, which pulls only once last night's final game should be over (latest tip + 2h30; west-coast tips are 04:00–05:00 Zurich, so usually 06:30–07:30) and does nothing once every game of the night is in the logs (`nba_feed.night_status`). **Evening** (`nba-fantasy-refresh`): 18:00 and 23:30, injury news before tip-off. Both republish Pages after a pull. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
 
 ```
 .venv/bin/python scripts/refresh_season.py            # same pull as the page button

@@ -111,7 +111,7 @@ src/scouting.py         matchup detail panel: opponent ranks by position, pace/D
 src/matchup.py          simulated week: 12-cat totals, chance per cat, swing weights
 src/lineup.py           legal five (strict PG/SG/SF/PF/C) and the week plan
 src/outlook.py          3-season + age model for the season pad's anchor line (data/season/outlook.csv); not the draft board
-scripts/refresh_season.py  season feed refresh (systemd timer: scripts/systemd/, 08:00 / 18:00 / 23:30)
+scripts/refresh_season.py  season feed refresh (systemd timers in scripts/systemd/: morning --morning every 15 min 06:00–09:45 until last night is in; evening 18:00 / 23:30)
 scripts/publish_season.py  after each refresh: export the week → season-data branch → Pages (docs/season.html, read-only)
 src/lab.py              headless 2k/10k rooms; unique greedy squad
 src/draft_room.py       pool, slots, paths

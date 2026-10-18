@@ -1,0 +1,10 @@
+[Unit]
+Description=NBA Fantasy: pull last night's box scores once the last game is over, then publish
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Projects/fantasy
+Environment=PATH=%h/.local/share/mise/shims:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/Projects/fantasy/.venv/bin/python scripts/refresh_season.py --morning --publish

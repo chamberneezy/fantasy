@@ -130,3 +130,24 @@ def test_feed_logs_read_side_and_opponent_and_skip_dnp() -> None:
     assert shaped["opp"].tolist() == ["UTA", "BOS"]
     assert shaped["home"].tolist() == [1, 1]
     assert shaped["to"].tolist() == [1.0, 2.0]
+
+
+def test_night_status_waits_for_the_last_game_then_for_every_box_score() -> None:
+    from datetime import datetime, timezone
+
+    import nba_feed
+
+    schedule = pd.DataFrame(
+        {
+            "game_id": ["g1", "g2"],
+            "date": ["2026-11-10", "2026-11-10"],
+            "tip_utc": ["2026-11-11T00:00:00Z", "2026-11-11T04:00:00Z"],  # 01:00 and 05:00 in Zurich
+        }
+    )
+    morning = datetime(2026, 11, 11, 6, 0, tzinfo=timezone.utc)  # 07:00 in Zurich
+    night = nba_feed.night_status(schedule, pd.DataFrame({"game_id": ["g1"]}), morning)
+    assert night["night"] == "2026-11-10"
+    assert night["due"] == datetime(2026, 11, 11, 6, 30, tzinfo=timezone.utc)
+    assert not night["done"] and night["missing"] == 1
+    assert nba_feed.night_status(schedule, pd.DataFrame({"game_id": ["g1", "g2"]}), morning)["done"]
+    assert nba_feed.night_status(schedule, pd.DataFrame(), datetime(2026, 11, 13, 6, tzinfo=timezone.utc))["done"]
