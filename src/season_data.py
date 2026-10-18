@@ -15,6 +15,7 @@ import injuries
 import matchup
 import nba_feed
 import schedule as slate
+import scouting
 from availability import _loose_key, name_key
 from data_loader import ProjectionLoader
 from draft_room import PROJECTIONS, _attach_double_doubles, _prepare_rookies
@@ -113,6 +114,7 @@ class SeasonData:
         self.context = context.Context(_stack(self.last_logs, self.logs), groups)
         self._groups = groups
         self._history: dict[str, np.ndarray | None] = {}
+        self._scout: scouting.Scout | None = None
         self._load_league()
 
     def _load_league(self) -> None:
@@ -268,6 +270,25 @@ class SeasonData:
             line["new_team"] = bool(len(last) and current and slate.nba_team(last["team"].iloc[-1]) != current)
         self._lines[key] = line
         return line
+
+    @property
+    def scout(self) -> scouting.Scout:
+        """Matchup detail. Reads the past seasons in ``history/`` on first use only."""
+        if self._scout is None:
+            history = self.feed_dir / nba_feed.HISTORY_DIR.name
+            older = [pd.read_csv(path, dtype={"game_id": str}) for path in sorted(history.glob("gamelogs_*.csv"))]
+            self._scout = scouting.Scout(
+                self.logs,
+                self.last_logs,
+                _stack(*older) if older else pd.DataFrame(),
+                self._groups,
+                nba_feed.SEASON,
+                nba_feed.LAST_SEASON,
+            )
+        return self._scout
+
+    def scout_detail(self, name: str, opp: str, home: bool) -> dict:
+        return self.scout.detail(self.player_id(name), slate.nba_team(opp), home)
 
     def logs_through(self) -> str | None:
         for logs in (self.logs, self.last_logs):

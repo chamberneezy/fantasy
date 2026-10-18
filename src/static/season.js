@@ -6,6 +6,9 @@ let error = "";
 let line = "";
 let day = "";
 let busy = false;
+// Matchup detail panels: which are open, and what the server sent for each.
+const scoutOpen = new Set();
+const scouts = {};
 
 function brand() {
   return `<a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, lab, and season."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
@@ -92,6 +95,87 @@ function pct(value) {
   return `${Math.round(value * 100)}%`;
 }
 
+const GROUP_NAMES = { G: "guards", F: "forwards", C: "centres" };
+
+function ordinal(n) {
+  const tail = n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th");
+  return `${n}${tail}`;
+}
+
+function scoutKey(row) {
+  return `${row.player_name}|${row.opp}|${row.home ? 1 : 0}`;
+}
+
+function shortLine(p) {
+  return `${stat(p.min, 0)} min · ${stat(p.pts)} pts · ${stat(p.reb)} reb · ${stat(p.ast)} ast · ${stat(p.fg3m)} 3s · ${stat(p.stl)} stl · ${stat(p.blk)} blk · ${stat(p.to)} to${p.fg_pct == null ? "" : ` · FG ${stat(p.fg_pct * 100)}%`}`;
+}
+
+function versusLine(v, o) {
+  const keys = [["pts", "pts"], ["reb", "reb"], ["ast", "ast"], ["fg3m", "3s"], ["stl", "stl"], ["blk", "blk"], ["to", "to"]];
+  const gaps = keys
+    .map(([key, label]) => ({ label, gap: v[key] - o[key], good: key === "to" ? v[key] < o[key] : v[key] > o[key] }))
+    .filter((row) => Math.abs(row.gap) >= 0.5)
+    .map((row) => `<span class="${row.good ? "up" : "down"}">${row.gap > 0 ? "+" : ""}${stat(row.gap)} ${row.label}</span>`);
+  if (v.fg_pct != null && o.fg_pct != null && Math.abs(v.fg_pct - o.fg_pct) >= 0.02) {
+    const gap = (v.fg_pct - o.fg_pct) * 100;
+    gaps.push(`<span class="${gap > 0 ? "up" : "down"}">${gap > 0 ? "+" : ""}${stat(gap)} FG%</span>`);
+  }
+  return gaps.length ? gaps.join(" · ") : "about his usual";
+}
+
+function scoutPanel(row) {
+  const s = scouts[scoutKey(row)];
+  if (!s) return `<div class="scout"><p class="slate-key">Reading the logs…</p></div>`;
+  if (s.error) return `<div class="scout"><p class="error">${s.error}</p></div>`;
+  const when = s.early ? `${s.team_basis}, last season. This season takes over once every team has 10 games.` : s.team_basis;
+  const chips = s.allowed.map((c) => {
+    const call = c.rank <= 10 ? "win" : c.rank >= 21 ? "hole" : "ok";
+    return `<li class="${call}"><span>${c.cat}</span><strong>${ordinal(c.rank)}</strong><em>${c.ratio > 0 ? "+" : ""}${Math.round(c.ratio * 100)}%</em></li>`;
+  }).join("");
+  const parts = [];
+  parts.push(`<p class="next-head">${s.opp} against ${GROUP_NAMES[s.group] || "his position"}</p>`);
+  if (chips) parts.push(`<ul class="cats scout-cats">${chips}</ul><p class="slate-key">1st = the kindest of 30 for you in that category; % = what ${s.opp} gives up per minute to ${GROUP_NAMES[s.group] || "the group"} against league average. From ${when}</p>`);
+  if (s.team) parts.push(`<p class="next-meta">Pace ${ordinal(s.team.pace_rank)} fastest · defence ${ordinal(s.team.drtg_rank)} softest (est. ${stat(s.team.drtg)} pts per 100)</p>`);
+  if (s.history) {
+    const v = s.history.versus;
+    parts.push(`<p class="next-meta"><strong>vs ${s.opp} since ${s.history.seasons[0]}:</strong> ${v.games} g · ${shortLine(v)}</p><p class="next-meta">Against his own average in those seasons: ${versusLine(v, s.history.overall)}${v.games < 6 ? " · small sample" : ""}</p>`);
+  } else {
+    parts.push(`<p class="next-meta">Never played ${s.opp} in the seasons on file.</p>`);
+  }
+  if (s.meetings.length) {
+    parts.push(`<p class="next-meta">Last meetings: ${s.meetings.map((m) => `${shortDate(m.date)}${String(m.date).slice(2, 4)} ${m.home ? "vs" : "@"} ${m.pts}/${m.reb}/${m.ast}, ${m.fg3m} 3s, ${m.stl} stl, ${m.blk} blk, ${m.to} to, FG ${m.fg}`).join(" · ")}</p>`);
+  }
+  if (s.splits && s.splits.home && s.splits.away) {
+    const side = (label, p) => `<span class="${s.splits.tonight === label ? "tonight" : ""}">${label === "home" ? "Home" : "Away"} ${p.games} g: ${stat(p.pts)} pts · ${stat(p.reb)} reb · ${stat(p.ast)} ast${p.fg_pct == null ? "" : ` · FG ${stat(p.fg_pct * 100)}%`}</span>`;
+    parts.push(`<p class="next-meta">${side("home", s.splits.home)} · ${side("away", s.splits.away)} <span class="slate-key">(${s.splits.basis}; tonight underlined)</span></p>`);
+  }
+  if (s.role) {
+    parts.push(`<p class="next-meta">Usage ${s.role.usage == null ? "—" : `${stat(s.role.usage)}%`} · true shooting ${s.role.ts == null ? "—" : `${stat(s.role.ts * 100)}%`} <span class="slate-key">(${s.role.basis})</span></p>`);
+  }
+  parts.push(`<p class="slate-key">Information only. The simulated week already uses a small, clamped opponent factor. No offensive rebounds in the free logs, so pace and defence are estimates; read the ranks.</p>`);
+  return `<div class="scout">${parts.join("")}</div>`;
+}
+
+function toggleScout(row) {
+  const key = `${row.name}|${row.opp}|${row.home}`;
+  if (scoutOpen.has(key)) {
+    scoutOpen.delete(key);
+    paint();
+    return;
+  }
+  scoutOpen.add(key);
+  paint();
+  if (scouts[key] && !scouts[key].error) return;
+  const query = new URLSearchParams({ name: row.name, opp: row.opp, home: row.home });
+  fetch(`/season/api/scout?${query}`)
+    .then((response) => response.json().then((payload) => (response.ok ? payload : { error: payload.error || "Could not read that." })))
+    .catch(() => ({ error: "Could not reach the pad." }))
+    .then((payload) => {
+      scouts[key] = payload;
+      paint();
+    });
+}
+
 function dayCard(card) {
   const title = `${card.dow} ${shortDate(card.date)} · ${card.league_games} NBA games · ${card.mine} of yours`;
   if (!card.playing.length) return `<div class="nexts dayline"><p class="next-head">${title}</p><p class="lede">Nobody on your 10 plays.</p></div>`;
@@ -102,7 +186,10 @@ function dayCard(card) {
       : `<button type="button" class="text" data-status="out" data-who="${row.player_name}">Mark out</button>`;
     const where = `${row.home ? "vs" : "@"} ${row.opp} · ${tip(row.tip_utc)}${row.b2b ? " · back-to-back" : ""} · ${row.positions}`;
     const head = `<span class="next-who"><em class="${row.seat ? "seat" : "seat sit"}">${row.seat || "Sit"}</em> ${row.player_name}</span><span class="next-meta">${where}</span>`;
-    if (!p) return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${row.why || "No NBA games on file yet, so no line."}</span></div><strong>—</strong></li>`;
+    const open = scoutOpen.has(scoutKey(row));
+    const scoutBtn = `<button type="button" class="text" data-scout="${row.player_name}" data-opp="${row.opp}" data-home="${row.home ? 1 : 0}" aria-expanded="${open}">${open ? "Hide matchup" : "Matchup"}</button>`;
+    const detail = open ? scoutPanel(row) : "";
+    if (!p) return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${row.why || "No NBA games on file yet, so no line."}</span><span class="next-meta">${scoutBtn}</span></div><strong>—</strong>${detail}</li>`;
     const numbers = `${stat(p.mp, 0)} min · ${stat(p.pts)} pts · ${stat(p.reb)} reb · ${stat(p.ast)} ast · ${stat(p.stl)} stl · ${stat(p.blk)} blk · ${stat(p.fg3m)} 3s · ${stat(p.to)} to · ${stat(p.pf)} pf · FG ${stat(p.fgm)}/${stat(p.fga)} · FT ${stat(p.ftm)}/${stat(p.fta)} · DD ${pct(p.dd)}`;
     const notes = [];
     if (row.chance != null && row.chance < 1) notes.push(`${pct(row.chance)} to play${row.why ? ` (${row.why})` : ""}`);
@@ -110,7 +197,7 @@ function dayCard(card) {
     if (p.new_team) notes.push("new team, last year’s role may not carry");
     if (row.costs.length) notes.push(`costs you ${row.costs.join(", ")}`);
     const worth = row.swing == null ? `${p.value > 0 ? "+" : ""}${stat(p.value)}` : `${row.swing > 0 ? "+" : ""}${stat(row.swing, 2)}`;
-    return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${numbers}</span><span class="next-meta">${notes.join(" · ") || `From ${p.basis}`}</span><span class="next-meta">${mark}</span></div><strong>${worth}</strong></li>`;
+    return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${numbers}</span><span class="next-meta">${notes.join(" · ") || `From ${p.basis}`}</span><span class="next-meta">${mark} · ${scoutBtn}</span></div><strong>${worth}</strong>${detail}</li>`;
   }).join("");
   const off = card.off.length ? `<p class="slate-key">No game: ${card.off.join(" · ")}</p>` : "";
   const key = card.matchup_aware
@@ -215,6 +302,11 @@ document.addEventListener("click", (event) => {
       busy = false;
       paint();
     });
+    return;
+  }
+  const scout = target.closest("[data-scout]");
+  if (scout) {
+    toggleScout({ name: scout.getAttribute("data-scout"), opp: scout.getAttribute("data-opp"), home: scout.getAttribute("data-home") });
     return;
   }
   const mark = target.closest("[data-status]");

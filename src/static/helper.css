@@ -559,6 +559,18 @@ input {
 .dayline li { grid-template-columns: 1fr auto; border-bottom: 1px solid var(--line); padding: 8px 0; }
 .dayline li div { display: grid; gap: 2px; }
 .dayline li strong { grid-row: auto; font-family: var(--display); font-size: 1.2rem; }
+.dayline .scout { grid-column: 1 / -1; display: grid; gap: 6px; margin-top: 8px; padding: 10px 12px; background: var(--pick); border: 1px solid var(--line); border-radius: 8px; }
+.dayline .scout p { margin: 0; }
+.dayline .scout .next-meta strong { font-family: var(--ui); font-size: inherit; color: var(--ink); }
+.scout-cats { grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 4px 0 0; }
+.dayline .scout-cats li { display: block; padding: 6px 8px; border-bottom: 1px solid var(--line); background: transparent; }
+.dayline .scout-cats strong { display: block; font-size: 1rem; color: var(--ink); }
+.scout-cats em { display: block; font-style: normal; color: var(--muted); font-size: 0.72rem; }
+.dayline .scout-cats .win strong { color: var(--nba-blue); }
+.dayline .scout-cats .hole strong { color: var(--nba-red); }
+.scout .up { color: var(--nba-blue); }
+.scout .down { color: var(--nba-red); }
+.scout .tonight { text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-width: 640px) {
   .sheet { padding: 0 14px 48px; }
@@ -568,4 +580,7 @@ input {
   .mark-hero { width: 120px; height: 120px; }
   .mark-hero.mark-wrap img { width: 110px; height: 110px; }
   .cats { grid-template-columns: repeat(2, 1fr); }
+  .scout-cats { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .dayline .scout-cats li { padding: 5px 4px; text-align: center; }
+  .dayline .scout { padding: 10px 8px; }
 }

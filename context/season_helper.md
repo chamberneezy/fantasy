@@ -19,6 +19,7 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 | Simulated week | `src/matchup.py` | 20,000 runs. Each player-game drawn from his own past games rescaled to tonight’s line. Chance per category, expected cats, win/tie/lose. |
 | Legal five + week plan | `src/lineup.py` | strict PG/SG/SF/PF/C. Opponent assumed to start best five by value. My five picked by swing in categories still in play; a player who costs more than he adds sits. |
 | Add plans | `src/season.py` `stream_plans` | only names nobody owns, 20+ NBA games on file; drops limited to my 3 lowest season values, never Hezonja; top 5 replayed through the simulation. |
+| Matchup detail panel | `src/scouting.py` | "Matchup" on each day-card player, `/season/api/scout`. Opponent rank of 30 per category vs his position group (per minute allowed vs league), pace and defensive-rating ranks (possessions estimated without OREB, so read ranks), his games vs that team since 2020-21 against his own average, last 3 meetings, home/away split, usage and TS%. Last season until every team has 10 games. Information only: it does not move the simulation. |
 | Data glue | `src/season_data.py` | reads feed + pasted rosters + matchups; cached on file mtimes. |
 
 ## Files Mario supplies (pasted by hand, never scraped)
@@ -58,7 +59,7 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 
 ## Next, in the order I would do it
 
-1. **Matchup detail panel** on each player in the day card (Mario asked; confirmed possible on the free feed, awaiting his go): opponent rank vs position per category, pace / defensive rating, his history vs that team (six seasons on disk), home/away split, likely defender (`leagueseasonmatchups`), usage / TS%. Label early-season numbers as last year’s.
+1. ~~Matchup detail panel~~ **built 18 Oct** (`src/scouting.py`). Not in it: likely defender (`leagueseasonmatchups` is a per-player network call; add to the refresh if wanted).
 2. **Rest of the matchup schedule** into `matchups.csv`, and Yahoo’s joined-week dates.
 3. **Refit the outlook** (`scripts/refresh_season.py --refit`) once ~3 weeks of 2026-27 are in. The CLI exists; the timer does not refit.
 4. **Backtest log (planned phase 8):** store each day’s projection and compare with the box score weekly, so trust is measured in-season.

@@ -106,6 +106,7 @@ src/daily.py            per-game line: per-minute rates × minutes, season-line 
 src/season_data.py      reads data/season/ (feed, pasted rosters, matchups) for the pad
 src/context.py          opponent / home factors and per-player back-to-back rest, from logs
 src/injuries.py         ESPN free injury feed → chance to play; manual mark beats it
+src/scouting.py         matchup detail panel: opponent ranks by position, pace/DRtg, history vs team, splits, usage/TS%; info only
 src/matchup.py          simulated week: 12-cat totals, chance per cat, swing weights
 src/lineup.py           legal five (strict PG/SG/SF/PF/C) and the week plan
 src/outlook.py          3-season + age model for the season pad's anchor line (data/season/outlook.csv); not the draft board

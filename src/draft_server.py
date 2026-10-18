@@ -20,6 +20,7 @@ from yahoo_auction import DraftSession, load_session, save_session
 from math_engine import ALL_CATEGORIES
 import nba_feed
 import season as season_pad
+import season_data
 
 app = Flask(__name__, template_folder=str(SRC / "templates"), static_folder=str(SRC / "static"))
 SESSION: dict[str, DraftSession | None] = {"current": None}
@@ -393,6 +394,17 @@ def season_state():
     if session is None:
         return jsonify(season_pad.idle_season())
     return jsonify(_season_state(session))
+
+
+@app.get("/season/api/scout")
+def season_scout():
+    """Matchup detail for one player against one opponent. Information only."""
+    name = str(request.args.get("name") or "")
+    opp = str(request.args.get("opp") or "")
+    if not name or not opp:
+        return jsonify({"error": "Pick a player and an opponent."}), 400
+    data = season_data.load()
+    return jsonify({"player_name": name, **data.scout_detail(name, opp, request.args.get("home") == "1")})
 
 
 @app.post("/season/api/start")
