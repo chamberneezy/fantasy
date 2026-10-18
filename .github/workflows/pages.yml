@@ -22,6 +22,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The season page shares its script and styles with the laptop pad.
+      - name: Copy the season page assets
+        run: |
+          cp src/static/season.js docs/js/season.js
+          cp src/static/helper.css docs/css/season.css
+      # This week's data: one commit on the season-data branch, replaced by the laptop after each refresh.
+      - name: Fetch the published week
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: season-data
+          path: docs/data/season
+      - name: Drop the data checkout's git folder
+        run: rm -rf docs/data/season/.git
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

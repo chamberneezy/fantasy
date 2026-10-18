@@ -1,5 +1,9 @@
 const app = document.querySelector("#app");
-const MARK = "/static/mark.png";
+// GitHub Pages sets this: a read-only copy that reads one JSON file per day.
+const STATIC = window.SEASON_STATIC || null;
+const MARK = STATIC ? "img/mark.png" : "/static/mark.png";
+const READ_ONLY = "This is the read-only copy. Add, drop and lineup changes happen on the laptop pad.";
+let published = null;
 
 let state = { started: false, categories: [] };
 let error = "";
@@ -13,10 +17,21 @@ let view = "today";
 const scouts = {};
 
 function brand() {
-  return `<a class="brand" href="/" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, lab, and season."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
+  return `<a class="brand" href="${STATIC ? "index.html" : "/"}" data-home-reset aria-label="NBA Fantasy home. Clears helper, mock, lab, and season."><span class="mark-wrap"><img class="mark" src="${MARK}" width="64" height="64" alt=""></span><span class="wordmark">NBA Fantasy</span></a>`;
+}
+
+async function staticApi(path, body) {
+  if (body) throw new Error(READ_ONLY);
+  if (!published) published = await (await fetch(`${STATIC.base}index.json`, { cache: "no-cache" })).json();
+  if (path !== "/season/api/state") throw new Error(READ_ONLY);
+  if (day && !published.days.includes(day)) throw new Error("Only this week is published. Earlier and later weeks are on the laptop pad.");
+  const response = await fetch(`${STATIC.base}${day || published.default}.json`, { cache: "no-cache" });
+  if (!response.ok) throw new Error("This day is not published yet.");
+  return response.json();
 }
 
 async function api(path, body) {
+  if (STATIC) return staticApi(path, body);
   const response = await fetch(day ? `${path}?date=${day}` : path, {
     method: body ? "POST" : "GET",
     headers: body ? { "Content-Type": "application/json" } : undefined,
@@ -28,7 +43,10 @@ async function api(path, body) {
 }
 
 function banner() {
-  return `<header class="banner"><div class="banner-inner">${brand()}<nav class="links"><a href="/helper">Helper</a><a href="/season">Season</a><a href="/draft">Mock</a><a href="/lab">Lab</a>${window.themeToggleHtml ? window.themeToggleHtml() : ""}</nav></div></header>`;
+  const links = STATIC
+    ? `<a href="helper.html">Helper</a><a href="season.html">Season</a><a href="draft.html">Mock</a>`
+    : `<a href="/helper">Helper</a><a href="/season">Season</a><a href="/draft">Mock</a><a href="/lab">Lab</a>`;
+  return `<header class="banner"><div class="banner-inner">${brand()}<nav class="links">${links}${window.themeToggleHtml ? window.themeToggleHtml() : ""}</nav></div></header>`;
 }
 
 function cats() {
@@ -73,8 +91,9 @@ function calendar() {
     if (!cell) return `<td class="${cls}"></td>`;
     return `<td class="${cls} game${cell.b2b ? " b2b" : ""}${cell.seat ? " start" : " bench"}">${cell.home ? "" : "@"}${cell.opp}</td>`;
   }).join("")}</tr>`).join("");
-  const prev = cal.prev ? `<button type="button" class="text" data-day="${cal.prev}">Earlier</button>` : "";
-  const next = cal.next ? `<button type="button" class="text" data-day="${cal.next}">Later</button>` : "";
+  const open = (iso) => iso && (!STATIC || (published && published.days.includes(iso)));
+  const prev = open(cal.prev) ? `<button type="button" class="text" data-day="${cal.prev}">Earlier</button>` : "";
+  const next = open(cal.next) ? `<button type="button" class="text" data-day="${cal.next}">Later</button>` : "";
   return `<div class="slate"><div class="slate-head"><p class="next-head">Week ${cal.week} · ${shortDate(cal.start)}–${shortDate(cal.end)} · up to ${cal.starts_left} starts left</p><span>${prev}${next}</span></div><div class="slate-scroll"><table><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div><p class="slate-key">Number = your players with a game. Red = more than 5, someone sits. Bold = start, faint = sit. Underline = second night of a back-to-back.</p></div>${dayCard(cal.day)}`;
 }
 
@@ -157,6 +176,11 @@ function toggleScout(row) {
   scoutOpen.add(key);
   paint();
   if (scouts[key] && !scouts[key].error) return;
+  if (STATIC) {
+    scouts[key] = (state.scouts || {})[key] || { error: "No matchup detail published for this game." };
+    paint();
+    return;
+  }
   const query = new URLSearchParams({ name: row.name, opp: row.opp, home: row.home });
   fetch(`/season/api/scout?${query}`)
     .then((response) => response.json().then((payload) => (response.ok ? payload : { error: payload.error || "Could not read that." })))
@@ -172,9 +196,11 @@ function dayCard(card) {
   if (!card.playing.length) return `<div class="nexts dayline"><p class="next-head">${title}</p><p class="lede">Nobody on your 10 plays.</p></div>`;
   const rows = card.playing.map((row) => {
     const p = row.line;
-    const mark = row.status
-      ? `<button type="button" class="text" data-status="clear" data-who="${row.player_name}">Clear ${row.status}</button>`
-      : `<button type="button" class="text" data-status="out" data-who="${row.player_name}">Mark out</button>`;
+    const mark = STATIC
+      ? ""
+      : row.status
+      ? `<button type="button" class="text" data-status="clear" data-who="${row.player_name}">Clear ${row.status}</button> · `
+      : `<button type="button" class="text" data-status="out" data-who="${row.player_name}">Mark out</button> · `;
     const where = `${row.home ? "vs" : "@"} ${row.opp} · ${tip(row.tip_utc)}${row.b2b ? " · back-to-back" : ""} · ${row.positions}`;
     const head = `<span class="next-who"><em class="${row.seat ? "seat" : "seat sit"}">${row.seat || "Sit"}</em> ${row.player_name}</span><span class="next-meta">${where}</span>`;
     const open = scoutOpen.has(scoutKey(row));
@@ -188,7 +214,7 @@ function dayCard(card) {
     if (p.new_team) notes.push("new team, last year’s role may not carry");
     if (row.costs.length) notes.push(`costs you ${row.costs.join(", ")}`);
     const worth = row.swing == null ? `${p.value > 0 ? "+" : ""}${stat(p.value)}` : `${row.swing > 0 ? "+" : ""}${stat(row.swing, 2)}`;
-    return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${numbers}</span><span class="next-meta">${notes.join(" · ") || `From ${p.basis}`}</span><span class="next-meta">${mark} · ${scoutBtn}</span></div><strong>${worth}</strong>${detail}</li>`;
+    return `<li class="${row.seat ? "" : "benched"}"><div>${head}<span class="next-meta">${numbers}</span><span class="next-meta">${notes.join(" · ") || `From ${p.basis}`}</span><span class="next-meta">${mark}${scoutBtn}</span></div><strong>${worth}</strong>${detail}</li>`;
   }).join("");
   const off = card.off.length ? `<p class="slate-key">No game: ${card.off.join(" · ")}</p>` : "";
   const key = card.matchup_aware
@@ -299,7 +325,7 @@ function moves(sh) {
       const sit = m.sit ? `<span class="next-meta">Out of ${m.seat}: ${m.sit} — ${m.sit_why}</span>` : "";
       return `<li><em class="seat">${m.seat}</em><div><span>${start} <span class="next-meta">${m.start_why}</span></span>${sit}</div></li>`;
     }).join("");
-    parts.push(`<div class="moves"><p class="brief-sub">${sh.moves.length} change${sh.moves.length > 1 ? "s" : ""} for ${dow(sh.date)} ${shortDate(sh.date)}</p><ul>${rows}</ul><button type="button" class="text" id="set-lineup">Done in Yahoo — mark these as set</button></div>`);
+    parts.push(`<div class="moves"><p class="brief-sub">${sh.moves.length} change${sh.moves.length > 1 ? "s" : ""} for ${dow(sh.date)} ${shortDate(sh.date)}</p><ul>${rows}</ul>${STATIC ? "" : `<button type="button" class="text" id="set-lineup">Done in Yahoo — mark these as set</button>`}</div>`);
   } else {
     parts.push(`<p class="next-meta moves-ok">Lineup is right for ${dow(sh.date)} ${shortDate(sh.date)} — no changes.</p>`);
   }
@@ -322,7 +348,7 @@ function myTeam() {
     const whole = view === "last" || (view === "today" && r.banked);
     const slot = r.best !== r.slot && !sh.past ? `${r.slot}<span class="to">→ ${r.best}</span>` : r.slot;
     const game = r.game ? `${r.game.home ? "" : "@"}${r.game.opp}<span>${r.banked ? "final" : tip(r.game.tip_utc).replace(/^\S+\s/, "")}</span>` : "—";
-    const drop = r.protected ? "" : `<button type="button" class="text drop" data-drop="${r.player_name}">Drop</button>`;
+    const drop = r.protected || STATIC ? "" : `<button type="button" class="text drop" data-drop="${r.player_name}">Drop</button>`;
     const cls = [r.slot === "BN" ? "bn" : "", r.game ? "" : "idle"].join(" ").trim();
     return `<tr class="${cls}"><td class="slot">${slot}</td><th scope="row">${r.player_name}${tag(r.injury)}<span>${r.team || "—"} · ${r.positions}${drop}</span></th><td class="opp">${game}</td>${SHEET_COLS.map(([, key]) => `<td>${cell(line, key, whole)}</td>`).join("")}</tr>`;
   }).join("");
@@ -336,8 +362,21 @@ function myTeam() {
   return `<div class="slate team"><div class="slate-head"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play</p></div>${moves(sh)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key}</p></div>`;
 }
 
+function publishedLine() {
+  if (!published) return "";
+  const when = new Date(published.published_at).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  return `<p class="slate-key">Read-only copy, published ${when} from the laptop pad (after each refresh at 08:00, 18:00 and 23:30). Changes to your roster or lineup are made there.</p>`;
+}
+
 function desk() {
-  return `${banner()}<div class="sheet">${brief()}${matchupCard()}${myTeam()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}<form class="feed" id="season-feed"><input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="name · add or drop" value="${line.replace(/"/g, "&quot;")}"></form>${error ? `<p class="error">${error}</p>` : ""}<div class="close season-acts"><button type="button" class="me" id="do-add">Add</button><button type="button" class="sold" id="do-drop">Drop</button></div>${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>${feedLine()}</div>`;
+  const errorLine = error ? `<p class="error">${error}</p>` : "";
+  const controls = STATIC
+    ? errorLine
+    : `<form class="feed" id="season-feed"><input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="name · add or drop" value="${line.replace(/"/g, "&quot;")}"></form>${errorLine}<div class="close season-acts"><button type="button" class="me" id="do-add">Add</button><button type="button" class="sold" id="do-drop">Drop</button></div>`;
+  const actions = STATIC
+    ? publishedLine()
+    : `<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>`;
+  return `${banner()}<div class="sheet">${brief()}${matchupCard()}${myTeam()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}${controls}${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}${actions}${feedLine()}</div>`;
 }
 
 function paint() {

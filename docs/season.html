@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem("nba-fantasy-theme") === "dark" ? "dark" : "light";
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="theme-color" content="#f6f8fc">
+  <title>NBA Fantasy season</title>
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/mark.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- season.css and season.js are copied from src/static/ by the Pages workflow; the week's data comes from the season-data branch. -->
+  <link rel="stylesheet" href="css/season.css?v=pages">
+  <link rel="stylesheet" href="css/motion.css?v=apex">
+</head>
+<body>
+  <main id="app"></main>
+  <script>window.SEASON_STATIC = { base: "data/season/" };</script>
+  <script src="js/theme.js?v=apex"></script>
+  <script src="js/motion.js?v=apex"></script>
+  <script src="js/season.js?v=pages"></script>
+</body>
+</html>
