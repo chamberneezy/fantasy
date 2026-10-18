@@ -42,6 +42,8 @@ systemctl --user list-timers nba-fantasy-refresh.timer
 journalctl --user -u nba-fantasy-refresh -n 30
 ```
 
+**GitHub Pages copy:** https://chamberneezy.github.io/fantasy/season.html — read-only, this week only. After each refresh the same service runs `scripts/publish_season.py`: `export_season.py` writes every day's state + matchup panels to `data/season_export/` (git-ignored), the result is force-pushed as the single commit on branch `season-data` (skipped when unchanged), and `gh workflow run pages.yml --ref cursor/3rd-league-draft-dollars` rebuilds Pages. The workflow copies `src/static/season.js` → `docs/js/season.js` and `helper.css` → `docs/css/season.css`, and checks `season-data` out into `docs/data/season/`. `docs/season.html` sets `window.SEASON_STATIC`, which hides add/drop/lineup/refresh. The repo is public, so the copy (your roster, the pasted league rosters) is public. Laptop off = no updates.
+
 Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_older.csv`, `outlook.csv`. Git-ignored because every refresh rewrites them: `feed.json`, `injuries.csv`, `players.csv`, `schedule.csv`, `gamelogs_2026-27.csv`. A fresh clone needs one refresh.
 
 ## Measured, so do not re-argue without new data
