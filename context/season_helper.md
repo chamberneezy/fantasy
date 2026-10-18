@@ -28,19 +28,19 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
 - `data/season/fantasy_weeks.csv` — optional `week,start,end` override. Not present. Week 1 = **20–25 Oct** (confirmed). Default after that is Monday–Sunday, but Yahoo’s week 21 ends 28 Mar, so two calendar weeks get joined somewhere before week 19 — **dates still needed** (matters from about February).
 
-## Rebuild commands
+## Refresh (automated)
+
+A systemd user timer runs `scripts/refresh_season.py` daily at **08:00** (box scores final), **18:00** and **23:30** (injury news before US tip-off), local time. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
 
 ```
-PY=.venv/bin/python
-# daily refresh (same as the page button)
-$PY -c "import sys; sys.path.insert(0,'src'); import nba_feed; print(nba_feed.refresh())"
-# past seasons 2020-21 … 2024-25, team by team (~10 min, once; league-wide pull 500s for old seasons)
-$PY -c "import sys; sys.path.insert(0,'src'); import nba_feed; print(nba_feed.pull_history())"
-# refit the outlook and rewrite outlook.csv (not wired to the Refresh button yet)
-$PY -c "import sys; sys.path.insert(0,'src'); import pandas as pd, nba_feed, outlook; print(outlook.build(nba_feed.HISTORY_DIR, pd.read_csv(nba_feed.logs_path(nba_feed.LAST_SEASON)), nba_feed.LAST_SEASON, nba_feed.SEASON, nba_feed.OUTLOOK_PATH))"
+.venv/bin/python scripts/refresh_season.py            # same pull as the page button
+.venv/bin/python scripts/refresh_season.py --history  # past seasons 2020-21 … 2024-25, once (~10 min)
+.venv/bin/python scripts/refresh_season.py --refit    # refit the outlook, rewrite outlook.csv
+systemctl --user list-timers nba-fantasy-refresh.timer
+journalctl --user -u nba-fantasy-refresh -n 30
 ```
 
-`data/season/` is ~30 MB of CSV and is **not** in `.gitignore`. Decide before committing whether it goes in.
+Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_older.csv`, `outlook.csv`. Git-ignored because every refresh rewrites them: `feed.json`, `injuries.csv`, `players.csv`, `schedule.csv`, `gamelogs_2026-27.csv`. A fresh clone needs one refresh.
 
 ## Measured, so do not re-argue without new data
 
@@ -60,7 +60,7 @@ $PY -c "import sys; sys.path.insert(0,'src'); import pandas as pd, nba_feed, out
 
 1. **Matchup detail panel** on each player in the day card (Mario asked; confirmed possible on the free feed, awaiting his go): opponent rank vs position per category, pace / defensive rating, his history vs that team (six seasons on disk), home/away split, likely defender (`leagueseasonmatchups`), usage / TS%. Label early-season numbers as last year’s.
 2. **Rest of the matchup schedule** into `matchups.csv`, and Yahoo’s joined-week dates.
-3. **Wire `outlook.build` and `pull_history`** into Refresh (or a CLI in `scripts/`), and refit once ~3 weeks of 2026-27 are in.
+3. **Refit the outlook** (`scripts/refresh_season.py --refit`) once ~3 weeks of 2026-27 are in. The CLI exists; the timer does not refit.
 4. **Backtest log (planned phase 8):** store each day’s projection and compare with the box score weekly, so trust is measured in-season.
 5. **League table on the page** (currently scratch only) and comeback lines for Kyrie / VanVleet / Lillard if Mario wants them.
 6. **Not built:** teammate boost when a starter sits; blowout risk (needs betting lines → API key); real banked lineups (past days assume best-by-value five); multi-add sequencing across the week; Yahoo eligibility for free agents.

@@ -109,6 +109,7 @@ src/injuries.py         ESPN free injury feed → chance to play; manual mark be
 src/matchup.py          simulated week: 12-cat totals, chance per cat, swing weights
 src/lineup.py           legal five (strict PG/SG/SF/PF/C) and the week plan
 src/outlook.py          3-season + age model for the season pad's anchor line (data/season/outlook.csv); not the draft board
+scripts/refresh_season.py  season feed refresh (systemd timer: scripts/systemd/, 08:00 / 18:00 / 23:30)
 src/lab.py              headless 2k/10k rooms; unique greedy squad
 src/draft_room.py       pool, slots, paths
 src/draft_server.py     Flask (`/` home)

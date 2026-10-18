@@ -1,0 +1,12 @@
+[Unit]
+Description=NBA Fantasy: refresh season feed after games and before tip-off
+
+[Timer]
+# 08:00 box scores are final; 18:00 and 23:30 pick up injury news before US tip-off.
+OnCalendar=*-*-* 08,18:00
+OnCalendar=*-*-* 23:30
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

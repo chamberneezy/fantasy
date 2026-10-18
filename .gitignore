@@ -6,3 +6,10 @@ venv/
 .DS_Store
 data/*_session.json
 data/lab_report.json
+
+# season feed: rewritten by every refresh (scripts/refresh_season.py)
+data/season/feed.json
+data/season/injuries.csv
+data/season/players.csv
+data/season/schedule.csv
+data/season/gamelogs_2026-27.csv

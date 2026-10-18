@@ -1,0 +1,9 @@
+[Unit]
+Description=NBA Fantasy: refresh season feed (NBA + ESPN injuries)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Projects/fantasy
+ExecStart=%h/Projects/fantasy/.venv/bin/python scripts/refresh_season.py
