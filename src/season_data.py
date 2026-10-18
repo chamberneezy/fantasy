@@ -169,6 +169,10 @@ class SeasonData:
             self._history[key] = games[list(matchup.STATS)].to_numpy(dtype=float) if len(games) else None
         return self._history[key]
 
+    def season_games(self, name: str) -> pd.DataFrame:
+        """His games this season, oldest first."""
+        return self._games(self.logs, self.player_id(name))
+
     def games_on_file(self, name: str) -> int:
         player_id = self.player_id(name)
         return len(self._games(self.last_logs, player_id)) + len(self._games(self.logs, player_id))

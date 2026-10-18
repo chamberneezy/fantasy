@@ -13,6 +13,7 @@ import lineup
 import matchup
 import schedule as slate
 import season_data
+import team_sheet
 from coach import match_player
 from availability import attach_games_forecast, name_key
 from draft_room import (
@@ -292,6 +293,7 @@ class SeasonSession:
         grid["prev"] = data.weeks[position - 1]["start"].isoformat() if position else None
         grid["next"] = data.weeks[position + 1]["start"].isoformat() if position + 1 < len(data.weeks) else None
         grid["day"] = self._day_card(chosen, grid, plan)
+        grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, PROTECTED)
         grid["today"] = now.isoformat()
         grid["matchup"] = self._matchup_card(plan)
         grid["plans"] = self.stream_plans(week, now, plan) if week is slate.week_for(now, data.weeks) else []
@@ -331,6 +333,45 @@ class SeasonSession:
         order = {seat: number for number, seat in enumerate(lineup.SEATS)}
         playing.sort(key=lambda row: (row["seat"] is None, order.get(row["seat"], 9), -(row["swing"] or 0)))
         return {**grid["days"][index], "playing": playing, "off": off, "matchup_aware": bool(weights)}
+
+    def brief(self, today: date | None = None) -> dict | None:
+        """The morning read for today's week. ``None`` until the schedule is pulled."""
+        data = self.data
+        if not data.weeks:
+            return None
+        now = today or league_today()
+        week = slate.week_for(now, data.weeks)
+        return team_sheet.brief(self, self.week_plan(week, now), week, now)
+
+    def set_lineup(self, day: date, today: date | None = None) -> None:
+        """Seat the pad's five for ``day``, as you set it in Yahoo. Everyone else to the bench."""
+        data = self.data
+        if not data.weeks:
+            raise ValueError("No schedule yet. Refresh data first.")
+        now = today or league_today()
+        if day < now:
+            raise ValueError("That day is played. Set today or a later day.")
+        week = slate.week_for(day, data.weeks)
+        chosen = self.week_plan(week, now)["lineups"].get(day.isoformat(), {})
+        seat_of = {name: seat for seat, name in chosen.items()}
+        # Yahoo has five bench spots, so on a light day the idle names fill the empty starts.
+        # Whoever already sits in an empty seat keeps it; then the first eligible name.
+        idle = [seat for seat in self.roster if seat["player"]["player_name"] not in seat_of]
+        for slot_id, label in SLOTS:
+            if label == "BN" or slot_id in chosen:
+                continue
+            keeper = next((seat for seat in idle if seat["slot_id"] == slot_id), None) or next(
+                (seat for seat in idle if eligible_for_slot(self._positions(seat["player"]), label)), None
+            )
+            if keeper:
+                seat_of[keeper["player"]["player_name"]] = slot_id
+                idle.remove(keeper)
+        bench = [slot_id for slot_id, label in SLOTS if label == "BN"]
+        if len(idle) > len(bench):
+            raise ValueError("Too many names for the bench. Check positions in Yahoo.")
+        for seat in self.roster:
+            name = seat["player"]["player_name"]
+            seat["slot_id"] = seat_of.get(name) or bench.pop(0)
 
     def _matchup_card(self, plan: dict) -> dict | None:
         result = plan.get("result")
@@ -613,6 +654,7 @@ class SeasonSession:
         data = self.data
         return {
             "calendar": self.calendar(day),
+            "brief": self.brief(),
             "feed": {
                 "fetched_at": data.meta.get("fetched_at"),
                 "errors": data.meta.get("errors") or {},

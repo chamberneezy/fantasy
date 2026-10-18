@@ -8,6 +8,8 @@ let day = "";
 let busy = false;
 // Matchup detail panels: which are open, and what the server sent for each.
 const scoutOpen = new Set();
+// My Team table: which stat line the columns show.
+let view = "today";
 const scouts = {};
 
 function brand() {
@@ -38,17 +40,6 @@ function cats() {
     const shown = value == null ? "—" : (value > 0 ? `+${value.toFixed(1)}` : value.toFixed(1));
     return `<li class="${call}"><span>${cat}</span><strong>${shown}</strong></li>`;
   }).join("")}</ul>`;
-}
-
-function roster() {
-  const rows = state.roster || [];
-  const il = state.il_enabled ? (state.il || []) : [];
-  return `<ul class="wallet season-roster">${rows.map((row) => {
-    const games = row.games == null ? "—" : `${row.games} g`;
-    const ilBtn = state.il_enabled ? `<button type="button" class="text" data-il="${row.player_name}">IL</button>` : "";
-    const dropBtn = row.protected ? "" : `<button type="button" class="text" data-drop="${row.player_name}">Drop</button>`;
-    return `<li><span>${row.label} ${row.player_name}${row.unlisted ? " · $1" : ""}</span><span>${games}${ilBtn}${dropBtn}</span></li>`;
-  }).join("")}</ul>${il.length ? `<p class="next-head">IL</p><ul class="wallet">${il.map((row) => `<li><span>${row.slot_id} ${row.player_name}</span><button type="button" class="text" data-activate="${row.player_name}">Activate</button></li>`).join("")}</ul>` : ""}`;
 }
 
 function streamers() {
@@ -231,8 +222,122 @@ function feedLine() {
   return `<p class="slate-key">NBA data pulled ${when} · ${feed.games_logged || 0} player-games this season${failed.length ? ` · failed: ${failed.join(", ")}` : ""}</p>`;
 }
 
+const VIEWS = [["today", "Tonight"], ["last", "Last game"], ["l7", "7 days"], ["season", "Season"], ["proj", "Proj."]];
+const SHEET_COLS = [["MIN", "mp"], ["FG%", "fg_pct"], ["FT%", "ft_pct"], ["3PM", "fg3m"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["STL", "stl"], ["BLK", "blk"], ["TO", "to"], ["PF", "pf"], ["DD", "dd"]];
+
+function dow(iso) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString([], { weekday: "short" });
+}
+
+function rate(value) {
+  return value == null ? "—" : value.toFixed(3).replace(/^0/, "");
+}
+
+function cell(line, key, whole) {
+  if (!line) return "—";
+  const value = line[key];
+  if (value == null) return "—";
+  if (key === "fg_pct" || key === "ft_pct") return rate(value);
+  if (key === "mp") return Math.round(value);
+  if (key === "dd") return whole ? value : value.toFixed(2).replace(/^0/, "");
+  return whole ? value : value.toFixed(1);
+}
+
+function boxLine(p) {
+  const bits = [`${p.pts} pts`, `${p.reb} reb`, `${p.ast} ast`];
+  if (p.fg3m) bits.push(`${p.fg3m} 3s`);
+  if (p.stl) bits.push(`${p.stl} stl`);
+  if (p.blk) bits.push(`${p.blk} blk`);
+  bits.push(`${p.to} to`, `FG ${p.fgm}/${p.fga}`);
+  return bits.join(" · ");
+}
+
+function brief() {
+  const b = state.brief;
+  if (!b) return "";
+  const head = `${dow(b.today)} ${shortDate(b.today)} · Week ${b.week}${b.opponent ? ` vs ${b.opponent}` : ""}`;
+  const parts = [`<p class="next-head">${head}</p>`];
+  if (!b.started) {
+    parts.push(`<p class="next-meta">Week ${b.week} starts ${dow(b.starts_on)} ${shortDate(b.starts_on)}</p>`);
+  } else if (b.so_far) {
+    const f = b.so_far;
+    parts.push(`<p class="brief-score">So far <strong>${f.won}–${f.lost}–${f.tied}</strong> <span class="next-meta">(won–lost–tied, as the pad seated your five)</span></p>`);
+    parts.push(`<ul class="cats brief-cats">${f.cats.map((c) => {
+      const digits = c.cat.includes("%") ? 3 : 0;
+      return `<li class="${c.call}"><span>${c.cat}</span><strong>${c.cat.includes("%") ? rate(c.mine) : stat(c.mine, digits)}</strong><em>${c.cat.includes("%") ? rate(c.theirs) : stat(c.theirs, digits)}</em></li>`;
+    }).join("")}</ul>`);
+  }
+  if (b.last_night.length || b.no_show.length) {
+    const rows = b.last_night.map((p) => `<li><span class="next-who">${p.player_name}</span><span class="next-meta">${boxLine(p)}</span></li>`).join("");
+    const dnp = b.no_show.length ? `<li><span class="next-meta">Had a game, did not play: ${b.no_show.join(", ")}</span></li>` : "";
+    parts.push(`<p class="brief-sub">Last night · ${dow(b.yesterday)} ${shortDate(b.yesterday)}</p><ul class="brief-list">${rows}${dnp}</ul>`);
+  }
+  if (b.hurt.length) {
+    parts.push(`<p class="brief-sub">Injuries</p><ul class="brief-list">${b.hurt.map((h) => `<li><span class="next-meta"><b class="inj">${h.short}</b> ${h.player_name}${h.part ? ` · ${h.part}` : ""}${h.back ? ` · back ~${shortDate(h.back)}` : ""}</span></li>`).join("")}</ul>`);
+  }
+  if (b.ahead.length) {
+    const days = b.ahead.map((d) => {
+      const note = d.sits ? `${d.sits} sit${d.sits > 1 ? "" : "s"}` : d.empty && d.games ? `${d.empty} empty` : d.games ? "full" : "no games";
+      const cls = d.sits ? "busy" : d.empty >= 2 ? "light" : "";
+      return `<button type="button" class="day-chip ${cls}" data-day="${d.date}"><span>${d.dow} ${shortDate(d.date)}</span><strong>${d.games}</strong><em>${note}</em></button>`;
+    }).join("");
+    parts.push(`<p class="brief-sub">Your games this week</p><div class="day-chips">${days}</div><p class="slate-key">Light days (2+ empty seats) are where an add pays most. Tap a day to see its lineup.</p>`);
+  }
+  return `<div class="nexts brief">${parts.join("")}</div>`;
+}
+
+function tag(injury) {
+  return injury ? ` <b class="inj" title="${injury.status}${injury.part ? ` · ${injury.part}` : ""}">${injury.short}</b>` : "";
+}
+
+function moves(sh) {
+  if (sh.past) return `<p class="slate-key">Played. The table shows final lines for those who played.</p>`;
+  const parts = [];
+  if (sh.moves.length) {
+    const rows = sh.moves.map((m) => {
+      const start = m.start ? `Start <strong>${m.start}</strong>` : "Leave empty";
+      const sit = m.sit ? `<span class="next-meta">Out of ${m.seat}: ${m.sit} — ${m.sit_why}</span>` : "";
+      return `<li><em class="seat">${m.seat}</em><div><span>${start} <span class="next-meta">${m.start_why}</span></span>${sit}</div></li>`;
+    }).join("");
+    parts.push(`<div class="moves"><p class="brief-sub">${sh.moves.length} change${sh.moves.length > 1 ? "s" : ""} for ${dow(sh.date)} ${shortDate(sh.date)}</p><ul>${rows}</ul><button type="button" class="text" id="set-lineup">Done in Yahoo — mark these as set</button></div>`);
+  } else {
+    parts.push(`<p class="next-meta moves-ok">Lineup is right for ${dow(sh.date)} ${shortDate(sh.date)} — no changes.</p>`);
+  }
+  if (sh.benched.length) {
+    parts.push(`<p class="next-meta">Sits with a game: ${sh.benched.map((b) => `${b.player_name} ${b.game} — ${b.why}`).join(" · ")}</p>`);
+  }
+  if (sh.playing && sh.empty.length) {
+    parts.push(`<p class="next-meta">Empty seat${sh.empty.length > 1 ? "s" : ""}: ${sh.empty.join(", ")} — nobody eligible plays.</p>`);
+  }
+  return parts.join("");
+}
+
+function myTeam() {
+  const sh = state.calendar && state.calendar.sheet;
+  if (!sh) return "";
+  const tabs = VIEWS.map(([key, label]) => `<button type="button" class="text${view === key ? " on" : ""}" data-view="${key}" aria-pressed="${view === key}">${label}</button>`).join("");
+  const head = `<tr><th>Slot</th><th class="pname">Player</th><th>Opp</th>${SHEET_COLS.map(([label]) => `<th>${label}</th>`).join("")}</tr>`;
+  const body = sh.rows.map((r) => {
+    const line = r.stats[view];
+    const whole = view === "last" || (view === "today" && r.banked);
+    const slot = r.best !== r.slot && !sh.past ? `${r.slot}<span class="to">→ ${r.best}</span>` : r.slot;
+    const game = r.game ? `${r.game.home ? "" : "@"}${r.game.opp}<span>${r.banked ? "final" : tip(r.game.tip_utc).replace(/^\S+\s/, "")}</span>` : "—";
+    const drop = r.protected ? "" : `<button type="button" class="text drop" data-drop="${r.player_name}">Drop</button>`;
+    const cls = [r.slot === "BN" ? "bn" : "", r.game ? "" : "idle"].join(" ").trim();
+    return `<tr class="${cls}"><td class="slot">${slot}</td><th scope="row">${r.player_name}${tag(r.injury)}<span>${r.team || "—"} · ${r.positions}${drop}</span></th><td class="opp">${game}</td>${SHEET_COLS.map(([, key]) => `<td>${cell(line, key, whole)}</td>`).join("")}</tr>`;
+  }).join("");
+  const key = {
+    today: "Tonight = projected line for this game (final once played), adjusted for opponent and venue.",
+    last: "His most recent game before this day.",
+    l7: "Per game over the 7 days before this day.",
+    season: "Per game this season, before this day.",
+    proj: "The pad's season line for his next game.",
+  }[view];
+  return `<div class="slate team"><div class="slate-head"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play</p></div>${moves(sh)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key}</p></div>`;
+}
+
 function desk() {
-  return `${banner()}<div class="sheet"><p class="lede">${state.note || "Daily – Today. 4 adds/week. No waivers. No IL."}</p><p class="roomline">Week ${state.week} · ${state.adds_left} adds left</p>${cats()}${matchupCard()}${calendar()}<form class="feed" id="season-feed"><input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="name · add or drop" value="${line.replace(/"/g, "&quot;")}"></form>${error ? `<p class="error">${error}</p>` : ""}<div class="close season-acts"><button type="button" class="me" id="do-add">Add</button><button type="button" class="sold" id="do-drop">Drop</button></div>${roster()}${plans() || streamers()}<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>${feedLine()}</div>`;
+  return `${banner()}<div class="sheet">${brief()}${matchupCard()}${myTeam()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}<form class="feed" id="season-feed"><input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="name · add or drop" value="${line.replace(/"/g, "&quot;")}"></form>${error ? `<p class="error">${error}</p>` : ""}<div class="close season-acts"><button type="button" class="me" id="do-add">Add</button><button type="button" class="sold" id="do-drop">Drop</button></div>${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>${feedLine()}</div>`;
 }
 
 function paint() {
@@ -302,6 +407,21 @@ document.addEventListener("click", (event) => {
       busy = false;
       paint();
     });
+    return;
+  }
+  const tab = target.closest("[data-view]");
+  if (tab) {
+    view = tab.getAttribute("data-view");
+    paint();
+    return;
+  }
+  if (target.id === "set-lineup") {
+    error = "";
+    api("/season/api/lineup", {}).then((payload) => {
+      state = payload;
+    }).catch((exc) => {
+      error = exc.message;
+    }).finally(paint);
     return;
   }
   const scout = target.closest("[data-scout]");

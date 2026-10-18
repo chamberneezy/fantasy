@@ -407,6 +407,21 @@ def season_scout():
     return jsonify({"player_name": name, **data.scout_detail(name, opp, request.args.get("home") == "1")})
 
 
+@app.post("/season/api/lineup")
+def season_lineup():
+    """Seat the suggested five for the chosen day: what you just set in Yahoo."""
+    session = current_season()
+    if session is None:
+        return jsonify({"error": "Start the season pad first."}), 400
+    try:
+        day = date.fromisoformat(str(request.args.get("date") or "")) if request.args.get("date") else season_pad.league_today()
+        session.set_lineup(day)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    season_pad.save_season(session)
+    return jsonify(_season_state(session))
+
+
 @app.post("/season/api/start")
 def season_start():
     session = current_season()
