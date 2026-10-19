@@ -11,6 +11,7 @@ last publish. Run by the refresh timer after each pull.
 from __future__ import annotations
 
 import hashlib
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,7 @@ DATA_BRANCH = "season-data"
 # The branch whose docs/ and workflow GitHub Pages deploys.
 PAGES_BRANCH = "cursor/3rd-league-draft-dollars"
 STAMP = DEFAULT_OUT.parent / "season_export.published"
+PUBLIC_NAME = re.compile(r"(\d{4}-\d{2}-\d{2}|index)\.json")
 
 
 def _run(*args: str, cwd: Path | None = None) -> str:
@@ -50,8 +52,10 @@ def publish(force: bool = False) -> str:
     remote = _run("git", "remote", "get-url", "origin", cwd=ROOT)
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
+        # Only the week's day files and the index go public; nothing else in the folder, ever.
         for path in DEFAULT_OUT.glob("*.json"):
-            shutil.copy2(path, work / path.name)
+            if PUBLIC_NAME.fullmatch(path.name):
+                shutil.copy2(path, work / path.name)
         _run("git", "init", "-q", "-b", DATA_BRANCH, cwd=work)
         _run("git", "add", "-A", cwd=work)
         _run(

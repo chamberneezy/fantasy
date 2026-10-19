@@ -123,7 +123,8 @@ data/                   projections, sessions; do not commit secrets
 
 ## Constraints that keep coming back
 
-- No Yahoo API. No official NBA logo.
+- No Yahoo API (tried Oct 2026: Yahoo now requires app approval; Mario chose screenshots instead). No official NBA logo.
+- Secrets never leave the laptop: `.env*`, keys and token files are git-ignored, and `scripts/git-hooks/pre-commit` (`git config core.hooksPath scripts/git-hooks`) refuses commits with them or secret-looking lines. Pages publishes only `docs/` plus the week's day JSON (`publish_season.PUBLIC_NAME`).
 - Do not edit the original plan file.
 - Do not scrape Yahoo or wire a live league.
 - Do not commit unless Mario asks.

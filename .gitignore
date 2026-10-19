@@ -16,3 +16,13 @@ data/season/gamelogs_2026-27.csv
 data/season_export/
 
 data/season_export.published
+
+# Secrets never leave this laptop: env files, keys, tokens (see scripts/git-hooks/pre-commit)
+.env
+.env.*
+*.env
+*.pem
+*.key
+*_token.json
+*token*.json
+secrets/

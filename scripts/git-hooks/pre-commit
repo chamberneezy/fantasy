@@ -1,0 +1,18 @@
+#!/bin/sh
+# Refuse commits that carry env files, keys, tokens, or anything that looks like a secret.
+# Installed with: git config core.hooksPath scripts/git-hooks
+set -e
+bad=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '(^|/)(\.env($|\.)|[^/]*\.env$|[^/]*\.(pem|key)$|[^/]*token[^/]*\.json$|secrets/)' || true)
+if [ -n "$bad" ]; then
+  echo "pre-commit: refusing to commit secret files:" >&2
+  echo "$bad" | sed 's/^/  /' >&2
+  exit 1
+fi
+leak=$(git diff --cached -U0 --diff-filter=ACMR -- . ':(exclude)scripts/git-hooks/pre-commit' \
+  | grep -E '^\+' \
+  | grep -iE '(client_secret|consumer_secret|api_key|secret_key|access_token|refresh_token|password)[[:space:]]*[=:][[:space:]]*["'\'']?[A-Za-z0-9_/+.-]{12,}|BEGIN [A-Z ]*PRIVATE KEY|gh[pousr]_[A-Za-z0-9]{30,}' || true)
+if [ -n "$leak" ]; then
+  echo "pre-commit: refusing to commit what looks like a secret:" >&2
+  echo "$leak" | cut -c1-80 | sed 's/^/  /' >&2
+  exit 1
+fi
