@@ -32,7 +32,8 @@ from math_engine import ALL_CATEGORIES, FantasyMathEngine
 ADDS_PER_WEEK = 4
 IL_SLOTS = 0
 STREAM_LISTED_CAP = 8
-OPENING_ADDS_USED = 1
+# Yahoo (19 Oct): all 4 week-1 adds open; the 5 Oct Tre Jones pickup did not count against week 1.
+OPENING_ADDS_USED = 0
 PROTECTED = frozenset({"Mario Hezonja"})
 SEASON_PATH = Path(__file__).resolve().parents[1] / "data" / "season_session.json"
 

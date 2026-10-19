@@ -77,7 +77,7 @@ Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaul
 - Helper loop: name → Stay/Stretch/Pass → Sold/Me → leftover seats.
 - Room heat after **two** hammers in a tier, **or** one nuclear first $50+ hammer. Not after one $87 Jokic.
 - Unlisted = $1 on this board. Lab “most common name at each seat” is unique greedy — never two Sabonis.
-- In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week-1 1 of 4 adds used, no IL.
+- In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week 1 starts with all 4 adds, no IL.
 - Season pad start/sit and matchup odds as **estimates**: strict-seat legal five, 20,000-run week vs the pasted opponent. Free NBA + ESPN feeds only.
 
 **Do not treat as a forecast**
@@ -139,7 +139,7 @@ data/                   projections, sessions; do not commit secrets
 6. Lab language: modal slot ≠ one room that happened. Squad names are unique. Alondes is $1 / not draftable.
 7. Logo from helper/draft/lab/season resets those sessions and opens `/`.
 8. No exploit, scrape, or Yahoo-live wiring.
-9. Season pad: no IL, Hezonja stays, Tre Jones on the 10, week 1 has 1 of 4 adds used.
+9. Season pad: no IL, Hezonja stays, Tre Jones on the 10, week 1 starts with 4 adds left.
 10. Season helper: no Yahoo calls anywhere in `nba_feed.py` / `injuries.py`; `/season` shows a matchup card only when `matchups.csv` names the week’s opponent; add plans never offer a rostered name or drop Hezonja.
 
 ## Mario’s roster (week 1)
@@ -148,4 +148,4 @@ Yahoo My Team after dropping Davion Mitchell for Tre Jones. **Hezonja stays.**
 
 PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jrue Holiday, Neemias Queta, Dillon Brooks, Tre Jones.
 
-1 of 4 adds used this week. Holes: TO, PF. No IL — a DNP costs a drop to stream.
+4 adds left in week 1 (Yahoo, 19 Oct). Holes: TO, PF. No IL — a DNP costs a drop to stream.

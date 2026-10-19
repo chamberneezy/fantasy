@@ -36,7 +36,7 @@ Hezonja is **untouchable**. Do not recommend dropping him.
 | BN | Dillon Brooks | ~$1, FG/PF tax |
 | BN | Tre Jones | FA add week 1 (dropped Davion Mitchell) |
 
-Week 1: **1 of 4 adds used**. Next stream if a DNP week: Brook Lopez. Sit Hezonja until he plays. Start Tre over Brooks.
+Week 1: **4 adds left** (Yahoo, 19 Oct; the 5 Oct Tre Jones pickup did not count). Next stream if a DNP week: Brook Lopez. Sit Hezonja until he plays. Start Tre over Brooks.
 
 12-cat tape: counting cats fine if people play; **TO** and **PF** leak; **BLK** only average; games risk on Jalen / Jrue / Kawhi.
 

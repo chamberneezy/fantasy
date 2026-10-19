@@ -28,7 +28,7 @@ def test_opening_roster_is_yahoo_ten() -> None:
         "Tre Jones",
     ]
     assert len(names) == len(set(names))
-    assert session.adds_used == 1
+    assert session.adds_used == 0
     tape = session.tape()
     assert tape["TO"] < 0
     assert tape["PF"] < 0
@@ -49,7 +49,7 @@ def test_add_drop_and_week(tmp_path) -> None:
     session = SeasonSession(build_pool())
     session.drop("Dillon Brooks")
     session.add("Andrew Nembhard")
-    assert session.adds_used == 2
+    assert session.adds_used == 1
     owned = session.owned_names()
     assert "Andrew Nembhard" in owned
     assert "Dillon Brooks" not in owned
@@ -114,7 +114,7 @@ def test_season_http_seeds_and_resets(tmp_path, monkeypatch) -> None:
     assert started.status_code == 200
     payload = started.get_json()
     assert payload["started"] is True
-    assert payload["adds_left"] == 3
+    assert payload["adds_left"] == 4
     assert payload["il_enabled"] is False
     names = [row["player_name"] for row in payload["roster"]]
     assert "Nikola Jokić" in names
@@ -126,7 +126,7 @@ def test_season_http_seeds_and_resets(tmp_path, monkeypatch) -> None:
     assert dropped.status_code == 200
     added = client.post("/season/api/add", json={"query": "nembhard"})
     assert added.status_code == 200
-    assert added.get_json()["adds_left"] == 2
+    assert added.get_json()["adds_left"] == 3
     blocked = client.post("/season/api/drop", json={"query": "hezonja"})
     assert blocked.status_code == 400
     wiped = client.post("/season/api/reset")
