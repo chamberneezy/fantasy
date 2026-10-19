@@ -10,7 +10,7 @@ Source: League → Settings screenshots, 5 Oct 2026. Pad brand stays **NBA Fanta
 | Scoring | Head-to-Head **Categories** |
 | Cats | MIN, FG%, FT%, 3PTM, PTS, REB, AST, ST, BLK, TO, PF, DD |
 | Roster | **PG, SG, SF, PF, C + 5 BN**. **No IL. No IL+.** |
-| Lineup | **Daily – Today**. Lock benched players: **No** (bench → active after tip still counts). |
+| Lineup | **Daily – Today**: each player can move between active and bench until **his own game's scheduled start** (Yahoo help SLN7137); a benched game does not count. Lock benched players: **No** = a benched player whose game has started can still be **dropped** (e.g. for a streamer), not moved into the active five. |
 | Adds | **4 per week**, no season cap, **no waivers**, post-draft = **free agents** (instant). |
 | Trades | Allowed, commissioner review, 1-day reject, end 18 Feb 2027. No draft-pick trades. |
 | Playoffs | **8 teams, weeks 19–20–21** (ends Sun 28 Mar). Division winners in, then seeded by overall. Eliminated teams lock. |
