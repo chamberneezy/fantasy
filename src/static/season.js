@@ -281,7 +281,7 @@ function boxLine(p) {
 function brief() {
   const b = state.brief;
   if (!b) return "";
-  const head = `${dow(b.today)} ${shortDate(b.today)} · Week ${b.week}${b.opponent ? ` vs ${b.opponent}` : ""}`;
+  const head = `This morning · ${dow(b.today)} ${shortDate(b.today)}`;
   const parts = [`<p class="next-head">${head}</p>`];
   if (!b.started) {
     parts.push(`<p class="next-meta">Week ${b.week} starts ${dow(b.starts_on)} ${shortDate(b.starts_on)}</p>`);
@@ -301,15 +301,18 @@ function brief() {
   if (b.hurt.length) {
     parts.push(`<p class="brief-sub">Injuries</p><ul class="brief-list">${b.hurt.map((h) => `<li><span class="next-meta"><b class="inj">${h.short}</b> ${h.player_name}${h.part ? ` · ${h.part}` : ""}${h.back ? ` · back ~${shortDate(h.back)}` : ""}</span></li>`).join("")}</ul>`);
   }
-  if (b.ahead.length) {
-    const days = b.ahead.map((d) => {
-      const note = d.sits ? `${d.sits} sit${d.sits > 1 ? "" : "s"}` : d.empty && d.games ? `${d.empty} empty` : d.games ? "full" : "no games";
-      const cls = d.sits ? "busy" : d.empty >= 2 ? "light" : "";
-      return `<button type="button" class="day-chip ${cls}" data-day="${d.date}"><span>${d.dow} ${shortDate(d.date)}</span><strong>${d.games}</strong><em>${note}</em></button>`;
-    }).join("");
-    parts.push(`<p class="brief-sub">Your games this week</p><div class="day-chips">${days}</div><p class="slate-key">Light days (2+ empty seats) are where an add pays most. Tap a day to see its lineup.</p>`);
-  }
   return `<div class="nexts brief">${parts.join("")}</div>`;
+}
+
+function dayChips(chosen) {
+  const ahead = (state.brief && state.brief.ahead) || [];
+  if (!ahead.length) return "";
+  const days = ahead.map((d) => {
+    const note = d.sits ? `${d.sits} sit${d.sits > 1 ? "" : "s"}` : d.empty && d.games ? `${d.empty} empty` : d.games ? "full" : "no games";
+    const cls = [d.sits ? "busy" : d.empty >= 2 ? "light" : "", d.date === chosen ? "on" : ""].join(" ").trim();
+    return `<button type="button" class="day-chip ${cls}" data-day="${d.date}" aria-pressed="${d.date === chosen}"><span>${d.dow} ${shortDate(d.date)}</span><strong>${d.games}</strong><em>${note}</em></button>`;
+  }).join("");
+  return `<div class="day-chips">${days}</div>`;
 }
 
 function tag(injury) {
@@ -359,7 +362,9 @@ function myTeam() {
     season: "Per game this season, before this day.",
     proj: "The pad's season line for his next game.",
   }[view];
-  return `<div class="slate team"><div class="slate-head"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play</p></div>${moves(sh)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key}</p></div>`;
+  const b = state.brief;
+  const versus = b && b.opponent ? ` · Week ${b.week} vs ${b.opponent}` : "";
+  return `<div class="slate team"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play${versus}</p>${dayChips(sh.date)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key} Tap a day above for its lineup; red = someone sits, blue = 2+ empty seats (an add pays most).</p>${moves(sh)}</div>`;
 }
 
 function publishedLine() {
@@ -376,7 +381,7 @@ function desk() {
   const actions = STATIC
     ? publishedLine()
     : `<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>`;
-  return `${banner()}<div class="sheet">${brief()}${matchupCard()}${myTeam()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}${controls}${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}${actions}${feedLine()}</div>`;
+  return `${banner()}<div class="sheet">${myTeam()}${brief()}${matchupCard()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}${controls}${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}${actions}${feedLine()}</div>`;
 }
 
 function paint() {
