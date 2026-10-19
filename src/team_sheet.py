@@ -16,6 +16,7 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 
+import daily
 import lineup
 import matchup
 import schedule as slate
@@ -68,18 +69,49 @@ def projected(line: dict | None) -> dict | None:
     return _with_rates(shown) | {"value": round(float(line.get("value") or 0.0), 2)}
 
 
-def player_stats(data, name: str, chosen: date, tonight: dict | None) -> dict:
+def week_totals(games: pd.DataFrame) -> dict | None:
+    """Summed box score over these games, with its per-game average kept for scoring."""
+    if games.empty:
+        return None
+    line = {stat: int(round(float(games[stat if stat != "mp" else "min"].sum()))) for stat in LINE_STATS}
+    line = _with_rates(line)
+    line["games"] = int(len(games))
+    line["per_game"] = average(games)
+    return line
+
+
+def _score(stats: dict, baselines: dict) -> dict:
+    """Give every view a ``value``: the 12-cat z of its per-game line, 0 = a typical player."""
+    keyed = []
+    for view, line in stats.items():
+        if line is None:
+            continue
+        per_game = line.get("per_game") or line
+        keyed.append((view, {key: (per_game.get(key) or 0.0) for key in (*LINE_STATS, "fg_pct", "ft_pct")}))
+    if not keyed:
+        return stats
+    scored = daily.score_lines([line for _, line in keyed], baselines)
+    for (view, _), result in zip(keyed, scored):
+        stats[view] = {**stats[view], "value": result["value"]}
+        stats[view].pop("per_game", None)
+    return stats
+
+
+def player_stats(data, name: str, chosen: date, tonight: dict | None, week_start: date | None = None, banked=None) -> dict:
     """Every view of the sheet for one player, as of the morning of ``chosen``."""
     games = data.season_games(name)
     before = games.loc[games["date"] < chosen.isoformat()] if len(games) else games
     recent = before.loc[before["date"] >= (chosen - timedelta(days=RECENT_DAYS)).isoformat()] if len(before) else before
-    return {
-        "today": projected(tonight),
+    this_week = before.loc[before["date"] >= week_start.isoformat()] if week_start and len(before) else before.iloc[0:0]
+    stats = {
+        "today": vector_line(banked) if banked is not None else projected(tonight),
         "last": one_game(before.iloc[-1]) if len(before) else None,
         "l7": average(recent),
         "season": average(before),
+        "week": week_totals(this_week),
         "proj": projected(data.line_for(name)),
     }
+    return _score(stats, data.baselines)
 
 
 def injury_tag(data, name: str) -> dict | None:
@@ -209,6 +241,7 @@ def sheet(session, chosen: date, plan: dict, today: date, protected: frozenset =
     weights = plan.get("weights")
     current = {seat["slot_id"]: seat["player"]["player_name"] for seat in session.roster if seat["slot_id"] in lineup.SEATS}
     rec_seat = {name: seat for seat, name in recommended.items()}
+    week_start = date.fromisoformat(min(plan["mine"])) if plan["mine"] else None
     order = {slot: index for index, slot in enumerate(lineup.SEATS)}
     rows = []
     for seat in sorted(session.roster, key=lambda item: (order.get(item["slot_id"], 9), item["slot_id"])):
@@ -230,8 +263,14 @@ def sheet(session, chosen: date, plan: dict, today: date, protected: frozenset =
                 "chance": round(float(entry["p"]), 2) if entry and entry.get("line") is not None else None,
                 "banked": bool(entry and entry.get("fixed") is not None),
                 "worth": round(sum(swing.values()), 2) if swing else None,
-                "stats": player_stats(data, name, chosen, entry.get("line") if entry else None)
-                | ({"today": vector_line(entry["fixed"])} if entry and entry.get("fixed") is not None else {}),
+                "stats": player_stats(
+                    data,
+                    name,
+                    chosen,
+                    entry.get("line") if entry else None,
+                    week_start,
+                    entry.get("fixed") if entry else None,
+                ),
             }
         )
     playing = sum(1 for entry in day_entries.values() if entry.get("line") is not None or entry.get("fixed") is not None)

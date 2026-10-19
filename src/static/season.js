@@ -248,8 +248,14 @@ function feedLine() {
   return `<p class="slate-key">NBA data pulled ${when} · ${feed.games_logged || 0} player-games this season${failed.length ? ` · failed: ${failed.join(", ")}` : ""}</p>`;
 }
 
-const VIEWS = [["today", "Tonight"], ["last", "Last game"], ["l7", "7 days"], ["season", "Season"], ["proj", "Proj."]];
-const SHEET_COLS = [["MIN", "mp"], ["FG%", "fg_pct"], ["FT%", "ft_pct"], ["3PM", "fg3m"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["STL", "stl"], ["BLK", "blk"], ["TO", "to"], ["PF", "pf"], ["DD", "dd"]];
+const VIEWS = [["today", "Tonight"], ["last", "Last game"], ["week", "This week"], ["l7", "7 days"], ["season", "Season"], ["proj", "Proj."]];
+// Box-score order: minutes, what you pile up, what you want low, then shooting. Value closes the row.
+const SHEET_COLS = [
+  ["MIN", "mp", "lead"],
+  ["PTS", "pts", "group"], ["REB", "reb"], ["AST", "ast"], ["STL", "stl"], ["BLK", "blk"], ["3PM", "fg3m"], ["DD", "dd"],
+  ["TO", "to", "group"], ["PF", "pf"],
+  ["FG%", "fg_pct", "group"], ["FT%", "ft_pct"],
+];
 
 function dow(iso) {
   return new Date(`${iso}T12:00:00`).toLocaleDateString([], { weekday: "short" });
@@ -345,26 +351,30 @@ function myTeam() {
   const sh = state.calendar && state.calendar.sheet;
   if (!sh) return "";
   const tabs = VIEWS.map(([key, label]) => `<button type="button" class="text${view === key ? " on" : ""}" data-view="${key}" aria-pressed="${view === key}">${label}</button>`).join("");
-  const head = `<tr><th>Slot</th><th class="pname">Player</th><th>Opp</th>${SHEET_COLS.map(([label]) => `<th>${label}</th>`).join("")}</tr>`;
+  const head = `<tr><th>Slot</th><th class="pname">Player</th><th>${view === "week" ? "G" : "Opp"}</th>${SHEET_COLS.map(([label, , cls]) => `<th class="${cls || ""}">${label}</th>`).join("")}<th class="group value">Value</th></tr>`;
   const body = sh.rows.map((r) => {
     const line = r.stats[view];
-    const whole = view === "last" || (view === "today" && r.banked);
+    const whole = view === "last" || view === "week" || (view === "today" && r.banked);
     const slot = r.best !== r.slot && !sh.past ? `${r.slot}<span class="to">→ ${r.best}</span>` : r.slot;
     const game = r.game ? `${r.game.home ? "" : "@"}${r.game.opp}<span>${r.banked ? "final" : tip(r.game.tip_utc).replace(/^\S+\s/, "")}</span>` : "—";
     const drop = r.protected || STATIC ? "" : `<button type="button" class="text drop" data-drop="${r.player_name}">Drop</button>`;
     const cls = [r.slot === "BN" ? "bn" : "", r.game ? "" : "idle"].join(" ").trim();
-    return `<tr class="${cls}"><td class="slot">${slot}</td><th scope="row">${r.player_name}${tag(r.injury)}<span>${r.team || "—"} · ${r.positions}${drop}</span></th><td class="opp">${game}</td>${SHEET_COLS.map(([, key]) => `<td>${cell(line, key, whole)}</td>`).join("")}</tr>`;
+    const where = view === "week" ? (line ? line.games : "—") : game;
+    const value = line && line.value != null ? `${line.value > 0 ? "+" : ""}${line.value.toFixed(1)}` : "—";
+    const tone = line && line.value != null ? (line.value >= 5 ? "up" : line.value < 0 ? "down" : "") : "";
+    return `<tr class="${cls}"><td class="slot">${slot}</td><th scope="row">${r.player_name}${tag(r.injury)}<span>${r.team || "—"} · ${r.positions}${drop}</span></th><td class="opp">${where}</td>${SHEET_COLS.map(([, key, group]) => `<td class="${group || ""}">${cell(line, key, whole)}</td>`).join("")}<td class="group value ${tone}">${value}</td></tr>`;
   }).join("");
   const key = {
     today: "Tonight = projected line for this game (final once played), adjusted for opponent and venue.",
     last: "His most recent game before this day.",
+    week: "Totals this fantasy week before this day; G = games.",
     l7: "Per game over the 7 days before this day.",
     season: "Per game this season, before this day.",
     proj: "The pad's season line for his next game.",
   }[view];
   const b = state.brief;
   const versus = b && b.opponent ? ` · Week ${b.week} vs ${b.opponent}` : "";
-  return `<div class="slate team"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play${versus}</p>${dayChips(sh.date)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key} Tap a day above for its lineup; red = someone sits, blue = 2+ empty seats (an add pays most).</p>${moves(sh)}</div>`;
+  return `<div class="slate team"><p class="next-head">My team · ${dow(sh.date)} ${shortDate(sh.date)} · ${sh.playing} play${versus}</p>${dayChips(sh.date)}<div class="views">${tabs}</div><div class="slate-scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div><p class="slate-key">Slot = where he sits now; → = where the pad would put him. ${key} Value = 12-cat worth of a game like that (per game on totals); 0 is a typical player, +5 and up is very good. Tap a day above for its lineup; red = someone sits, blue = 2+ empty seats (an add pays most).</p>${moves(sh)}</div>`;
 }
 
 function publishedLine() {

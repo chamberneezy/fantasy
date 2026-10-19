@@ -129,3 +129,25 @@ def test_set_lineup_seats_the_plan_and_benches_the_rest() -> None:
     with pytest.raises(ValueError):
         session.set_lineup(date(2026, 10, 1), today=week["start"])
     assert team_sheet.lineup_moves(seated, plan, {}, None) == []
+
+
+def test_week_totals_sum_the_box_score_and_keep_games() -> None:
+    base = {stat: 0 for stat in ("min", "fg3m", "reb", "ast", "stl", "blk", "to", "pf", "dd", "ftm", "fta")}
+    games = pd.DataFrame([{**base, "pts": 20, "fgm": 8, "fga": 16}, {**base, "pts": 10, "fgm": 4, "fga": 4}])
+    line = team_sheet.week_totals(games)
+    assert (line["pts"], line["games"]) == (30, 2)
+    assert line["fg_pct"] == pytest.approx(0.6)
+    assert line["per_game"]["pts"] == pytest.approx(15.0)
+
+
+def test_every_view_gets_a_value_and_better_lines_score_higher() -> None:
+    from season_data import season_lines
+
+    _, baselines = season_lines()
+    plain = {"mp": 30, "fgm": 6, "fga": 13, "ftm": 3, "fta": 4, "fg3m": 1.5, "pts": 16, "reb": 5, "ast": 3, "stl": 1, "blk": 0.5, "to": 2, "pf": 2, "dd": 0.1}
+    great = {**plain, "pts": 30, "reb": 11, "ast": 8, "fgm": 11, "fga": 20, "dd": 0.6}
+    stats = team_sheet._score(
+        {"l7": team_sheet._with_rates(dict(plain)), "season": team_sheet._with_rates(dict(great)), "last": None}, baselines
+    )
+    assert stats["last"] is None
+    assert stats["season"]["value"] > stats["l7"]["value"]

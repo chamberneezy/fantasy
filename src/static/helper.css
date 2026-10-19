@@ -601,6 +601,10 @@ input {
 .team td.opp span { display: block; color: var(--muted); font-size: 0.68rem; }
 .team tr.idle td:not(.slot) { color: var(--muted); }
 .team th.pname { text-align: left; }
+.team .group { border-left: 1px solid var(--line); padding-left: 8px; }
+.team td.value { font-family: var(--display); font-size: 1rem; color: var(--ink); }
+.team td.value.up { color: var(--nba-blue); }
+.team td.value.down { color: var(--nba-red); }
 .tape-head { margin-top: 18px; }
 .dayline .scout { grid-column: 1 / -1; display: grid; gap: 6px; margin-top: 8px; padding: 10px 12px; background: var(--pick); border: 1px solid var(--line); border-radius: 8px; }
 .dayline .scout p { margin: 0; }
