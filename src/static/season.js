@@ -391,7 +391,7 @@ function desk() {
   const actions = STATIC
     ? publishedLine()
     : `<div class="actions"><button type="button" class="text" id="week">New week</button><button type="button" class="text" id="refresh"${busy ? " disabled" : ""}>${busy ? "Pulling…" : "Refresh data"}</button></div>`;
-  return `${banner()}<div class="sheet">${myTeam()}${brief()}${matchupCard()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}${controls}${plans() || streamers()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}${actions}${feedLine()}</div>`;
+  return `${banner()}<div class="sheet">${myTeam()}${brief()}<p class="roomline">Week ${state.week} · ${state.adds_left} of 4 adds left</p>${calendar()}${controls}${plans() || streamers()}${matchupCard()}<p class="next-head tape-head">Roster strength · season z by category</p>${cats()}${actions}${feedLine()}</div>`;
 }
 
 function paint() {
