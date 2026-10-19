@@ -19,7 +19,7 @@ Source: League → Settings screenshots, 5 Oct 2026. Pad brand stays **NBA Fanta
 
 Injured players occupy a real one of the 10 seats. Add = drop someone first.
 
-## Mario’s 10 (Yahoo My Team, after Tre Jones add)
+## Mario’s 10 (Yahoo My Team, 19 Oct 2026)
 
 Hezonja is **untouchable**. Do not recommend dropping him.
 
@@ -33,16 +33,16 @@ Hezonja is **untouchable**. Do not recommend dropping him.
 | BN | Mario Hezonja | $3 draft, keep |
 | BN | Jrue Holiday | ~$1 |
 | BN | Neemias Queta | ~$1 |
-| BN | Dillon Brooks | ~$1, FG/PF tax |
+| BN | Anfernee Simons | FA add 19 Oct for Dillon Brooks (4 games in week 1 vs 2; Q hamstring, back ~20 Oct) |
 | BN | Tre Jones | FA add week 1 (dropped Davion Mitchell) |
 
-Week 1: **4 adds left** (Yahoo, 19 Oct; the 5 Oct Tre Jones pickup did not count). Next stream if a DNP week: Brook Lopez. Sit Hezonja until he plays. Start Tre over Brooks.
+Week 1: **3 adds left** after Simons (the 5 Oct Tre Jones pickup did not count). Keep 2 in reserve for an injured starter. Sit Hezonja until he plays.
 
 12-cat tape: counting cats fine if people play; **TO** and **PF** leak; **BLK** only average; games risk on Jalen / Jrue / Kawhi.
 
 ## League rosters (pasted from Yahoo, 5 Oct 2026)
 
-All 16 teams with Yahoo slot and position eligibility: `data/season/league_rosters.csv`. Mario’s team is **Lipicaneri**. Week 1 opponent: **Danijel’s Dandy Team**. Pasted by hand — never scraped. Re-paste after trades or adds.
+All 16 teams with Yahoo slot and position eligibility: `data/season/league_rosters.csv`. Mario’s team is **Lipicaneri**. Week 1 opponent: **Danijel’s Dandy Team**. Pasted by hand — never scraped. Mario’s own row updated 19 Oct (Simons for Brooks); the other 15 teams are still the 5 Oct paste. Re-paste after trades or adds.
 
 Fantasy week 1 is **Tue 20 Oct – Sun 25 Oct 2026** (confirmed by Mario, 5 Oct). Later weeks run Monday–Sunday by default; Yahoo joins two weeks somewhere before week 19, dates not yet confirmed.
 

@@ -1,6 +1,6 @@
 # Season helper — where it stands and what is next
 
-Last worked on **7 Oct 2026**. Everything below is **uncommitted** on `cursor/3rd-league-draft-dollars`. Suite: **96 tests pass** (`.venv/bin/python -m pytest tests/ -q`). Restart the server on 5340 after pulling changes; a stale process keeps serving old code.
+Last worked on **19 Oct 2026**, committed and pushed on `cursor/3rd-league-draft-dollars`. Suite: **116 tests pass** (`.venv/bin/python -m pytest tests/ -q`). Restart the server on 5340 after pulling changes; a stale process keeps serving old code.
 
 **18 Oct 2026:** restored on the Arch Linux machine from the `chamberneezy/backup` snapshot (16 Oct) into `~/Projects/fantasy`, still uncommitted on `cursor/3rd-league-draft-dollars`. Runs in `.venv` (Python 3.14); `scipy` added to `requirements.txt`. 96 tests pass.
 
@@ -54,6 +54,27 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 - Second night of a back-to-back does **not** cut minutes of those who play (ratio 1.025). It is a sit chance only.
 - Outlook model on held-out 2025-26: ~6–8% lower error than last season’s line. Model alone under-rates top scorers by ~0.5 pt; last season alone over-rates them by ~1.2 pt; 50/50 is best for stars.
 - NBA feed position (G/F/C) matches Yahoo eligibility only roughly (Jaccard 0.69). Free-agent positions are **guessed** and flagged; e.g. Diabaté shows SF/PF but is a centre.
+
+## Week 1 (live) — Tue 20 – Sun 25 Oct vs Danijel's Dandy Team
+
+Mario's focus is **week 1 only** until it ends; ignore week 2+ for now.
+
+- **Moves:** Dillon Brooks → **Anfernee Simons** (19 Oct). **3 of 4 adds left**; keep 2 in reserve for an injured starter (no IL).
+- **Odds after the move:** ~6.5 of 12 cats, **win 53% / tie 23% / lose 24%** (was 45 / 23 / 32). Likely wins MIN, FT%, PTS, STL; toss-ups 3PM, FG%, AST, TO; likely losses REB, PF, BLK, DD (Danijel has AD, Duren, Sarr, Carter). Chase the toss-ups (assists, 3s, efficient guards), not blocks/DD.
+- **Tue lineup:** Simons at PG (Keyonte idle), Queta at C (Jokić idle). First tip Tue 21:00 Zurich. Simons is Yahoo **Q** (hamstring): if ruled out, leave PG empty rather than spend an add.
+- **Considered, not done:** Champagnie for Collins (+0.2 cats; Collins may outplay his model in DET). Keep Jrue (hand, DTD, back ~21 Oct). Ayton is the best FA (+6.4) but C-only behind Jokić/Queta, so not this week.
+
+**What Mario sends (screenshots / messages), and when:**
+
+| When | What |
+|---|---|
+| After any move | One line: "added X, dropped Y" → apply with `SeasonSession.add/drop`, `save_season`, then `scripts/publish_season.py`. |
+| Once | Danijel's current roster (other teams are the 5 Oct paste). |
+| Every morning Wed–Mon | Yahoo **matchup page** screenshot (12 cats + both rosters). Read the real score, say which cats are locked / lost / in play, tonight's lineup, whether an add is worth it. |
+| Before an add | Free-agent list, top 25–40 → `data/season/free_agents.csv` (Brooks re-added there as FA). |
+| If he deviates | "started X instead of Y"; otherwise assume he set the pad's lineup. |
+
+Mario does **not** want the Yahoo API (needs app approval since Jul 2026) or anyone logging into his Yahoo account. Stats, injuries and schedules come from the NBA/ESPN feeds automatically.
 
 ## Results on file (7 Oct 2026, before any real game)
 

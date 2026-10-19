@@ -140,13 +140,13 @@ data/                   projections, sessions; do not commit secrets
 6. Lab language: modal slot ≠ one room that happened. Squad names are unique. Alondes is $1 / not draftable.
 7. Logo from helper/draft/lab/season resets those sessions and opens `/`.
 8. No exploit, scrape, or Yahoo-live wiring.
-9. Season pad: no IL, Hezonja stays, Tre Jones on the 10, week 1 starts with 4 adds left.
+9. Season pad: no IL, Hezonja stays, Tre Jones and Simons on the 10 (session), 3 adds left in week 1.
 10. Season helper: no Yahoo calls anywhere in `nba_feed.py` / `injuries.py`; `/season` shows a matchup card only when `matchups.csv` names the week’s opponent; add plans never offer a rostered name or drop Hezonja.
 
 ## Mario’s roster (week 1)
 
-Yahoo My Team after dropping Davion Mitchell for Tre Jones. **Hezonja stays.**
+Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
 
-PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jrue Holiday, Neemias Queta, Dillon Brooks, Tre Jones.
+PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jrue Holiday, Neemias Queta, Anfernee Simons, Tre Jones.
 
-4 adds left in week 1 (Yahoo, 19 Oct). Holes: TO, PF. No IL — a DNP costs a drop to stream.
+**3 adds left in week 1.** Holes: TO, PF. No IL — a DNP costs a drop to stream. Week 1 status, the screenshot routine and what Mario sends: `context/season_helper.md` → *Week 1 (live)*.
