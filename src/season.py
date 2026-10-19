@@ -425,6 +425,11 @@ class SeasonSession:
             name = player["player_name"]
             if name in owned or data.rostered_by(name) or "average" in name.lower():
                 continue
+            # With Yahoo's free-agent list pasted, nobody off it is offered, and nobody Yahoo has Out.
+            if data.free_agents:
+                listed = data.free_agent(name)
+                if listed is None or str(listed.get("yahoo_status") or "").upper() == "O":
+                    continue
             if data.line_for(name) is None or data.games_on_file(name) < STREAM_MIN_GAMES:
                 continue
             positions, verified = data.positions_for(name, player.get("positions"))

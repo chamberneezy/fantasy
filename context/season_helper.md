@@ -26,6 +26,7 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 ## Files Mario supplies (pasted by hand, never scraped)
 
 - `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **snapshot 5 Oct 2026**. Stale after any add/drop/trade. Re-paste the week’s opponent at least.
+- `data/season/free_agents.csv` — Yahoo's free-agent list (name, team, Yahoo positions, Q/O tag, pre-season rank, % rostered), top 40 by pre-season rank, **19 Oct 2026**. When present, add plans only offer these names and skip Yahoo "O"; Yahoo positions replace the NBA-feed guess. Re-paste before each add decision.
 - `data/season/matchups.csv` — `week,opponent`. **Only week 1 is filled** (Danijel's Dandy Team).
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
 - `data/season/fantasy_weeks.csv` — optional `week,start,end` override. Not present. Week 1 = **20–25 Oct** (confirmed). Default after that is Monday–Sunday, but Yahoo’s week 21 ends 28 Mar, so two calendar weeks get joined somewhere before week 19 — **dates still needed** (matters from about February).

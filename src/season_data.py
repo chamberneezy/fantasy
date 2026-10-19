@@ -28,6 +28,8 @@ MIN_ANCHOR_GAMES = 5
 HISTORY_GAMES = 60
 ROSTERS_NAME = "league_rosters.csv"
 MATCHUPS_NAME = "matchups.csv"
+# Yahoo's free-agent list, pasted by hand. When present, only these names are offered as adds.
+FREE_AGENTS_NAME = "free_agents.csv"
 # NBA feed positions are G / F / C. Yahoo's are finer; this is the nearest guess
 # for a free agent whose Yahoo eligibility was never pasted.
 FEED_POSITIONS = {"G": "PG/SG", "F": "SF/PF", "C": "C", "G-F": "SG/SF", "F-G": "SG/SF", "F-C": "PF/C", "C-F": "PF/C"}
@@ -125,7 +127,13 @@ class SeasonData:
             if rosters_path.exists()
             else pd.DataFrame(columns=["fantasy_team", "manager", "slot", "player_name", "nba_team", "positions"])
         )
-        self._yahoo = _keyed((row.player_name, str(row.positions)) for row in self.rosters.itertuples())
+        agents_path = self.feed_dir / FREE_AGENTS_NAME
+        agents = pd.read_csv(agents_path).fillna("") if agents_path.exists() else pd.DataFrame(columns=["player_name", "positions", "yahoo_status"])
+        self.free_agents = _keyed((row["player_name"], row) for row in agents.to_dict("records"))
+        self._yahoo = _keyed(
+            [(row["player_name"], str(row["positions"])) for row in agents.to_dict("records")]
+            + [(row.player_name, str(row.positions)) for row in self.rosters.itertuples()]
+        )
         self._rostered = _keyed((row.player_name, str(row.fantasy_team)) for row in self.rosters.itertuples())
         matchups_path = self.feed_dir / MATCHUPS_NAME
         self.matchups = (
@@ -150,6 +158,10 @@ class SeasonData:
 
     def injury(self, name: str) -> dict | None:
         return _find(self.injuries, name)
+
+    def free_agent(self, name: str) -> dict | None:
+        """His row on the pasted Yahoo free-agent list, if there is one."""
+        return _find(self.free_agents, name)
 
     def rostered_by(self, name: str) -> str | None:
         """The fantasy team that owns him on the pasted rosters, if any."""
