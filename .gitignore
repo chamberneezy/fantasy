@@ -18,3 +18,4 @@ data/season_export/
 # Yahoo API keys and sign-in token: this laptop only
 .env.yahoo
 data/yahoo_token.json
+data/season_export.published
