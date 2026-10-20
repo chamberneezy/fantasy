@@ -63,13 +63,14 @@ Mario's focus is **week 1 only** until it ends; ignore week 2+ for now.
 - **Odds after the move:** ~6.5 of 12 cats, **win 53% / tie 23% / lose 24%** (was 45 / 23 / 32). Likely wins MIN, FT%, PTS, STL; toss-ups 3PM, FG%, AST, TO; likely losses REB, PF, BLK, DD (Danijel has AD, Duren, Sarr, Carter). Chase the toss-ups (assists, 3s, efficient guards), not blocks/DD.
 - **Tue lineup:** Simons at PG (Keyonte idle), Queta at C (Jokić idle). First tip Tue 21:00 Zurich. Simons is Yahoo **Q** (hamstring): if ruled out, leave PG empty rather than spend an add.
 - **Considered, not done:** Champagnie for Collins (+0.2 cats; Collins may outplay his model in DET). Keep Jrue (hand, DTD, back ~21 Oct). Ayton is the best FA (+6.4) but C-only behind Jokić/Queta, so not this week.
+- **Week plan (19 Oct):** empty seats are SG Tue, PF+C Wed, SG+PF Thu, SF+PF Sat. Jrue's two games (Wed, Fri) never get a seat, so he adds nothing this week. **Jrue → Jalen Smith** (CHI, PF/C; Wed/Fri/Sat, on the pasted FA list) re-simulates to about +0.5 cats, win ≈53% → ≈65%. Decide Wed morning after Tuesday's games: do it if no starter got hurt (leaves 2 adds); costs Jrue rest-of-season. Dropping Simons or Tre Jones instead is worse.
 
 **What Mario sends (screenshots / messages), and when:**
 
 | When | What |
 |---|---|
 | After any move | One line: "added X, dropped Y" → apply with `SeasonSession.add/drop`, `save_season`, then `scripts/publish_season.py`. |
-| Once | Danijel's current roster (other teams are the 5 Oct paste). |
+| Done 19 Oct | Danijel's roster: unchanged from the 5 Oct paste. |
 | Every morning Wed–Mon | Yahoo **matchup page** screenshot (12 cats + both rosters). Read the real score, say which cats are locked / lost / in play, tonight's lineup, whether an add is worth it. |
 | Before an add | Free-agent list, top 25–40 → `data/season/free_agents.csv` (Brooks re-added there as FA). |
 | If he deviates | "started X instead of Y"; otherwise assume he set the pad's lineup. |
