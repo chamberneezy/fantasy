@@ -59,11 +59,13 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 
 Mario's focus is **week 1 only** until it ends; ignore week 2+ for now.
 
-- **Moves:** Dillon Brooks → **Anfernee Simons** (19 Oct). **3 of 4 adds left**; keep 2 in reserve for an injured starter (no IL).
+- **Moves:** Dillon Brooks → **Anfernee Simons** (19 Oct); Jrue Holiday → **Jalen Smith** (21 Oct). **2 of 4 adds left**; keep them for an injured starter (no IL).
+- **Goal:** win each week. Rank moves by this week's win chance; season value given up is a con, not a veto.
+- **After Tue 20 Oct:** pad count 7–4–1 (assumes Hart + Duren started for Danijel). With Smith: win 63% / tie 21% / lose 16%, ~6.9 cats; REB 30% → 60%. Smith starts all 3 CHI games (Wed C, Fri PF, Sat PF). Wed lineup: Keyonte PG, Tre Jones SG, Kawhi PF, Smith C.
 - **Odds after the move:** ~6.5 of 12 cats, **win 53% / tie 23% / lose 24%** (was 45 / 23 / 32). Likely wins MIN, FT%, PTS, STL; toss-ups 3PM, FG%, AST, TO; likely losses REB, PF, BLK, DD (Danijel has AD, Duren, Sarr, Carter). Chase the toss-ups (assists, 3s, efficient guards), not blocks/DD.
 - **Tue lineup:** Simons at PG (Keyonte idle), Queta at C (Jokić idle). First tip Tue 21:00 Zurich. Simons is Yahoo **Q** (hamstring): if ruled out, leave PG empty rather than spend an add.
 - **Considered, not done:** Champagnie for Collins (+0.2 cats; Collins may outplay his model in DET). Keep Jrue (hand, DTD, back ~21 Oct). Ayton is the best FA (+6.4) but C-only behind Jokić/Queta, so not this week.
-- **Week plan (19 Oct):** empty seats are SG Tue, PF+C Wed, SG+PF Thu, SF+PF Sat. Jrue's two games (Wed, Fri) never get a seat, so he adds nothing this week. **Jrue → Jalen Smith** (CHI, PF/C; Wed/Fri/Sat, on the pasted FA list) re-simulates to about +0.5 cats, win ≈53% → ≈65%. Decide Wed morning after Tuesday's games: do it if no starter got hurt (leaves 2 adds); costs Jrue rest-of-season. Dropping Simons or Tre Jones instead is worse.
+- **Week plan (19 Oct, done 21 Oct):** empty seats are SG Tue, PF+C Wed, SG+PF Thu, SF+PF Sat. Jrue's two games (Wed, Fri) never get a seat, so he adds nothing this week. **Jrue → Jalen Smith** (CHI, PF/C; Wed/Fri/Sat, on the pasted FA list) re-simulates to about +0.5 cats, win ≈53% → ≈65%. Decide Wed morning after Tuesday's games: do it if no starter got hurt (leaves 2 adds); costs Jrue rest-of-season. Dropping Simons or Tre Jones instead is worse.
 
 **What Mario sends (screenshots / messages), and when:**
 
