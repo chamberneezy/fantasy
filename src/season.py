@@ -479,7 +479,13 @@ class SeasonSession:
         """Replay the week with the swap made, so the gain shown is simulated, not estimated."""
         players = [seat for seat in self._my_players() if seat[0] != row["drop"]]
         players.append((row["add"], row["positions"], row["team"]))
-        swapped = lineup.plan_week(self._by_day(players, week, today), plan["theirs"], today.isoformat())["result"]
+        by_day = self._by_day(players, week, today)
+        # Days already played stay as banked: a drop today does not erase his past lines.
+        iso = today.isoformat()
+        for day in by_day:
+            if day < iso and day in plan["mine"]:
+                by_day[day] = plan["mine"][day]
+        swapped = lineup.plan_week(by_day, plan["theirs"], iso)["result"]
         before = plan["result"]
         add_line = self.data.line_for(row["add"])
         drop_line = self.data.line_for(row["drop"])
