@@ -1,35 +1,68 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Davion Mitchell,MIA,PG,,112,66
-Jakob Poeltl,TOR,C,,118,57
-Yves Missi,NOP,C,,132,31
-Gui Santos,GSW,SF/PF,,138,27
+Jakob Poeltl,TOR,C,,124,49
 Moussa Diabaté,CHA,C,Q,145,28
 Anthony Black,ORL,PG/SG/SF,O,147,41
-Ace Bailey,UTA,SF/PF,,149,39
-Pelle Larsson,MIA,SG/SF,Q,152,17
+Ace Bailey,UTA,SF/PF,,150,39
+Pelle Larsson,MIA,SG/SF,,153,13
 Aaron Nesmith,IND,SG/SF,Q,154,18
 Mikel Brown Jr.,BKN,PG,,155,21
-Isaiah Jackson,LAC,C,,158,21
+Isaiah Jackson,LAC,C,,159,20
 Bennedict Mathurin,NOP,SG/SF,,160,20
 Jeremiah Fears,NOP,PG/SG,,163,47
-Jake LaRavia,LAL,SF/PF,,164,10
+Jake LaRavia,LAL,SF/PF,,164,7
 Maxime Raynaud,SAC,C,O,169,22
 Oso Ighodaro,PHX,C,Q,170,7
 Brook Lopez,LAC,C,,174,12
 Deandre Ayton,WAS,C,,177,13
-Jaylen Wells,MEM,SG/SF,,178,8
+Jaylen Wells,MEM,SG/SF,,178,18
 Isaiah Collier,UTA,PG/SG,,181,8
-Jordan Poole,NOP,PG/SG,,182,10
+Jordan Poole,NOP,PG/SG,,182,7
 Scoot Henderson,POR,PG,,183,11
 Kelly Oubre Jr.,IND,SF/PF,,184,14
 Kyle Filipowski,UTA,PF/C,Q,186,10
-Dennis Schröder,CHA,PG/SG,,187,8
-Paul Reed,DET,PF/C,,188,13
+Dennis Schröder,CHA,PG/SG,,187,26
 Tim Hardaway Jr.,MIA,SG/SF,,189,9
 Baylor Scheierman,BOS,SG/SF,,190,3
 Robert Williams III,POR,C,,191,5
 Daniss Jenkins,DET,PG/SG,,,5
 Isaiah Stewart,MEM,PF/C,O,193,14
 Dylan Cardwell,SAC,PF/C,O,195,5
-Miles McBride,NYK,PG/SG,,196,5
-Jrue Holiday,POR,PG/SG,,,
+Miles McBride,NYK,PG/SG,,199,5
+Jrue Holiday,POR,PG/SG,,144,30
+Kris Dunn,LAC,PG/SG,,203,12
+Bilal Coulibaly,WAS,SG/SF,,210,23
+Derrick Jones Jr.,LAC,SF/PF,,211,8
+Tidjane Salaün,CHA,PF/C,,381,0
+Ziaire Williams,LAL,SG/SF,,270,5
+Alex Caruso,OKC,SG/SF,,205,19
+Justin Champagnie,WAS,SF/PF,,256,3
+Matisse Thybulle,LAL,SG/SF,,340,3
+Kasparas Jakučionis,MIL,PG/SG,,335,8
+Javonte Green,DET,SG/SF,,259,2
+Marcus Sasser,DAL,PG,,377,4
+Julian Champagnie,SAS,SF/PF,,175,21
+Luke Kennard,PHX,SG/SF,,260,1
+DeAndre Jordan,NOP,C,,453,0
+Kentavious Caldwell-Pope,PHI,SG/SF,,288,5
+Dean Wade,PHI,SF/PF,,285,1
+Max Christie,DAL,SG/SF,,254,7
+Jordan Goodwin,PHX,PG/SG,,263,1
+Charles Bassey,GSW,C,,437,1
+Brandon Williams,GSW,PG,,283,4
+Trevon Brazile,DEN,PF,,564,6
+Sam Hauser,BOS,SF/PF,,206,4
+Ja'Kobe Walter,TOR,PG/SG,,273,4
+Graham Ike,GSW,PF,,552,1
+Svi Mykhailiuk,UTA,SG/SF,,319,1
+Tre Johnson,WAS,PG/SG/SF,,223,6
+Daniel Gafford,DAL,C,,135,31
+Ryan Kalkbrenner,CHA,C,,265,5
+Sidy Cissoko,POR,SF/PF,,350,1
+Corey Kispert,ATL,SG/SF,,314,0
+Terrence Shannon Jr.,MIN,SG/SF,,202,2
+Quenton Jackson,IND,PG/SG,,343,0
+Al Horford,GSW,PF/C,O,214,3
+Bub Carrington,WAS,PG/SG,,245,2
+Sam Merrill,CLE,SG/SF,,271,3
+Anfernee Simons,PHI,PG/SG,,,

@@ -255,7 +255,7 @@ class SeasonSession:
         data = self.data
         mine = self._by_day(self._my_players(), week, today)
         opponent = data.matchups.get(week["week"])
-        their_names = data.team_names(opponent) if opponent else []
+        their_names = data.active_names(opponent) if opponent else []
         if their_names:
             theirs = self._by_day(
                 [(name, data.positions_for(name)[0], data.team_of(name)) for name in their_names], week, today

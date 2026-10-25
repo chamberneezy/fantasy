@@ -140,13 +140,13 @@ data/                   projections, sessions; do not commit secrets
 6. Lab language: modal slot ≠ one room that happened. Squad names are unique. Alondes is $1 / not draftable.
 7. Logo from helper/draft/lab/season resets those sessions and opens `/`.
 8. No exploit, scrape, or Yahoo-live wiring.
-9. Season pad: no IL, Hezonja stays, Tre Jones, Simons and Jalen Smith on the 10 (session), 2 adds left in week 1.
+9. Season pad: no IL, Hezonja stays, Tre Jones, Jalen Smith and Tristan da Silva on the 10 (session); opponent `IL` rows are rostered but never simulated as starters.
 10. Season helper: no Yahoo calls anywhere in `nba_feed.py` / `injuries.py`; `/season` shows a matchup card only when `matchups.csv` names the week’s opponent; add plans never offer a rostered name or drop Hezonja.
 
-## Mario’s roster (week 1)
+## Mario’s roster (after week 1)
 
-Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
+Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4), then **Anfernee Simons → Tristan da Silva** (25 Oct, add 3 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
 
-PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jalen Smith, Neemias Queta, Anfernee Simons, Tre Jones.
+PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jalen Smith, Neemias Queta, Tristan da Silva, Tre Jones.
 
-**2 adds left in week 1** (keep them for an injured starter). Holes: TO, PF. No IL — a DNP costs a drop to stream. Week 1 status, the screenshot routine and what Mario sends: `context/season_helper.md` → *Week 1 (live)*.
+Week 2 (Mon 26 Oct – Sun 1 Nov) vs **Old Stars**, 4 fresh adds. Holes: TO, PF; MIN and 3PM lean to opponents in weeks 2–5. No IL — a DNP costs a drop to stream. Week 1 record, how to answer (facts first, per-cat leans, no headline win %) and what Mario sends: `context/season_helper.md`.

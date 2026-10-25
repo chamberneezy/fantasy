@@ -25,9 +25,9 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 ## Files Mario supplies (pasted by hand, never scraped)
 
-- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **snapshot 5 Oct 2026**. Stale after any add/drop/trade. Re-paste the week’s opponent at least.
-- `data/season/free_agents.csv` — Yahoo's free-agent list (name, team, Yahoo positions, Q/O tag, pre-season rank, % rostered), top 40 by pre-season rank, **19 Oct 2026**. When present, add plans only offer these names and skip Yahoo "O"; Yahoo positions replace the NBA-feed guess. Re-paste before each add decision.
-- `data/season/matchups.csv` — `week,opponent`. **Only week 1 is filled** (Danijel's Dandy Team).
+- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **snapshot 5 Oct 2026**; weeks 2–5 opponents re-pasted **24 Oct**. Stale after any add/drop/trade. Re-paste the week’s opponent at least. Slot `IL` stays rostered but is left out of that team's simulated starts (the league has no IL; Old Stars carries two anyway).
+- `data/season/free_agents.csv` — Yahoo's free-agent list (name, team, Yahoo positions, Q/O tag, pre-season rank, % rostered), merged from Yahoo screenshots (Players → All Available, sorted by **Current** rank, 2–3 pages), last **25 Oct 2026**, 67 names. Names missing from a fresh screenshot that ranked inside it are removed as taken; names below the pages stay until seen again. When present, add plans only offer these names and skip Yahoo "O"; Yahoo positions replace the NBA-feed guess. Re-paste before each add decision.
+- `data/season/matchups.csv` — `week,opponent`. Weeks **1–5** filled: Danijel's Dandy Team, Old Stars, BC Versus, Mother Tucker, Harlem Bricks.
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
 - `data/season/fantasy_weeks.csv` — optional `week,start,end` override. Not present. Week 1 = **20–25 Oct** (confirmed). Default after that is Monday–Sunday, but Yahoo’s week 21 ends 28 Mar, so two calendar weeks get joined somewhere before week 19 — **dates still needed** (matters from about February).
 
@@ -55,26 +55,31 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 - Outlook model on held-out 2025-26: ~6–8% lower error than last season’s line. Model alone under-rates top scorers by ~0.5 pt; last season alone over-rates them by ~1.2 pt; 50/50 is best for stars.
 - NBA feed position (G/F/C) matches Yahoo eligibility only roughly (Jaccard 0.69). Free-agent positions are **guessed** and flagged; e.g. Diabaté shows SF/PF but is a centre.
 
-## Week 1 (live) — Tue 20 – Sun 25 Oct vs Danijel's Dandy Team
+## Week 1 — Tue 20 – Sun 25 Oct vs Danijel's Dandy Team
 
-Mario's focus is **week 1 only** until it ends; ignore week 2+ for now.
+- **Moves (3 of 4 adds):** Dillon Brooks → Anfernee Simons (19 Oct); Jrue Holiday → Jalen Smith (21 Oct); Anfernee Simons → **Tristan da Silva** (25 Oct; ORL SF/PF, starter minutes while Banchero is out ~4–6 weeks).
+- **Score:** 3–9 after Wed, 7–5 after Thu, 6–5–1 after Fri (Yahoo), about 7–5 after Sat (box-score count). Final pending.
+- **Lessons:** the "63% win" call after Tuesday was badly overconfident (opponent's early games, Jokić idle until Thu). Jrue → Smith and Brooks → Simons were weak long-run calls. Past days in the pad still assume both teams' best five, so its headline odds drift from the real Yahoo score mid-week.
 
-- **Moves:** Dillon Brooks → **Anfernee Simons** (19 Oct); Jrue Holiday → **Jalen Smith** (21 Oct). **2 of 4 adds left**; keep them for an injured starter (no IL).
-- **Goal:** win each week. Rank moves by this week's win chance; season value given up is a con, not a veto.
-- **After Tue 20 Oct:** pad count 7–4–1 (assumes Hart + Duren started for Danijel). With Smith: win 63% / tie 21% / lose 16%, ~6.9 cats; REB 30% → 60%. Smith starts all 3 CHI games (Wed C, Fri PF, Sat PF). Wed lineup: Keyonte PG, Tre Jones SG, Kawhi PF, Smith C.
-- **Odds after the move:** ~6.5 of 12 cats, **win 53% / tie 23% / lose 24%** (was 45 / 23 / 32). Likely wins MIN, FT%, PTS, STL; toss-ups 3PM, FG%, AST, TO; likely losses REB, PF, BLK, DD (Danijel has AD, Duren, Sarr, Carter). Chase the toss-ups (assists, 3s, efficient guards), not blocks/DD.
-- **Tue lineup:** Simons at PG (Keyonte idle), Queta at C (Jokić idle). First tip Tue 21:00 Zurich. Simons is Yahoo **Q** (hamstring): if ruled out, leave PG empty rather than spend an add.
-- **Considered, not done:** Champagnie for Collins (+0.2 cats; Collins may outplay his model in DET). Keep Jrue (hand, DTD, back ~21 Oct). Ayton is the best FA (+6.4) but C-only behind Jokić/Queta, so not this week.
-- **Week plan (19 Oct, done 21 Oct):** empty seats are SG Tue, PF+C Wed, SG+PF Thu, SF+PF Sat. Jrue's two games (Wed, Fri) never get a seat, so he adds nothing this week. **Jrue → Jalen Smith** (CHI, PF/C; Wed/Fri/Sat, on the pasted FA list) re-simulates to about +0.5 cats, win ≈53% → ≈65%. Decide Wed morning after Tuesday's games: do it if no starter got hurt (leaves 2 adds); costs Jrue rest-of-season. Dropping Simons or Tre Jones instead is worse.
+## How to answer (agreed 23 Oct)
+
+1. Facts first: score, games left, who plays — checkable against Mario's screenshot.
+2. No headline win %. Per category: likely / lean / coin flip / unlikely, with the reason.
+3. Coin flips are named as coin flips; Mario decides those.
+4. Every add/drop shows the long-run value given up first; push only clear edges. Goal stays winning each week.
+
+## Roster shape (sim of weeks 2–5, 24 Oct)
+
+MIN and 3PM lean to the opponent in all four weeks; TO, STL, AST, FT% lean Mario's way. Week-2 adds should target minutes, threes and games, not centres (Jokić, Collins, Queta, Smith are already C-eligible). Week 3 has no games Tue 3 Nov and 10-for-5 seats Mon/Wed.
 
 **What Mario sends (screenshots / messages), and when:**
 
 | When | What |
 |---|---|
 | After any move | One line: "added X, dropped Y" → apply with `SeasonSession.add/drop`, `save_season`, then `scripts/publish_season.py`. |
-| Done 19 Oct | Danijel's roster: unchanged from the 5 Oct paste. |
-| Every morning Wed–Mon | Yahoo **matchup page** screenshot (12 cats + both rosters). Read the real score, say which cats are locked / lost / in play, tonight's lineup, whether an add is worth it. |
-| Before an add | Free-agent list, top 25–40 → `data/season/free_agents.csv` (Brooks re-added there as FA). |
+| Every morning | Yahoo **matchup page** screenshot (12 cats + both rosters). Read the real score, say which cats are locked / lost / in play, tonight's lineup, whether an add is worth it. |
+| Before an add | Players → All Available, sorted by **Current** rank, 2–3 pages → merge into `data/season/free_agents.csv`. |
+| Sunday / Monday | Next opponent's roster → `league_rosters.csv`. |
 | If he deviates | "started X instead of Y"; otherwise assume he set the pad's lineup. |
 
 Mario does **not** want the Yahoo API (needs app approval since Jul 2026) or anyone logging into his Yahoo account. Stats, injuries and schedules come from the NBA/ESPN feeds automatically.
@@ -88,7 +93,8 @@ Mario does **not** want the Yahoo API (needs app approval since Jul 2026) or any
 ## Next, in the order I would do it
 
 1. ~~Matchup detail panel~~ **built 18 Oct** (`src/scouting.py`). Not in it: likely defender (`leagueseasonmatchups` is a per-player network call; add to the refresh if wanted).
-2. **Rest of the matchup schedule** into `matchups.csv`, and Yahoo’s joined-week dates.
+2. ~~Matchup schedule~~ weeks 1–5 in `matchups.csv` (24 Oct). Still needed: weeks 6+ and Yahoo’s joined-week dates.
+2b. **Week-ahead report + weekly scorecard** (agreed 23 Oct, not built): Sunday report of starts per day, per-cat leans, add options with season cost; Monday score vs the leans in `data/season/results.csv`; weight this season's games more in `daily.py` once the scorecard shows it helps.
 3. **Refit the outlook** (`scripts/refresh_season.py --refit`) once ~3 weeks of 2026-27 are in. The CLI exists; the timer does not refit.
 4. **Backtest log (planned phase 8):** store each day’s projection and compare with the box score weekly, so trust is measured in-season.
 5. **League table on the page** (currently scratch only) and comeback lines for Kyrie / VanVleet / Lillard if Mario wants them.

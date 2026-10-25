@@ -148,6 +148,11 @@ class SeasonData:
     def team_names(self, fantasy_team: str) -> list[str]:
         return [str(name) for name in self.rosters.loc[self.rosters["fantasy_team"] == fantasy_team, "player_name"]]
 
+    def active_names(self, fantasy_team: str) -> list[str]:
+        """Names that can score: an IL row stays rostered but out of the week's starts."""
+        team = self.rosters[self.rosters["fantasy_team"] == fantasy_team]
+        return [str(name) for name in team.loc[team["slot"].astype(str).str.upper() != "IL", "player_name"]]
+
     def positions_for(self, name: str, fallback: object = "") -> tuple[str, bool]:
         """Yahoo eligibility if pasted, else a guess from the NBA feed. Second value: is it Yahoo's."""
         yahoo = _find(self._yahoo, name)
