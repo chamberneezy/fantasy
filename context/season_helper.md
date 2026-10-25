@@ -45,7 +45,7 @@ Mario opens the Claude app → Code → this repo, branch `cursor/3rd-league-dra
 |---|---|---|
 | Matchup page (12 cats, both teams) | `data/season/yahoo_scores.csv`: two rows, `week,through,side` (`mine` / `theirs`) + `min,fgm,fga,ftm,fta,fg3m,pts,reb,ast,stl,blk,to,pf,dd` | `through` = the last day whose games are in the totals (a morning screenshot: yesterday). Keep earlier rows. The week plan then starts from these real totals. |
 | "Added X, dropped Y" / My Team | `SeasonSession.drop/add` + `save_season` (session json), Mario's lines in `league_rosters.csv` (CRLF line endings), `free_agents.csv` (X off, Y on) | Adds count against 4 per week. |
-| Transactions (League → Transactions) | apply each add/drop/trade to that team's rows in `league_rosters.csv`, oldest first; Mario's own also via `SeasonSession.add/drop(on=date)` | Must reach back to the last one seen; say so if it does not. Slot `IL` = rostered but not simulated. |
+| Transactions (League → Transactions) | append to `data/season/transactions.csv` (`when_local` in Zurich time as Yahoo shows it, `team`, `add`, `drop`; full names), then apply each add/drop/trade to that team's rows in `league_rosters.csv`, oldest first; Mario's own also via `SeasonSession.add/drop(on=date)` | Must reach back to the last row in the log (last: 25 Oct 12:19, Rapske Manige); say so if it does not. Slot `IL` = rostered but not simulated. |
 | Free agents (sorted by Current rank) | merge into `free_agents.csv`; names missing that ranked inside the pages → remove as taken | |
 | Season schedule | `matchups.csv` (`week,opponent`) | |
 
