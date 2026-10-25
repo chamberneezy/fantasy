@@ -28,6 +28,9 @@ MIN_ANCHOR_GAMES = 5
 HISTORY_GAMES = 60
 ROSTERS_NAME = "league_rosters.csv"
 MATCHUPS_NAME = "matchups.csv"
+# Yahoo's matchup page, typed in from a screenshot: both teams' week totals through a day.
+YAHOO_SCORES_NAME = "yahoo_scores.csv"
+YAHOO_COLUMNS = ("week", "through", "side", "min", "fgm", "fga", "ftm", "fta", "fg3m", "pts", "reb", "ast", "stl", "blk", "to", "pf", "dd")
 # Yahoo's free-agent list, pasted by hand. When present, only these names are offered as adds.
 FREE_AGENTS_NAME = "free_agents.csv"
 # NBA feed positions are G / F / C. Yahoo's are finer; this is the nearest guess
@@ -141,9 +144,27 @@ class SeasonData:
             if matchups_path.exists()
             else {}
         )
+        scores_path = self.feed_dir / YAHOO_SCORES_NAME
+        self.yahoo_scores = pd.read_csv(scores_path) if scores_path.exists() else pd.DataFrame(columns=list(YAHOO_COLUMNS))
         injuries_path = self.feed_dir / nba_feed.INJURIES_PATH.name
         report = pd.read_csv(injuries_path).fillna("") if injuries_path.exists() else pd.DataFrame()
         self.injuries = _keyed((row["player_name"], row) for row in report.to_dict("records"))
+
+    def yahoo_banked(self, week: int) -> dict | None:
+        """The latest Yahoo score for ``week``: ``through`` a day, both sides as ``matchup.STATS`` vectors."""
+        rows = self.yahoo_scores.loc[self.yahoo_scores["week"] == week] if len(self.yahoo_scores) else self.yahoo_scores
+        if rows.empty:
+            return None
+        through = str(rows["through"].max())
+        latest = rows.loc[rows["through"].astype(str) == through]
+        sides = {}
+        for side in ("mine", "theirs"):
+            row = latest.loc[latest["side"] == side]
+            if row.empty:
+                return None
+            values = row.iloc[0]
+            sides[side] = np.array([float(values["min" if stat == "mp" else stat]) for stat in matchup.STATS])
+        return {"through": through, **sides}
 
     def team_names(self, fantasy_team: str) -> list[str]:
         return [str(name) for name in self.rosters.loc[self.rosters["fantasy_team"] == fantasy_team, "player_name"]]

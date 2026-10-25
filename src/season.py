@@ -260,9 +260,11 @@ class SeasonSession:
             theirs = self._by_day(
                 [(name, data.positions_for(name)[0], data.team_of(name)) for name in their_names], week, today
             )
-            plan = lineup.plan_week(mine, theirs, today.isoformat())
+            banked = data.yahoo_banked(week["week"])
+            plan = lineup.plan_week(mine, theirs, today.isoformat(), banked=banked)
             plan["opponent"] = opponent
             plan["theirs"] = theirs
+            plan["banked"] = banked
         else:
             plan = {"lineups": {day: lineup.by_value(entries) for day, entries in mine.items()}, "result": None, "weights": None}
         plan["mine"] = mine
@@ -485,7 +487,7 @@ class SeasonSession:
         for day in by_day:
             if day < iso and day in plan["mine"]:
                 by_day[day] = plan["mine"][day]
-        swapped = lineup.plan_week(by_day, plan["theirs"], iso)["result"]
+        swapped = lineup.plan_week(by_day, plan["theirs"], iso, banked=plan.get("banked"))["result"]
         before = plan["result"]
         add_line = self.data.line_for(row["add"])
         drop_line = self.data.line_for(row["drop"])

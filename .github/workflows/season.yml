@@ -1,0 +1,85 @@
+# Season feed for the NBA Fantasy pad and iPhone app.
+# GitHub runs schedules only from the default branch, so a copy of this file lives on
+# main for the schedule; this copy on the working branch runs it after a push that
+# changes the roster, the league files, a Yahoo score or the code.
+name: Season feed
+
+on:
+  schedule:
+    - cron: "0 6,7,8 * * *"   # mornings (07-09 Zurich in winter): last night's box scores
+    - cron: "0 17,22 * * *"   # evenings: injury news before tip-off
+  push:
+    branches: [cursor/3rd-league-draft-dollars]
+    paths:
+      - data/season_session.json
+      - data/season/league_rosters.csv
+      - data/season/free_agents.csv
+      - data/season/matchups.csv
+      - data/season/yahoo_scores.csv
+      - src/**
+      - scripts/**
+  workflow_dispatch:
+  repository_dispatch:
+    types: [season-refresh]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: season-feed
+  cancel-in-progress: false
+
+env:
+  CODE_REF: cursor/3rd-league-draft-dollars
+  FEED_BRANCH: season-feed
+  FEED_FILES: schedule.csv players.csv gamelogs_2026-27.csv injuries.csv feed.json
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CODE_REF }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -q -r requirements.txt
+
+      - name: Restore the raw feed
+        run: |
+          if git ls-remote --exit-code --heads origin "$FEED_BRANCH" >/dev/null; then
+            git fetch -q --depth 1 origin "$FEED_BRANCH"
+            git archive FETCH_HEAD | tar -x -C data/season
+          fi
+
+      - name: Pull from ESPN
+        run: |
+          flag=""
+          if [ "${{ github.event.schedule }}" = "0 6,7,8 * * *" ]; then flag="--morning"; fi
+          python scripts/refresh_season.py $flag
+
+      - name: Save the raw feed
+        run: |
+          work=$(mktemp -d)
+          for name in $FEED_FILES; do
+            if [ -f "data/season/$name" ]; then cp "data/season/$name" "$work/"; fi
+          done
+          cd "$work"
+          git init -q -b "$FEED_BRANCH"
+          git add -A
+          git -c user.name="NBA Fantasy feed" -c user.email="81742479+chamberneezy@users.noreply.github.com" \
+            commit -q -m "Season feed $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/$FEED_BRANCH"
+
+      - name: Publish the app feed and Pages
+        env:
+          PUBLISH_REMOTE: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/publish_season.py --force

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 
+import matchup as matchup_stats
 import opportunity
 import schedule as slate
 import season
@@ -113,13 +114,34 @@ def _week(grid: dict, plan: dict) -> list[dict]:
     return days
 
 
-def _leans(matchup: dict | None) -> list[dict]:
+def _leans(matchup: dict | None, banked: dict | None) -> list[dict]:
+    """Per-cat word for the week's end, plus Yahoo's real score when one is on file."""
     if not matchup:
         return []
-    return [
-        {"cat": row["cat"], "mine": row["mine"], "theirs": row["theirs"], "lean": lean_word(row["win"])}
-        for row in matchup["cats"]
-    ]
+    rows = []
+    for row in matchup["cats"]:
+        item = {"cat": row["cat"], "mine": row["mine"], "theirs": row["theirs"], "lean": lean_word(row["win"])}
+        if banked:
+            item["yahoo_mine"], item["yahoo_theirs"] = _yahoo_value(banked["mine"], row["cat"]), _yahoo_value(banked["theirs"], row["cat"])
+        rows.append(item)
+    return rows
+
+
+def _yahoo_value(vector, cat: str) -> float:
+    """One category from a ``matchup.STATS`` vector, as Yahoo shows it."""
+    at = matchup_stats.AT
+    if cat in matchup_stats.RATIOS:
+        made, tried = matchup_stats.RATIOS[cat]
+        return round(float(vector[at[made]] / vector[at[tried]]), 3) if vector[at[tried]] else 0.0
+    return round(float(vector[at[matchup_stats.COUNTING[cat]]]), 1)
+
+
+def _leans_note(banked: dict | None, today: date) -> str:
+    if banked and banked["through"] >= (today.fromordinal(today.toordinal() - 1)).isoformat():
+        return f"Starts from Yahoo's real score through {banked['through']}; only the days after are simulated."
+    if banked:
+        return f"Starts from Yahoo's score through {banked['through']}; the days after it assume both teams' best five. Send a fresh matchup screenshot."
+    return "No Yahoo score on file this week: past days assume both teams started their best five."
 
 
 def build(session, today: date) -> dict:
@@ -140,8 +162,9 @@ def build(session, today: date) -> dict:
         "adds_left": session.state(today).get("adds_left"),
         "today": _today(grid),
         "days": _week(grid, plan),
-        "leans": _leans(grid.get("matchup")),
-        "leans_note": "Past days assume both teams started their best five; trust Yahoo's score for what is banked.",
+        "leans": _leans(grid.get("matchup"), plan.get("banked")),
+        "yahoo_through": (plan.get("banked") or {}).get("through"),
+        "leans_note": _leans_note(plan.get("banked"), today),
         "news": opportunity.news(data, mine, plan.get("opponent"), today, protected),
         "mine": [player_card(data, name) for name in mine],
         "theirs": [player_card(data, name) for name in (data.active_names(plan["opponent"]) if plan.get("opponent") else [])],

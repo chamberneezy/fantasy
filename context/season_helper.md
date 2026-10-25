@@ -37,11 +37,21 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 `data/season_session.json` (roster, lineup, adds used) is **committed** now, so the run and cloud sessions see Mario's ten. After a move: update the session (`SeasonSession.add/drop`, `save_season`) and `league_rosters.csv`, commit, push, `gh workflow run season.yml`.
 
-## From the Claude iPhone app
+## From the Claude iPhone app (cloud session on this repo)
 
-Mario sends Yahoo screenshots in a Claude Code session on this repo (Claude app → Code). Same routine as below: read the real score, apply moves to the session and rosters, merge free-agent pages, commit, push, start `season.yml`. Answer in the agreed format (facts first, per-cat leans, no headline win %).
+Mario opens the Claude app → Code → this repo, branch `cursor/3rd-league-draft-dollars`, and sends Yahoo screenshots. A cloud session has the code and the committed files, not the raw feed: first `git fetch origin season-feed && git archive FETCH_HEAD | tar -x -C data/season` (schedule, players, this season's logs, injuries), then `pip install -r requirements.txt`. Then, per screenshot:
 
-## Refresh on the laptop (old, still works)
+| Screenshot | Write | Notes |
+|---|---|---|
+| Matchup page (12 cats, both teams) | `data/season/yahoo_scores.csv`: two rows, `week,through,side` (`mine` / `theirs`) + `min,fgm,fga,ftm,fta,fg3m,pts,reb,ast,stl,blk,to,pf,dd` | `through` = the last day whose games are in the totals (a morning screenshot: yesterday). Keep earlier rows. The week plan then starts from these real totals. |
+| "Added X, dropped Y" / My Team | `SeasonSession.drop/add` + `save_season` (session json), Mario's lines in `league_rosters.csv` (CRLF line endings), `free_agents.csv` (X off, Y on) | Adds count against 4 per week. |
+| Opponent's roster | his rows in `league_rosters.csv`; slot `IL` = rostered but not simulated | Ask before changing other teams' rows. |
+| Free agents (sorted by Current rank) | merge into `free_agents.csv`; names missing that ranked inside the pages → remove as taken | |
+| Season schedule | `matchups.csv` (`week,opponent`) | |
+
+Then commit and push: the push starts `season.yml` (paths above), which pulls ESPN, rebuilds and publishes `app.json` and Pages within a few minutes. Reply in the agreed format: facts first, per-cat leans as words, coin flips named, long-run cost first on any move. Opponent analysis stays in chat, not in commits.
+
+## Refresh on the laptop (old; its systemd timers were switched off 25 Oct 2026, GitHub publishes now)
 
 Two systemd user timers, Zurich time. **Morning** (`nba-fantasy-morning`): every 15 min 06:00–09:45 runs `refresh_season.py --morning --publish`, which pulls only once last night's final game should be over (latest tip + 2h30; west-coast tips are 04:00–05:00 Zurich, so usually 06:30–07:30) and does nothing once every game of the night is in the logs (`nba_feed.night_status`). **Evening** (`nba-fantasy-refresh`): 18:00 and 23:30, injury news before tip-off. Both republish Pages after a pull. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
 

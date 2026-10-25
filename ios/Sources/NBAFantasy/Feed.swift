@@ -13,6 +13,7 @@ struct Feed: Codable {
     let today: Today
     let days: [Day]
     let leans: [Lean]
+    let yahooThrough: String?
     let leansNote: String
     let news: News
     let mine: [PlayerCard]
@@ -79,6 +80,8 @@ struct Lean: Codable, Identifiable {
     let mine: Double
     let theirs: Double
     let lean: String
+    let yahooMine: Double?
+    let yahooTheirs: Double?
 }
 
 struct News: Codable {
