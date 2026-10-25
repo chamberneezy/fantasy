@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 
+import numpy as np
+
 import matchup as matchup_stats
 import opportunity
 import schedule as slate
@@ -115,7 +117,7 @@ def _week(grid: dict, plan: dict) -> list[dict]:
 
 
 def _leans(matchup: dict | None, banked: dict | None) -> list[dict]:
-    """Per-cat word for the week's end, plus Yahoo's real score when one is on file."""
+    """Per-cat word for the week's end, plus the score so far (``live_totals``) when there is one."""
     if not matchup:
         return []
     rows = []
@@ -124,6 +126,103 @@ def _leans(matchup: dict | None, banked: dict | None) -> list[dict]:
         if banked:
             item["yahoo_mine"], item["yahoo_theirs"] = _yahoo_value(banked["mine"], row["cat"]), _yahoo_value(banked["theirs"], row["cat"])
         rows.append(item)
+    return rows
+
+
+SEATS = 5
+
+
+def live_totals(plan: dict, today: date) -> dict | None:
+    """The week so far: Yahoo's last typed-in totals, plus ESPN box scores for every finished day after them.
+
+    A day counts each team's starters. With five or fewer players in games they all
+    started, so the day is exact; with more, the five who played the most minutes are
+    assumed, and the day is listed in ``assumed`` (Yahoo may show a different five).
+    """
+    if not plan.get("result"):
+        return None
+    banked = plan.get("banked")
+    start = banked["through"] if banked else ""
+    yesterday = date.fromordinal(today.toordinal() - 1).isoformat()
+    sides = {
+        "mine": (plan["mine"], plan["lineups"], banked["mine"].copy() if banked else np.zeros(len(matchup_stats.STATS))),
+        "theirs": (plan["theirs"], plan.get("their_lineups") or {}, banked["theirs"].copy() if banked else np.zeros(len(matchup_stats.STATS))),
+    }
+    assumed, counted = [], False
+    for side, (by_day, lineups, total) in sides.items():
+        for day, entries in by_day.items():
+            if day <= start or day > yesterday:
+                continue
+            counted = True
+            played = [entry for entry in entries if entry.get("fixed") is not None and entry["fixed"][matchup_stats.AT["mp"]] > 0]
+            if len(played) > SEATS:
+                assumed.append({"side": side, "date": day, "played": len(played)})
+            seated = set(lineups.get(day, {}).values())
+            for entry in played:
+                if entry["name"] in seated:
+                    total += entry["fixed"]
+    through = yesterday if counted else (start or None)
+    if not through:
+        return None
+    return {"through": through, "yahoo_through": start or None, "mine": sides["mine"][2], "theirs": sides["theirs"][2], "assumed": sorted(assumed, key=lambda row: row["date"])}
+
+
+def score(leans: list[dict], through: str | None) -> dict | None:
+    """The week's score as Yahoo shows it (categories won, lost, tied) and the outlook as counts of lean words."""
+    if not leans:
+        return None
+    outlook = {"yours": 0, "coin_flip": 0, "his": 0}
+    for row in leans:
+        key = "yours" if row["lean"] in ("likely yours", "lean yours") else "coin_flip" if row["lean"] == "coin flip" else "his"
+        outlook[key] += 1
+    result = {"through": through, "outlook": outlook}
+    if through and all("yahoo_mine" in row for row in leans):
+        won = lost = tied = 0
+        for row in leans:
+            mine, theirs = row["yahoo_mine"], row["yahoo_theirs"]
+            if mine == theirs:
+                tied += 1
+            elif (mine < theirs) == (row["cat"] in ("TO", "PF")):
+                won += 1
+            else:
+                lost += 1
+        result.update(won=won, lost=lost, tied=tied)
+    return result
+
+
+CATEGORIES = ("MIN", "FG%", "FT%", "3PM", "PTS", "REB", "AST", "STL", "BLK", "TO", "PF", "DD")
+
+
+def season_weeks(session, current: int, today: date) -> list[dict]:
+    """Every week with an opponent on file: dates, opponent, and the score.
+
+    Finished weeks are scored like the live week: Yahoo's last typed-in totals plus
+    box scores through Sunday. Later weeks show only the opponent.
+    """
+    data = session.data
+    rows = []
+    for week in data.weeks:
+        opponent = data.matchups.get(week["week"])
+        if not opponent:
+            continue
+        row = {
+            "week": week["week"],
+            "start": week["start"].isoformat(),
+            "end": week["end"].isoformat(),
+            "opponent": opponent,
+            "current": week["week"] == current,
+        }
+        if week["end"] < today:
+            day_after = date.fromordinal(week["end"].toordinal() + 1)
+            live = live_totals(session.week_plan(week, day_after), day_after)
+            if live:
+                leans = [
+                    {"cat": cat, "lean": "", "yahoo_mine": _yahoo_value(live["mine"], cat), "yahoo_theirs": _yahoo_value(live["theirs"], cat)}
+                    for cat in CATEGORIES
+                ]
+                counted = score(leans, live["through"])
+                row.update(through=live["through"], won=counted["won"], lost=counted["lost"], tied=counted["tied"], final=True)
+        rows.append(row)
     return rows
 
 
@@ -144,6 +243,42 @@ def _leans_note(banked: dict | None, today: date) -> str:
     return "No Yahoo score on file this week: past days assume both teams started their best five."
 
 
+def _with_live(weeks: list[dict], live: dict | None, leans: list[dict]) -> list[dict]:
+    """The current week in the season list shows the same live score as the score card."""
+    block = score(leans, (live or {}).get("through")) if live else None
+    for row in weeks:
+        if row["current"] and block and "won" in block:
+            row.update(through=block["through"], won=block["won"], lost=block["lost"], tied=block["tied"], final=block["through"] >= row["end"])
+    return weeks
+
+
+def _score_block(leans: list[dict], live: dict | None) -> dict | None:
+    block = score(leans, (live or {}).get("through"))
+    if block and live:
+        block["yahoo_through"] = live["yahoo_through"]
+        block["assumed"] = live["assumed"]
+        block["basis"] = _basis(live)
+    return block
+
+
+def _basis(live: dict) -> str:
+    """One line on where the score comes from, and which days guess the starters."""
+    parts = []
+    if live["yahoo_through"]:
+        parts.append(f"Yahoo to {_day(live['yahoo_through'])}")
+    if live["through"] != live["yahoo_through"]:
+        parts.append(f"box scores to {_day(live['through'])}")
+    text = " + ".join(parts) if parts else "box scores"
+    if live["assumed"]:
+        guesses = ", ".join(f"{'your' if row['side'] == 'mine' else 'his'} {_day(row['date'])}" for row in live["assumed"])
+        text += f". Starters guessed on {guesses} (more than five played)."
+    return text
+
+
+def _day(iso: str) -> str:
+    return date.fromisoformat(iso).strftime("%a %-d %b")
+
+
 def build(session, today: date) -> dict:
     data = session.data
     week = slate.week_for(today, data.weeks)
@@ -162,8 +297,10 @@ def build(session, today: date) -> dict:
         "adds_left": session.state(today).get("adds_left"),
         "today": _today(grid),
         "days": _week(grid, plan),
-        "leans": _leans(grid.get("matchup"), plan.get("banked")),
-        "yahoo_through": (plan.get("banked") or {}).get("through"),
+        "leans": (leans := _leans(grid.get("matchup"), live := live_totals(plan, today))),
+        "score": _score_block(leans, live),
+        "season": _with_live(season_weeks(session, week["week"], today), live, leans),
+        "yahoo_through": (live or {}).get("through"),
         "leans_note": _leans_note(plan.get("banked"), today),
         "news": opportunity.news(data, mine, plan.get("opponent"), today, protected),
         "mine": [player_card(data, name) for name in mine],

@@ -13,6 +13,8 @@ struct Feed: Codable {
     let today: Today
     let days: [Day]
     let leans: [Lean]
+    let score: Score?
+    let season: [SeasonWeek]?
     let yahooThrough: String?
     let leansNote: String
     let news: News
@@ -98,6 +100,54 @@ struct TrackRecord: Codable {
     let gained3: Double
     let minutes: Double
     let calls: Int
+}
+
+/// The week as Yahoo scores it (categories won / lost / tied through a day) and the outlook as lean counts.
+struct Score: Codable {
+    let through: String?
+    let won: Int?
+    let lost: Int?
+    let tied: Int?
+    let outlook: Outlook
+    /// Where the score comes from, e.g. "Yahoo to Fri 23 Oct + box scores to Sat 24 Oct".
+    let basis: String?
+
+    var text: String? {
+        guard let won, let lost, let tied else { return nil }
+        return tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)"
+    }
+}
+
+struct Outlook: Codable {
+    let yours: Int
+    let coinFlip: Int
+    let his: Int
+}
+
+/// One week of the season: opponent, and Yahoo's score once one is on file.
+struct SeasonWeek: Codable, Identifiable {
+    var id: Int { week }
+    let week: Int
+    let start: String
+    let end: String
+    let opponent: String
+    let current: Bool
+    let through: String?
+    let won: Int?
+    let lost: Int?
+    let tied: Int?
+    let final: Bool?
+
+    var scoreText: String? {
+        guard let won, let lost, let tied else { return nil }
+        return tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)"
+    }
+
+    /// Won, lost or tied the week, once it is final.
+    var outcome: String? {
+        guard final == true, let won, let lost else { return nil }
+        return won > lost ? "W" : won < lost ? "L" : "T"
+    }
 }
 
 /// Mario's lowest-value player who is not protected: the bar a pickup must clear.

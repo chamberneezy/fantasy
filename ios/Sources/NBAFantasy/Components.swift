@@ -67,3 +67,77 @@ enum Palette {
         }
     }
 }
+
+/// This week's score in the brand type: Yahoo's real categories, then the outlook in words.
+struct ScoreCard: View {
+    let feed: Feed
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack(alignment: .center) {
+                Text("LIPICANERI").font(Theme.display(13)).kerning(1).foregroundStyle(Theme.blue)
+                Spacer()
+                Text((feed.opponent ?? "Opponent").uppercased()).font(Theme.display(13)).kerning(1).foregroundStyle(Theme.red).lineLimit(1)
+            }
+            if let score = feed.score, let won = score.won, let lost = score.lost, let tied = score.tied {
+                HStack(spacing: 10) {
+                    Text("\(won)").foregroundStyle(won >= lost ? Theme.blue : Theme.ink)
+                    Text("–").foregroundStyle(Theme.mute)
+                    Text("\(lost)").foregroundStyle(lost > won ? Theme.red : Theme.ink)
+                    if tied > 0 {
+                        Text("–").foregroundStyle(Theme.mute)
+                        Text("\(tied)").foregroundStyle(Theme.mute)
+                    }
+                }
+                .font(Theme.display(44).monospacedDigit())
+                Text(score.basis ?? "Through \(score.through.map(Dates.short) ?? "—")")
+                    .font(Theme.ui(11.5))
+                    .foregroundStyle(Theme.mute)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("No score yet this week").font(Theme.ui(14)).foregroundStyle(Theme.mute)
+            }
+            if let outlook = feed.score?.outlook {
+                HStack(spacing: 6) {
+                    Pill(text: "\(outlook.yours) lean yours", color: Theme.blue)
+                    Pill(text: "\(outlook.coinFlip) coin flip\(outlook.coinFlip == 1 ? "" : "s")", color: Palette.lean("coin flip"))
+                    Pill(text: "\(outlook.his) lean his", color: Theme.red)
+                }
+                Text("Where the 12 categories are heading by Sunday").font(Theme.ui(11)).foregroundStyle(Theme.mute)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
+    }
+}
+
+/// One line of the season: week, dates, opponent, score or "next".
+struct SeasonRow: View {
+    let week: SeasonWeek
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text("W\(week.week)").font(Theme.display(15)).foregroundStyle(week.current ? .white : Theme.heading)
+                .frame(width: 38, height: 26)
+                .background(week.current ? Theme.blue : Theme.heading.opacity(0.1), in: RoundedRectangle(cornerRadius: 6))
+            VStack(alignment: .leading, spacing: 1) {
+                Text(week.opponent).font(Theme.ui(15, .semibold)).foregroundStyle(Theme.ink)
+                Text("\(Dates.short(week.start)) – \(Dates.short(week.end))\(week.current ? " · this week" : "")").font(Theme.ui(11.5)).foregroundStyle(Theme.mute)
+            }
+            Spacer()
+            if let text = week.scoreText {
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text(text).font(Theme.display(18).monospacedDigit()).foregroundStyle(color)
+                    Text(week.final == true ? "final" : "through \(week.through.map(Dates.short) ?? "")").font(Theme.ui(10.5)).foregroundStyle(Theme.mute)
+                }
+            } else {
+                Text(week.current ? "no score yet" : "upcoming").font(Theme.ui(12)).foregroundStyle(Theme.mute)
+            }
+        }
+    }
+
+    private var color: Color {
+        guard let won = week.won, let lost = week.lost else { return Theme.ink }
+        return won > lost ? Theme.blue : won < lost ? Theme.red : Theme.ink
+    }
+}

@@ -7,7 +7,10 @@ struct TodayView: View {
         NavigationStack {
             List {
                 if let feed = store.feed {
-                    BrandSection("Week \(feed.week) vs \(feed.opponent ?? "—")", footer: feed.addsLeft.map { "\($0) add\($0 == 1 ? "" : "s") left this week" }) {
+                    BrandSection("Week \(feed.week) score") {
+                        ScoreCard(feed: feed)
+                    }
+                    BrandSection("Starts per day vs \(feed.opponent ?? "—")", footer: feed.addsLeft.map { "\($0) add\($0 == 1 ? "" : "s") left this week" }) {
                         WeekStrip(days: feed.days, today: feed.today.date)
                     }
                     BrandSection("Start today") {

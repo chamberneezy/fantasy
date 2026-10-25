@@ -45,5 +45,31 @@
     ]
   ],
   "il": [],
-  "status": {}
+  "status": {},
+  "moves": [
+    {
+      "date": "2026-10-19",
+      "drop": "Dillon Brooks"
+    },
+    {
+      "date": "2026-10-19",
+      "add": "Anfernee Simons"
+    },
+    {
+      "date": "2026-10-21",
+      "drop": "Jrue Holiday"
+    },
+    {
+      "date": "2026-10-21",
+      "add": "Jalen Smith"
+    },
+    {
+      "date": "2026-10-25",
+      "drop": "Anfernee Simons"
+    },
+    {
+      "date": "2026-10-25",
+      "add": "Tristan Da Silva"
+    }
+  ]
 }

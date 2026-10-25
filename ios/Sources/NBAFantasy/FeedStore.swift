@@ -68,6 +68,17 @@ final class FeedStore {
             }.joined(separator: "; ")
             alerts.append(("op:" + chance.id, "\(chance.playerName) out, \(chance.daysOut) days", names))
         }
+        // The morning update: once a new night is in the score, one line with where the week stands.
+        if let score = feed.score, let through = score.through, let text = score.text,
+           !seen.contains("score:" + through) {
+            seen.insert("score:" + through)
+            let outlook = score.outlook
+            alerts.append((
+                "score:" + through,
+                "Week \(feed.week): \(text) vs \(feed.opponent ?? "opponent")",
+                "Through \(Dates.short(through)). By Sunday: \(outlook.yours) lean yours, \(outlook.coinFlip) coin flip\(outlook.coinFlip == 1 ? "" : "s"), \(outlook.his) lean his."
+            ))
+        }
         UserDefaults.standard.set(Array(seen), forKey: seenKey)
         for (id, title, body) in alerts {
             let content = UNMutableNotificationContent()

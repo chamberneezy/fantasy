@@ -16,6 +16,11 @@ struct MatchupView: View {
                             ForEach(feed.leans) { LeanRow(lean: $0) }
                         }
                     }
+                    if let season = feed.season, !season.isEmpty {
+                        BrandSection(seasonTitle(season), footer: "Scores come from the Yahoo matchup screenshots you send; a week is final once its Sunday is in.") {
+                            ForEach(season) { SeasonRow(week: $0) }
+                        }
+                    }
                 } else {
                     ProgressView()
                 }
@@ -26,13 +31,21 @@ struct MatchupView: View {
     }
 }
 
+/// "Season · 1–0–0" once weeks are final, else just "Season".
+private func seasonTitle(_ weeks: [SeasonWeek]) -> String {
+    let done = weeks.compactMap(\.outcome)
+    guard !done.isEmpty else { return "Season" }
+    let count = { (mark: String) in done.filter { $0 == mark }.count }
+    return "Season · \(count("W"))–\(count("L"))–\(count("T"))"
+}
+
 struct ScoreHeader: View {
     let through: String?
 
     var body: some View {
         HStack {
             Text("CAT").frame(width: 48, alignment: .leading)
-            Text(through.map { "YAHOO \(Dates.short($0).uppercased())  →  WEEK END" } ?? "WEEK END")
+            Text(through.map { "SO FAR (\(Dates.short($0).uppercased()))  →  WEEK END" } ?? "WEEK END")
             Spacer()
             Text("LEAN")
         }

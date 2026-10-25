@@ -38,3 +38,23 @@ def test_banked_days_use_yahoo_and_later_days_still_count():
     assert (points["mine"], points["theirs"], points["win"]) == (110.0, 40.0, 1.0)
     # His start count is real games only, not the Yahoo block.
     assert len(real["their_games"]) == 2
+
+
+def test_a_past_day_uses_the_roster_of_that_day():
+    import season
+
+    session = season.SeasonSession.__new__(season.SeasonSession)
+    session.moves = [
+        {"date": "2026-10-21", "drop": "Jrue Holiday"},
+        {"date": "2026-10-21", "add": "Jalen Smith"},
+        {"date": "2026-10-25", "drop": "Anfernee Simons"},
+        {"date": "2026-10-25", "add": "Tristan Da Silva"},
+    ]
+    assert session._on_roster("Jrue Holiday", "2026-10-20")
+    assert not session._on_roster("Jrue Holiday", "2026-10-21")
+    assert not session._on_roster("Jalen Smith", "2026-10-20")
+    assert session._on_roster("Jalen Smith", "2026-10-21")
+    assert session._on_roster("Anfernee Simons", "2026-10-24")
+    assert not session._on_roster("Anfernee Simons", "2026-10-25")
+    assert not session._on_roster("Tristan Da Silva", "2026-10-24")
+    assert session._on_roster("Nikola Jokić", "2026-10-20")

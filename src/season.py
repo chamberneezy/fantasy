@@ -160,6 +160,8 @@ class SeasonSession:
         self.il: list[dict] = []
         self.adds_used = OPENING_ADDS_USED
         self.week = 1
+        # Dated adds and drops, so a past day is scored with the roster of that day.
+        self.moves: list[dict] = []
         self._seed()
 
     def _lookup(self, name: str) -> dict:
@@ -247,13 +249,38 @@ class SeasonSession:
             for seat in self.roster
         ]
 
+    def _on_roster(self, name: str, day: str) -> bool:
+        """Was ``name`` mine on ``day``? Added from his add date; dropped players count until their drop date."""
+        added = [move["date"] for move in self.moves if move.get("add") == name]
+        dropped = [move["date"] for move in self.moves if move.get("drop") == name]
+        if added and day < max(added):
+            return False
+        if dropped and (not added or max(dropped) > max(added)) and day >= max(dropped):
+            return False
+        return True
+
+    def _week_players(self, week: dict) -> list[tuple[str, str, str]]:
+        """My ten plus anyone I dropped during ``week``: his games before the drop still count."""
+        players = self._my_players()
+        held = {name for name, _, _ in players}
+        start = week["start"].isoformat()
+        for move in self.moves:
+            name = move.get("drop")
+            if name and name not in held and move["date"] > start:
+                players.append((name, self.data.positions_for(name)[0], self.data.team_of(name)))
+                held.add(name)
+        return players
+
     def week_plan(self, week: dict, today: date) -> dict:
         """My five for each day of the week, and the matchup if the opponent is known."""
-        key = (week["week"], today, tuple(self._my_players()), tuple(sorted(self.status.items())), id(self.data))
+        key = (week["week"], today, tuple(self._my_players()), tuple(map(str, self.moves)), tuple(sorted(self.status.items())), id(self.data))
         if self._plan_cache.get("key") == key:
             return self._plan_cache["plan"]
         data = self.data
-        mine = self._by_day(self._my_players(), week, today)
+        mine = {
+            day: [entry for entry in entries if self._on_roster(entry["name"], day)]
+            for day, entries in self._by_day(self._week_players(week), week, today).items()
+        }
         opponent = data.matchups.get(week["week"])
         their_names = data.active_names(opponent) if opponent else []
         if their_names:
@@ -597,7 +624,7 @@ class SeasonSession:
         ranked.sort(key=lambda row: (-row["help"], -(row["games"] or 0)))
         return ranked[:8]
 
-    def add(self, query: str) -> None:
+    def add(self, query: str, on: date | None = None) -> None:
         if self.adds_used >= ADDS_PER_WEEK:
             raise ValueError(f"You already used {ADDS_PER_WEEK} adds this week.")
         player = self._lookup(query)
@@ -607,6 +634,7 @@ class SeasonSession:
         slot_id = self._open_seat(player.get("positions"))
         self.roster.append({"slot_id": slot_id, "player": player})
         self.adds_used += 1
+        self.moves.append({"date": (on or league_today()).isoformat(), "add": name})
 
     def _fill_starters(self) -> None:
         for slot_id, label in SLOTS:
@@ -630,11 +658,12 @@ class SeasonSession:
                 return empty_bn[0]
             raise ValueError("No empty eligible seat. Drop a bench name first.") from None
 
-    def drop(self, query: str) -> None:
+    def drop(self, query: str, on: date | None = None) -> None:
         player = match_player(query, [seat["player"] for seat in self.roster] + [item["player"] for item in self.il])
         name = player["player_name"]
         if name in PROTECTED:
             raise ValueError("Hezonja stays.")
+        self.moves.append({"date": (on or league_today()).isoformat(), "drop": name})
         self.roster = [seat for seat in self.roster if seat["player"]["player_name"] != name]
         self.il = [item for item in self.il if item["player"]["player_name"] != name]
         self._fill_starters()
@@ -733,6 +762,7 @@ def save_season(session: SeasonSession, path: Path | None = None) -> None:
         "roster": [[seat["slot_id"], seat["player"]["player_name"]] for seat in session.roster],
         "il": [[item["slot_id"], item["player"]["player_name"]] for item in session.il],
         "status": dict(session.status),
+        "moves": list(session.moves),
     }
     target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
@@ -753,6 +783,7 @@ def load_season(players: list[dict], path: Path | None = None) -> SeasonSession:
         for slot_id, name in roster:
             session.roster.append({"slot_id": slot_id, "player": session._lookup(name)})
     session.status = {str(name): str(mark) for name, mark in (payload.get("status") or {}).items()}
+    session.moves = [dict(move) for move in payload.get("moves") or []]
     session.il = []
     for slot_id, name in payload.get("il") or []:
         session.il.append({"slot_id": slot_id, "player": session._lookup(name)})
