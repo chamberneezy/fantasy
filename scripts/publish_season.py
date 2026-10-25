@@ -11,6 +11,7 @@ last publish. Run by the refresh timer after each pull.
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import shutil
 import subprocess
@@ -27,7 +28,7 @@ DATA_BRANCH = "season-data"
 # The branch whose docs/ and workflow GitHub Pages deploys.
 PAGES_BRANCH = "cursor/3rd-league-draft-dollars"
 STAMP = DEFAULT_OUT.parent / "season_export.published"
-PUBLIC_NAME = re.compile(r"(\d{4}-\d{2}-\d{2}|index)\.json")
+PUBLIC_NAME = re.compile(r"(\d{4}-\d{2}-\d{2}|index|app)\.json")
 
 
 def _run(*args: str, cwd: Path | None = None) -> str:
@@ -38,7 +39,7 @@ def _digest(folder: Path) -> str:
     """The week's content, leaving out the publish time in the index."""
     digest = hashlib.sha256()
     for path in sorted(folder.glob("*.json")):
-        if path.name != "index.json":
+        if path.name not in ("index.json", "app.json"):
             digest.update(path.name.encode())
             digest.update(path.read_bytes())
     return digest.hexdigest()
@@ -49,7 +50,8 @@ def publish(force: bool = False) -> str:
     digest = _digest(DEFAULT_OUT)
     if not force and STAMP.exists() and STAMP.read_text().strip() == digest:
         return "unchanged, not published"
-    remote = _run("git", "remote", "get-url", "origin", cwd=ROOT)
+    # On a GitHub runner the remote carries the job's token (set by the workflow).
+    remote = os.environ.get("PUBLISH_REMOTE") or _run("git", "remote", "get-url", "origin", cwd=ROOT)
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         # Only the week's day files and the index go public; nothing else in the folder, ever.

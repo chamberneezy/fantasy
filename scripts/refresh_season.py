@@ -1,9 +1,10 @@
-"""Refresh the season pad's free NBA + ESPN feed into data/season/.
+"""Refresh the season pad's free ESPN feed (or the NBA's, with --nba) into data/season/.
 
 Same pull as the page's "Refresh data" button. A running server picks the
 new files up on its next request (season_data caches on file mtimes).
 
-    .venv/bin/python scripts/refresh_season.py            # daily pull
+    .venv/bin/python scripts/refresh_season.py            # daily pull (ESPN; also works on a GitHub runner)
+    .venv/bin/python scripts/refresh_season.py --nba      # the old stats.nba.com pull (laptop only)
     .venv/bin/python scripts/refresh_season.py --history  # past seasons, once (~10 min)
     .venv/bin/python scripts/refresh_season.py --refit    # rewrite outlook.csv
     .venv/bin/python scripts/refresh_season.py --morning  # only once last night's games are over and not yet in
@@ -29,6 +30,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import pandas as pd  # noqa: E402
 
+import espn_feed  # noqa: E402
 import nba_feed  # noqa: E402
 import outlook  # noqa: E402
 
@@ -39,6 +41,7 @@ def main() -> int:
     parser.add_argument("--refit", action="store_true", help="refit the outlook model and rewrite outlook.csv")
     parser.add_argument("--morning", action="store_true", help="pull only when last night is over and not yet logged")
     parser.add_argument("--publish", action="store_true", help="after a pull, republish the GitHub Pages copy")
+    parser.add_argument("--nba", action="store_true", help="pull from stats.nba.com instead of ESPN (refused on cloud runners)")
     args = parser.parse_args()
 
     if args.morning:
@@ -53,7 +56,7 @@ def main() -> int:
             print(f"night of {night['night']}: last game not over until {night['due'].astimezone().strftime('%H:%M')}.")
             return 0
 
-    report = nba_feed.refresh()
+    report = nba_feed.refresh() if args.nba else espn_feed.refresh()
     print(json.dumps(report, indent=2))
     failed = bool(report["errors"]) and not report["rows"]
     if args.publish and not failed:

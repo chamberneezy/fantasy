@@ -1,0 +1,49 @@
+{
+  "mode": "season",
+  "week": 1,
+  "adds_used": 3,
+  "roster": [
+    [
+      "PG",
+      "Keyonte George"
+    ],
+    [
+      "SG",
+      "Kawhi Leonard"
+    ],
+    [
+      "SF",
+      "Jalen Williams"
+    ],
+    [
+      "C",
+      "John Collins"
+    ],
+    [
+      "BN1",
+      "Nikola Joki\u0107"
+    ],
+    [
+      "BN2",
+      "Mario Hezonja"
+    ],
+    [
+      "BN3",
+      "Neemias Queta"
+    ],
+    [
+      "BN4",
+      "Tre Jones"
+    ],
+    [
+      "BN5",
+      "Jalen Smith"
+    ],
+    [
+      "PF",
+      "Tristan Da Silva"
+    ]
+  ],
+  "il": [],
+  "status": {}
+}

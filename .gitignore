@@ -5,6 +5,8 @@ __pycache__/
 venv/
 .DS_Store
 data/*_session.json
+# The season pad's roster and lineup: the GitHub run and cloud sessions read it.
+!data/season_session.json
 data/lab_report.json
 
 # season feed: rewritten by every refresh (scripts/refresh_season.py)
@@ -23,6 +25,13 @@ data/season_export.published
 *.env
 *.pem
 *.key
+*.p8
 *_token.json
 *token*.json
 secrets/
+
+# iOS build output (xtool)
+ios/.build/
+ios/.bsp/
+ios/xtool/
+ios/.swiftpm/

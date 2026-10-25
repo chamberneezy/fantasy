@@ -31,7 +31,17 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
 - `data/season/fantasy_weeks.csv` — optional `week,start,end` override. Not present. Week 1 = **20–25 Oct** (confirmed). Default after that is Monday–Sunday, but Yahoo’s week 21 ends 28 Mar, so two calendar weeks get joined somewhere before week 19 — **dates still needed** (matters from about February).
 
-## Refresh (automated)
+## Refresh on GitHub (since 25 Oct 2026)
+
+`.github/workflows/season.yml` lives on **main** (GitHub runs schedules only from the default branch) and checks out `cursor/3rd-league-draft-dollars`. It restores the raw feed from branch `season-feed`, runs `refresh_season.py` (ESPN), saves the feed back, then `publish_season.py` (season-data → Pages, incl. `app.json` for the iPhone app). Runs: 06/07/08 UTC with `--morning` (skips until last night is over, then once all games are in), 17 and 22 UTC for injury news, and by hand (`gh workflow run season.yml`). stats.nba.com times out and cdn.nba.com answers 403 from runners (probe 25 Oct), so the cloud uses ESPN; ESPN ids map to NBA ids in `data/season/espn_ids.csv`.
+
+`data/season_session.json` (roster, lineup, adds used) is **committed** now, so the run and cloud sessions see Mario's ten. After a move: update the session (`SeasonSession.add/drop`, `save_season`) and `league_rosters.csv`, commit, push, `gh workflow run season.yml`.
+
+## From the Claude iPhone app
+
+Mario sends Yahoo screenshots in a Claude Code session on this repo (Claude app → Code). Same routine as below: read the real score, apply moves to the session and rosters, merge free-agent pages, commit, push, start `season.yml`. Answer in the agreed format (facts first, per-cat leans, no headline win %).
+
+## Refresh on the laptop (old, still works)
 
 Two systemd user timers, Zurich time. **Morning** (`nba-fantasy-morning`): every 15 min 06:00–09:45 runs `refresh_season.py --morning --publish`, which pulls only once last night's final game should be over (latest tip + 2h30; west-coast tips are 04:00–05:00 Zurich, so usually 06:30–07:30) and does nothing once every game of the night is in the logs (`nba_feed.night_status`). **Evening** (`nba-fantasy-refresh`): 18:00 and 23:30, injury news before tip-off. Both republish Pages after a pull. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
 
@@ -48,6 +58,9 @@ journalctl --user -u nba-fantasy-refresh -n 30
 Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_older.csv`, `outlook.csv`. Git-ignored because every refresh rewrites them: `feed.json`, `injuries.csv`, `players.csv`, `schedule.csv`, `gamelogs_2026-27.csv`. A fresh clone needs one refresh.
 
 ## Measured, so do not re-argue without new data
+
+- Injury bumps, 2025-26 replay (one rotation player out, earlier games only, top named teammate): shrink 15 games predicts +4.5 min on high calls vs +3.7 real (shrink 5 predicted +6.6). Gained minutes: high 69% (132 calls), medium 64%, low 57%. Per-player single-game minutes error stays ~4.9 whatever the method.
+- ESPN vs stats.nba.com, 20–24 Oct 2026: 812/812 player-games, schedule 1,200/1,200, 515 players same team; 17 small stat differences; ESPN minutes are whole.
 
 - Daily line vs naive, 2025-26 walk-forward (140 players, first 20 games as anchor): total error 17.32 vs 17.80 season-to-date vs 18.88 fixed line. Most of the gain is minutes.
 - Opponent + home factors improve error by only ~0.1%. Shown, clamped, not trusted to swing a call.
@@ -96,6 +109,7 @@ Mario does **not** want the Yahoo API (needs app approval since Jul 2026) or any
 2. ~~Matchup schedule~~ weeks 1–5 in `matchups.csv` (24 Oct). Still needed: weeks 6+ and Yahoo’s joined-week dates.
 2b. **Week-ahead report + weekly scorecard** (agreed 23 Oct, not built): Sunday report of starts per day, per-cat leans, add options with season cost; Monday score vs the leans in `data/season/results.csv`; weight this season's games more in `daily.py` once the scorecard shows it helps.
 3. **Refit the outlook** (`scripts/refresh_season.py --refit`) once ~3 weeks of 2026-27 are in. The CLI exists; the timer does not refit.
+3b. **Injury bumps:** minutes replay done (see Measured). Next: replay the per-minute production changes; until then they move very slowly (`RATE_SHRINK_GAMES`).
 4. **Backtest log (planned phase 8):** store each day’s projection and compare with the box score weekly, so trust is measured in-season.
 5. **League table on the page** (currently scratch only) and comeback lines for Kyrie / VanVleet / Lillard if Mario wants them.
 6. **Not built:** teammate boost when a starter sits; blowout risk (needs betting lines → API key); real banked lineups (past days assume best-by-value five); multi-add sequencing across the week; Yahoo eligibility for free agents.

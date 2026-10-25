@@ -78,7 +78,8 @@ Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaul
 - Room heat after **two** hammers in a tier, **or** one nuclear first $50+ hammer. Not after one $87 Jokic.
 - Unlisted = $1 on this board. Lab “most common name at each seat” is unique greedy — never two Sabonis.
 - In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week 1 starts with all 4 adds, no IL.
-- Season pad start/sit and matchup odds as **estimates**: strict-seat legal five, 20,000-run week vs the pasted opponent. Free NBA + ESPN feeds only.
+- Season pad start/sit and matchup odds as **estimates**: strict-seat legal five, 20,000-run week vs the pasted opponent. Free ESPN feed (matches stats.nba.com: 812/812 player-games, 17 tiny stat corrections, minutes whole).
+- Injury bumps (`opportunity.py`) at their measured rate only: top named teammate gained minutes 69% / 64% / 57% of the time on high / medium / low calls (2025-26 replay). Per-minute production changes are untested.
 
 **Do not treat as a forecast**
 
@@ -100,7 +101,10 @@ src/room.py             live heat from logged sales
 src/sidecar.py          helper session
 src/yahoo_auction.py    mock clocks + bots
 src/season.py           in-season pad; 4 adds/week; no IL in this league
-src/nba_feed.py         free NBA stats feed (nba_api) → data/season/; never Yahoo
+src/espn_feed.py        this season's schedule, rosters, box scores from ESPN's free API (default; works on GitHub runners)
+src/nba_feed.py         file formats + the old stats.nba.com pull (`--nba`, laptop only; refused on cloud runners)
+src/opportunity.py      injury news: who gains minutes, the bumped line, certainty (replay-measured), vs Mario's weakest
+src/app_feed.py         app.json for the iPhone app (today, week starts, per-cat leans as words, news, stat cards)
 src/schedule.py         fantasy weeks, week grid, back-to-backs (Eastern day)
 src/daily.py            per-game line: per-minute rates × minutes, season-line anchor
 src/season_data.py      reads data/season/ (feed, pasted rosters, matchups) for the pad
@@ -111,8 +115,9 @@ src/scouting.py         matchup detail panel: opponent ranks by position, pace/D
 src/matchup.py          simulated week: 12-cat totals, chance per cat, swing weights
 src/lineup.py           legal five (strict PG/SG/SF/PF/C) and the week plan
 src/outlook.py          3-season + age model for the season pad's anchor line (data/season/outlook.csv); not the draft board
-scripts/refresh_season.py  season feed refresh (systemd timers in scripts/systemd/: morning --morning every 15 min 06:00–09:45 until last night is in; evening 18:00 / 23:30)
-scripts/publish_season.py  after each refresh: export the week → season-data branch → Pages (docs/season.html, read-only)
+scripts/refresh_season.py  season feed refresh (ESPN). Runs on GitHub Actions (`.github/workflows/season.yml` on **main**: mornings 06–08 UTC with --morning, evenings 17 and 22 UTC, or by hand); raw feed kept on branch `season-feed`
+scripts/publish_season.py  after each refresh: export the week (+ app.json) → season-data branch → Pages (docs/season.html, read-only)
+ios/                    NBA Fantasy iPhone app (SwiftUI, built on Linux with xtool; see ios/README.md)
 src/lab.py              headless 2k/10k rooms; unique greedy squad
 src/draft_room.py       pool, slots, paths
 src/draft_server.py     Flask (`/` home)

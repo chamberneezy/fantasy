@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+import app_feed  # noqa: E402
 import schedule as slate  # noqa: E402
 import season  # noqa: E402
 from draft_room import build_pool  # noqa: E402
@@ -59,6 +60,9 @@ def export(out_dir: Path = DEFAULT_OUT) -> dict:
         "published_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     (out_dir / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    # The iPhone app reads this one file.
+    feed = app_feed.build(session, today)
+    (out_dir / "app.json").write_text(json.dumps(feed, default=_plain, ensure_ascii=False), encoding="utf-8")
     return index
 
 
