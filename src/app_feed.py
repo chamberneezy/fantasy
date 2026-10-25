@@ -132,6 +132,83 @@ def _leans(matchup: dict | None, banked: dict | None) -> list[dict]:
 SEATS = 5
 
 
+RECAP_STATS = ("mp", "pts", "reb", "ast", "fg3m", "stl", "blk", "to", "fgm", "fga", "ftm", "fta")
+
+
+def _night(plan: dict, side: str, day: str) -> tuple[list[dict], np.ndarray]:
+    """One team's starters on ``day``: each one's real line, and the team's total for the night."""
+    by_day = plan["mine"] if side == "mine" else plan.get("theirs") or {}
+    lineups = plan["lineups"] if side == "mine" else plan.get("their_lineups") or {}
+    seated = set(lineups.get(day, {}).values())
+    total = np.zeros(len(matchup_stats.STATS))
+    rows = []
+    for entry in by_day.get(day, []):
+        line = entry.get("fixed")
+        if line is None or line[matchup_stats.AT["mp"]] <= 0 or entry["name"] not in seated:
+            continue
+        total += line
+        rows.append({"player_name": entry["name"], **{stat: round(float(line[matchup_stats.AT[stat]]), 1) for stat in RECAP_STATS}})
+    rows.sort(key=lambda row: -row["pts"])
+    return rows, total
+
+
+def recap(session, today: date) -> dict | None:
+    """Last night for my starters and my opponent's: the lines, who won each category on the night, the week after it."""
+    data = session.data
+    night = date.fromordinal(today.toordinal() - 1)
+    week = slate.week_for(night, data.weeks)
+    if not week or not (week["start"] <= night <= week["end"]):
+        return None
+    plan = session.week_plan(week, today)
+    day = night.isoformat()
+    mine, my_total = _night(plan, "mine", day)
+    theirs, their_total = _night(plan, "theirs", day) if plan.get("result") else ([], np.zeros(len(matchup_stats.STATS)))
+    if not mine and not theirs:
+        return {"date": day, "mine": [], "theirs": [], "played": False}
+    cats = [
+        {"cat": cat, "lean": "", "yahoo_mine": _yahoo_value(my_total, cat), "yahoo_theirs": _yahoo_value(their_total, cat)}
+        for cat in CATEGORIES
+    ]
+    night_score = score(cats, day) if plan.get("result") else None
+    live = live_totals(plan, today) if plan.get("result") else None
+    week_score = None
+    if live:
+        week_cats = [
+            {"cat": cat, "lean": "", "yahoo_mine": _yahoo_value(live["mine"], cat), "yahoo_theirs": _yahoo_value(live["theirs"], cat)}
+            for cat in CATEGORIES
+        ]
+        counted = score(week_cats, live["through"])
+        week_score = {key: counted[key] for key in ("won", "lost", "tied")}
+    return {
+        "date": day,
+        "played": True,
+        "week": week["week"],
+        "opponent": plan.get("opponent"),
+        "mine": mine,
+        "theirs": theirs,
+        "night": {key: night_score[key] for key in ("won", "lost", "tied")} if night_score else None,
+        "week_score": week_score,
+    }
+
+
+def injuries(data, names: list[str]) -> list[dict]:
+    """Every listed status for these players (out, doubtful, questionable, day-to-day), as ESPN reports it."""
+    rows = []
+    for name in names:
+        injury = data.injury(name)
+        if injury:
+            rows.append(
+                {
+                    "player_name": name,
+                    "status": str(injury.get("status") or ""),
+                    "return_date": str(injury.get("return_date") or ""),
+                    "reported": str(injury.get("reported") or ""),
+                    "note": str(injury.get("note") or ""),
+                }
+            )
+    return rows
+
+
 def live_totals(plan: dict, today: date) -> dict | None:
     """The week so far: Yahoo's last typed-in totals, plus ESPN box scores for every finished day after them.
 
@@ -314,6 +391,8 @@ def build(session, today: date) -> dict:
         "yahoo_through": (live or {}).get("through"),
         "leans_note": _leans_note(plan.get("banked"), today),
         "news": opportunity.news(data, mine, plan.get("opponent"), today, protected),
+        "recap": recap(session, today),
+        "injuries": {"mine": injuries(data, mine), "theirs": injuries(data, their)},
         "mine": [player_card(data, name) for name in mine],
         "theirs": [player_card(data, name) for name in their],
         "stats": board,
