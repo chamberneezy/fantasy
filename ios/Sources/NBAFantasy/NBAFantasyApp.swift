@@ -5,6 +5,11 @@ struct NBAFantasyApp: App {
     @State private var store = FeedStore()
     @Environment(\.scenePhase) private var phase
 
+    init() {
+        Theme.registerFonts()
+        Theme.styleBars()
+    }
+
     var body: some Scene {
         WindowGroup {
             TabView {
@@ -13,6 +18,7 @@ struct NBAFantasyApp: App {
                 NewsView().tabItem { Label("News", systemImage: "bell") }
                 StatsView().tabItem { Label("Stats", systemImage: "list.number") }
             }
+            .tint(Theme.blue)
             .environment(store)
             .task {
                 await store.askForNotifications()

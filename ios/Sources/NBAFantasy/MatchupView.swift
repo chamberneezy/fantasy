@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Per-category leans for the week. Words, not percentages.
+/// Per-category: Yahoo's real score now, and where the week is heading, as a word.
 struct MatchupView: View {
     @Environment(FeedStore.self) private var store
 
@@ -9,30 +9,35 @@ struct MatchupView: View {
             List {
                 if let feed = store.feed {
                     if feed.leans.isEmpty {
-                        Text("No opponent on file for week \(feed.week).").foregroundStyle(.secondary)
+                        BrandSection { Text("No opponent on file for week \(feed.week).").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
                     } else {
-                        Section {
+                        BrandSection("Week \(feed.week) vs \(feed.opponent ?? "—")", footer: feed.leansNote) {
+                            ScoreHeader(through: feed.yahooThrough)
                             ForEach(feed.leans) { LeanRow(lean: $0) }
-                        } header: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Week \(feed.week) vs \(feed.opponent ?? "—")")
-                                if let through = feed.yahooThrough {
-                                    Text("Yahoo now (through \(Dates.short(through)))  ·  week-end projection").font(.caption2)
-                                } else {
-                                    Text("Week-end projection").font(.caption2)
-                                }
-                            }
-                        } footer: {
-                            Text(feed.leansNote)
                         }
                     }
                 } else {
                     ProgressView()
                 }
             }
-            .navigationTitle("Matchup")
+            .brandScreen("Matchup")
             .refreshable { await store.refresh() }
         }
+    }
+}
+
+struct ScoreHeader: View {
+    let through: String?
+
+    var body: some View {
+        HStack {
+            Text("CAT").frame(width: 48, alignment: .leading)
+            Text(through.map { "YAHOO \(Dates.short($0).uppercased())  →  WEEK END" } ?? "WEEK END")
+            Spacer()
+            Text("LEAN")
+        }
+        .font(Theme.ui(10.5, .semibold))
+        .foregroundStyle(Theme.mute)
     }
 }
 
@@ -41,34 +46,19 @@ struct LeanRow: View {
 
     var body: some View {
         HStack {
-            Text(lean.cat).font(.body.weight(.semibold)).frame(width: 48, alignment: .leading)
+            Text(lean.cat).font(Theme.display(16)).foregroundStyle(Theme.heading).frame(width: 48, alignment: .leading)
             VStack(alignment: .leading, spacing: 1) {
                 if let mine = lean.yahooMine, let theirs = lean.yahooTheirs {
                     Text("\(value(mine)) – \(value(theirs))")
-                        .font(.callout.monospacedDigit().weight(.semibold))
-                        .foregroundStyle(leads(mine, theirs) ? .green : (mine == theirs ? .primary : .red))
+                        .font(Theme.display(17).monospacedDigit())
+                        .foregroundStyle(mine == theirs ? Theme.ink : (leads(mine, theirs) ? Theme.blue : Theme.red))
                 }
                 Text("→ \(value(lean.mine)) – \(value(lean.theirs))")
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .font(Theme.ui(12).monospacedDigit())
+                    .foregroundStyle(Theme.mute)
             }
             Spacer()
-            Text(lean.lean)
-                .font(.caption.bold())
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(color.opacity(0.18), in: Capsule())
-                .foregroundStyle(color)
-        }
-    }
-
-    private var color: Color {
-        switch lean.lean {
-        case "likely yours": return .green
-        case "lean yours": return .mint
-        case "coin flip": return .orange
-        case "lean his": return .pink
-        default: return .red
+            Pill(text: lean.lean, color: Palette.lean(lean.lean))
         }
     }
 

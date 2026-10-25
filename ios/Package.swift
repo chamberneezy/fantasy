@@ -12,6 +12,8 @@ let package = Package(
     targets: [
         .target(
             name: "NBAFantasy",
+            // The brand: Oswald + Outfit (SIL OFL, cut to static weights) and the mark from docs/img.
+            resources: [.copy("Fonts"), .copy("Brand")],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
     ]

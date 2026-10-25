@@ -7,37 +7,33 @@ struct TodayView: View {
         NavigationStack {
             List {
                 if let feed = store.feed {
-                    Section {
+                    BrandSection("Week \(feed.week) vs \(feed.opponent ?? "—")", footer: feed.addsLeft.map { "\($0) add\($0 == 1 ? "" : "s") left this week" }) {
                         WeekStrip(days: feed.days, today: feed.today.date)
-                    } header: {
-                        Text("Week \(feed.week) vs \(feed.opponent ?? "—")")
-                    } footer: {
-                        if let adds = feed.addsLeft { Text("\(adds) add\(adds == 1 ? "" : "s") left this week") }
                     }
-                    Section("Start today") {
-                        if feed.today.starters.isEmpty { Text("Nobody plays today").foregroundStyle(.secondary) }
+                    BrandSection("Start today") {
+                        if feed.today.starters.isEmpty { Text("Nobody plays today").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
                         ForEach(feed.today.starters) { GameRow(game: $0) }
                     }
                     if !feed.today.bench.isEmpty {
-                        Section("Plays, but sits") {
+                        BrandSection("Plays, but sits") {
                             ForEach(feed.today.bench) { GameRow(game: $0) }
                         }
                     }
                     if !feed.today.off.isEmpty {
-                        Section("No game") {
-                            Text(feed.today.off.joined(separator: " · ")).font(.footnote).foregroundStyle(.secondary)
+                        BrandSection("No game") {
+                            Text(feed.today.off.joined(separator: " · ")).font(Theme.ui(13)).foregroundStyle(Theme.mute)
                         }
                     }
-                    Section {
+                    BrandSection {
                         Stamp(feed: feed, error: store.error)
                     }
                 } else if let error = store.error {
-                    Text(error).foregroundStyle(.red)
+                    Text(error).font(Theme.ui(14)).foregroundStyle(Theme.red)
                 } else {
                     ProgressView()
                 }
             }
-            .navigationTitle("Today")
+            .brandScreen("Today")
             .refreshable { await store.refresh() }
         }
     }
@@ -50,18 +46,18 @@ struct WeekStrip: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(days) { day in
-                VStack(spacing: 4) {
-                    Text(day.dow).font(.caption2).foregroundStyle(.secondary)
-                    Text("\(day.myStarts)").font(.headline)
-                    Text("\(day.theirPlayers)").font(.caption).foregroundStyle(.secondary)
+                VStack(spacing: 3) {
+                    Text(day.dow.uppercased()).font(Theme.ui(10.5, .semibold)).foregroundStyle(Theme.mute)
+                    Text("\(day.myStarts)").font(Theme.display(22)).foregroundStyle(Theme.blue)
+                    Text("\(day.theirPlayers)").font(Theme.display(14)).foregroundStyle(Theme.red.opacity(0.85))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
-                .background(day.date == today ? Color.accentColor.opacity(0.15) : .clear, in: RoundedRectangle(cornerRadius: 8))
-                .opacity(day.past ? 0.45 : 1)
+                .background(day.date == today ? Theme.blue.opacity(0.12) : .clear, in: RoundedRectangle(cornerRadius: 10))
+                .opacity(day.past ? 0.4 : 1)
             }
         }
-        .accessibilityLabel("Starts per day, mine over his")
+        .accessibilityLabel("Starts per day: mine in blue, his in red")
     }
 }
 
@@ -69,26 +65,25 @@ struct GameRow: View {
     let game: Game
 
     var body: some View {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: 12) {
             Text(game.seat ?? "BN")
-                .font(.caption.bold())
-                .frame(width: 30)
-                .padding(.vertical, 3)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 5))
+                .font(Theme.display(13))
+                .foregroundStyle(game.seat == nil ? Theme.mute : .white)
+                .frame(width: 34, height: 24)
+                .background(game.seat == nil ? Theme.mute.opacity(0.15) : Theme.heading, in: RoundedRectangle(cornerRadius: 6))
             VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(game.playerName).font(.body.weight(.semibold))
-                    if !game.status.isEmpty {
-                        Text(game.status).font(.caption2.bold()).foregroundStyle(.red)
-                    }
+                HStack(spacing: 6) {
+                    Text(game.playerName).font(Theme.ui(16, .semibold)).foregroundStyle(Theme.ink)
+                    if !game.status.isEmpty { Pill(text: game.status, color: Theme.red) }
                 }
                 Text("\(game.team) \(game.home ? "vs" : "@") \(game.opp)\(tip)")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(Theme.ui(12.5)).foregroundStyle(Theme.mute)
                 if let line = game.line {
-                    Text(LineText.short(line)).font(.caption.monospacedDigit())
+                    Text(LineText.short(line)).font(Theme.ui(12).monospacedDigit()).foregroundStyle(Theme.ink)
                 }
             }
         }
+        .padding(.vertical, 2)
     }
 
     private var tip: String {
@@ -117,12 +112,12 @@ struct Stamp: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("Box scores through \(feed.logsThrough ?? "—")")
-            Text("Published \(published)")
-            if let error { Text(error).foregroundStyle(.red) }
+            Text("Box scores through \(feed.logsThrough.map(Dates.short) ?? "—")")
+            Text("Updated \(published)")
+            if let error { Text(error).foregroundStyle(Theme.red) }
         }
-        .font(.caption2)
-        .foregroundStyle(.secondary)
+        .font(Theme.ui(11.5))
+        .foregroundStyle(Theme.mute)
     }
 
     private var published: String {
