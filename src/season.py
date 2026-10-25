@@ -162,6 +162,10 @@ class SeasonSession:
         self.week = 1
         # Dated adds and drops, so a past day is scored with the roster of that day.
         self.moves: list[dict] = []
+        # Whose pad this is. Another team runs the same engine from its own folder (export_season --team-dir).
+        self.team = "Lipicaneri"
+        self.protected: frozenset = PROTECTED
+        self.team_dir: Path | None = None
         self._seed()
 
     def _lookup(self, name: str) -> dict:
@@ -188,7 +192,7 @@ class SeasonSession:
 
     @property
     def data(self) -> season_data.SeasonData:
-        return self._data or season_data.load()
+        return self._data or season_data.load(team_dir=self.team_dir)
 
     def _team(self, player: dict) -> str:
         return self.data.team_of(player["player_name"], player.get("team"))
@@ -323,7 +327,7 @@ class SeasonSession:
         grid["prev"] = data.weeks[position - 1]["start"].isoformat() if position else None
         grid["next"] = data.weeks[position + 1]["start"].isoformat() if position + 1 < len(data.weeks) else None
         grid["day"] = self._day_card(chosen, grid, plan)
-        grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, PROTECTED)
+        grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, self.protected)
         grid["today"] = now.isoformat()
         grid["matchup"] = self._matchup_card(plan)
         grid["plans"] = self.stream_plans(week, now, plan) if week is slate.week_for(now, data.weeks) else []
@@ -500,7 +504,7 @@ class SeasonSession:
         for seat in self.roster:
             name = seat["player"]["player_name"]
             line = self.data.line_for(name)
-            if name not in PROTECTED and line is not None:
+            if name not in self.protected and line is not None:
                 valued.append((line["value"], name))
         return [name for _, name in sorted(valued)[:STREAM_DROPS]]
 
@@ -562,7 +566,7 @@ class SeasonSession:
                     "games": games,
                     "unlisted": bool(player.get("unlisted") or player["player_name"] == "Mario Hezonja"),
                     "total_value": float(player.get("total_value") or 0),
-                    "protected": player["player_name"] in PROTECTED,
+                    "protected": player["player_name"] in self.protected,
                 }
             )
         ranked = [row for row in ranked if not row["protected"]]
@@ -661,8 +665,8 @@ class SeasonSession:
     def drop(self, query: str, on: date | None = None) -> None:
         player = match_player(query, [seat["player"] for seat in self.roster] + [item["player"] for item in self.il])
         name = player["player_name"]
-        if name in PROTECTED:
-            raise ValueError("Hezonja stays.")
+        if name in self.protected:
+            raise ValueError(f"{name} stays." if name == "Mario Hezonja" else f"{name} is protected.")
         self.moves.append({"date": (on or league_today()).isoformat(), "drop": name})
         self.roster = [seat for seat in self.roster if seat["player"]["player_name"] != name]
         self.il = [item for item in self.il if item["player"]["player_name"] != name]
@@ -722,7 +726,7 @@ class SeasonSession:
                     "team": self._team(seat["player"]),
                     "games": seat["player"].get("predicted_games"),
                     "unlisted": bool(seat["player"].get("unlisted")),
-                    "protected": seat["player"]["player_name"] in PROTECTED,
+                    "protected": seat["player"]["player_name"] in self.protected,
                 }
                 for seat in self.roster
             ],
@@ -764,12 +768,17 @@ def save_season(session: SeasonSession, path: Path | None = None) -> None:
         "status": dict(session.status),
         "moves": list(session.moves),
     }
+    if session.team != "Lipicaneri":
+        payload["team"] = session.team
+        payload["protected"] = sorted(session.protected)
     target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def load_season(players: list[dict], path: Path | None = None) -> SeasonSession:
-    target = path or SEASON_PATH
+def load_season(players: list[dict], path: Path | None = None, team_dir: Path | None = None) -> SeasonSession:
+    """``team_dir``: another team's folder (its session.json, matchups.csv, yahoo_scores.csv)."""
+    target = path or (team_dir / "session.json" if team_dir else SEASON_PATH)
     session = SeasonSession(players)
+    session.team_dir = team_dir
     if not target.exists():
         return session
     payload = json.loads(target.read_text(encoding="utf-8"))
@@ -784,6 +793,9 @@ def load_season(players: list[dict], path: Path | None = None) -> SeasonSession:
             session.roster.append({"slot_id": slot_id, "player": session._lookup(name)})
     session.status = {str(name): str(mark) for name, mark in (payload.get("status") or {}).items()}
     session.moves = [dict(move) for move in payload.get("moves") or []]
+    if payload.get("team"):
+        session.team = str(payload["team"])
+        session.protected = frozenset(payload.get("protected") or [])
     session.il = []
     for slot_id, name in payload.get("il") or []:
         session.il.append({"slot_id": slot_id, "player": session._lookup(name)})

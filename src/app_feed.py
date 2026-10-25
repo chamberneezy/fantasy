@@ -13,7 +13,6 @@ import numpy as np
 import matchup as matchup_stats
 import opportunity
 import schedule as slate
-import season
 import stats_board
 
 FEED_VERSION = 2
@@ -294,11 +293,12 @@ def build(session, today: date) -> dict:
     grid = session.calendar(today, today)
     plan = session.week_plan(week, today)
     mine = [seat["player"]["player_name"] for seat in session.roster]
-    protected = {name.casefold() for name in season.PROTECTED}
+    protected = {name.casefold() for name in session.protected}
     their = data.active_names(plan["opponent"]) if plan.get("opponent") else []
     board = stats_board.board(data, today, mine, their)
     return {
         "version": FEED_VERSION,
+        "team": session.team,
         "published_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "logs_through": data.logs_through(),
         "week": week["week"],

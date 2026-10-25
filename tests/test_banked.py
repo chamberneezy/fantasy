@@ -58,3 +58,23 @@ def test_a_past_day_uses_the_roster_of_that_day():
     assert not session._on_roster("Anfernee Simons", "2026-10-25")
     assert not session._on_roster("Tristan Da Silva", "2026-10-24")
     assert session._on_roster("Nikola Jokić", "2026-10-20")
+
+
+def test_a_team_folder_brings_its_own_name_protected_list_and_files(tmp_path):
+    import json
+
+    import season
+
+    (tmp_path / "session.json").write_text(json.dumps({
+        "mode": "season", "team": "Other Team", "protected": [], "week": 2, "adds_used": 1,
+        "roster": [], "il": [], "status": {}, "moves": [],
+    }))
+    from draft_room import build_pool
+
+    session = season.load_season(build_pool([]), team_dir=tmp_path)
+    assert session.team == "Other Team"
+    assert session.protected == frozenset()
+    assert (session.week, session.adds_used) == (2, 1)
+    assert session.team_dir == tmp_path
+    # Without a team folder the pad stays mine: Lipicaneri, Hezonja protected.
+    assert "Mario Hezonja" in season.PROTECTED

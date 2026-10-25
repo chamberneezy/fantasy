@@ -5,6 +5,7 @@ panel for that day's games) and an index. Reads the saved season session, so
 the copy shows the roster and lineup as the laptop pad has them.
 
     .venv/bin/python scripts/export_season.py [out_dir]
+    .venv/bin/python scripts/export_season.py --team-dir DIR --app OUT.json   # another team: only its app feed
 """
 
 from __future__ import annotations
@@ -32,6 +33,17 @@ def _plain(value):
     if hasattr(value, "item"):
         return value.item()
     raise TypeError(f"cannot write {type(value).__name__}")
+
+
+def export_app(team_dir: Path, out_file: Path) -> dict:
+    """One app feed for the team whose session.json, matchups.csv and yahoo_scores.csv are in ``team_dir``."""
+    session = season.load_season(build_pool([]), team_dir=team_dir)
+    if not session.data.weeks:
+        raise SystemExit("No schedule on disk. Run scripts/refresh_season.py first.")
+    feed = app_feed.build(session, season.league_today())
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    out_file.write_text(json.dumps(feed, default=_plain, ensure_ascii=False), encoding="utf-8")
+    return {"team": feed["team"], "week": feed["week"], "bytes": out_file.stat().st_size}
 
 
 def export(out_dir: Path = DEFAULT_OUT) -> dict:
@@ -67,5 +79,10 @@ def export(out_dir: Path = DEFAULT_OUT) -> dict:
 
 
 if __name__ == "__main__":
+    if "--team-dir" in sys.argv:
+        team_dir = Path(sys.argv[sys.argv.index("--team-dir") + 1])
+        out_file = Path(sys.argv[sys.argv.index("--app") + 1]) if "--app" in sys.argv else team_dir / "app.json"
+        print(json.dumps(export_app(team_dir, out_file)))
+        sys.exit(0)
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
     print(json.dumps(export(target)))
