@@ -25,7 +25,7 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 ## Files Mario supplies (pasted by hand, never scraped)
 
-- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **snapshot 5 Oct 2026**; weeks 2–5 opponents re-pasted **24 Oct**. Stale after any add/drop/trade. Re-paste the week’s opponent at least. Slot `IL` stays rostered but is left out of that team's simulated starts (the league has no IL; Old Stars carries two anyway).
+- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **all re-pasted 25 Oct 2026** (Danijel's from the 24 Oct matchup page). Kept current from Yahoo's **Transactions** screen (adds, drops, trades with dates). With every roster on file, an unrostered player is a free agent. Stale after any add/drop/trade. Re-paste the week’s opponent at least. Slot `IL` stays rostered but is left out of that team's simulated starts (the league has no IL; Old Stars carries two anyway).
 - `data/season/free_agents.csv` — Yahoo's free-agent list (name, team, Yahoo positions, Q/O tag, pre-season rank, % rostered), merged from Yahoo screenshots (Players → All Available, sorted by **Current** rank, 2–3 pages), last **25 Oct 2026**, 67 names. Names missing from a fresh screenshot that ranked inside it are removed as taken; names below the pages stay until seen again. When present, add plans only offer these names and skip Yahoo "O"; Yahoo positions replace the NBA-feed guess. Re-paste before each add decision.
 - `data/season/matchups.csv` — `week,opponent`. Weeks **1–5** filled: Danijel's Dandy Team, Old Stars, BC Versus, Mother Tucker, Harlem Bricks.
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
@@ -45,7 +45,7 @@ Mario opens the Claude app → Code → this repo, branch `cursor/3rd-league-dra
 |---|---|---|
 | Matchup page (12 cats, both teams) | `data/season/yahoo_scores.csv`: two rows, `week,through,side` (`mine` / `theirs`) + `min,fgm,fga,ftm,fta,fg3m,pts,reb,ast,stl,blk,to,pf,dd` | `through` = the last day whose games are in the totals (a morning screenshot: yesterday). Keep earlier rows. The week plan then starts from these real totals. |
 | "Added X, dropped Y" / My Team | `SeasonSession.drop/add` + `save_season` (session json), Mario's lines in `league_rosters.csv` (CRLF line endings), `free_agents.csv` (X off, Y on) | Adds count against 4 per week. |
-| Opponent's roster | his rows in `league_rosters.csv`; slot `IL` = rostered but not simulated | Ask before changing other teams' rows. |
+| Transactions (League → Transactions) | apply each add/drop/trade to that team's rows in `league_rosters.csv`, oldest first; Mario's own also via `SeasonSession.add/drop(on=date)` | Must reach back to the last one seen; say so if it does not. Slot `IL` = rostered but not simulated. |
 | Free agents (sorted by Current rank) | merge into `free_agents.csv`; names missing that ranked inside the pages → remove as taken | |
 | Season schedule | `matchups.csv` (`week,opponent`) | |
 

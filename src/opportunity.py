@@ -221,12 +221,10 @@ def _season_minutes(logs: pd.DataFrame, player_id: int) -> float:
 
 
 def _owner(data, name: str, mine: set[str], free: dict | None) -> str:
-    """mine / free (on the pasted list) / unlisted (on no pasted roster: likely free, check Yahoo) / a fantasy team."""
+    """mine / a fantasy team / free. All 16 rosters are on file (25 Oct 2026), so no roster means free."""
     if name.casefold() in mine:
         return "mine"
-    if free is not None:
-        return "free"
-    return data.rostered_by(name) or "unlisted"
+    return data.rostered_by(name) or "free"
 
 
 def _days_out(injury: dict, today: date) -> int:

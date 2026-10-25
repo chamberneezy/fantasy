@@ -14,6 +14,7 @@ import matchup as matchup_stats
 import opportunity
 import schedule as slate
 import season
+import stats_board
 
 FEED_VERSION = 2
 # Chance of winning a category (tie counts half) → the word shown.
@@ -279,6 +280,14 @@ def _day(iso: str) -> str:
     return date.fromisoformat(iso).strftime("%a %-d %b")
 
 
+def _cards(data, board: dict, mine: list[str], theirs: list[str]) -> dict:
+    """A player page (last games, injury, projection) for everyone on the board, keyed by name."""
+    names = {*mine, *theirs}
+    for window in board["rows"].values():
+        names.update(row["player_name"] for row in window["league"])
+    return {name: player_card(data, name) for name in sorted(names)}
+
+
 def build(session, today: date) -> dict:
     data = session.data
     week = slate.week_for(today, data.weeks)
@@ -286,6 +295,8 @@ def build(session, today: date) -> dict:
     plan = session.week_plan(week, today)
     mine = [seat["player"]["player_name"] for seat in session.roster]
     protected = {name.casefold() for name in season.PROTECTED}
+    their = data.active_names(plan["opponent"]) if plan.get("opponent") else []
+    board = stats_board.board(data, today, mine, their)
     return {
         "version": FEED_VERSION,
         "published_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -304,5 +315,7 @@ def build(session, today: date) -> dict:
         "leans_note": _leans_note(plan.get("banked"), today),
         "news": opportunity.news(data, mine, plan.get("opponent"), today, protected),
         "mine": [player_card(data, name) for name in mine],
-        "theirs": [player_card(data, name) for name in (data.active_names(plan["opponent"]) if plan.get("opponent") else [])],
+        "theirs": [player_card(data, name) for name in their],
+        "stats": board,
+        "cards": _cards(data, board, mine, their),
     }

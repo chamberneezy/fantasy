@@ -20,6 +20,8 @@ struct Feed: Codable {
     let news: News
     let mine: [PlayerCard]
     let theirs: [PlayerCard]
+    let stats: StatsBoard?
+    let cards: [String: PlayerCard]?
 
     static let url = URL(string: "https://chamberneezy.github.io/fantasy/data/season/app.json")!
 
@@ -285,5 +287,58 @@ enum Dates {
         out.dateFormat = "EEE d MMM"
         out.locale = Locale(identifier: "en_GB")
         return out.string(from: date)
+    }
+}
+
+/// Rolling stats: per window (7 days, 30 days, season), the league's top players by value and both teams.
+struct StatsBoard: Codable {
+    let windows: [StatsWindow]
+    let rows: [String: BoardRows]
+}
+
+struct StatsWindow: Codable, Identifiable {
+    var id: String { key }
+    let key: String
+    let label: String
+    let from: String?
+    let to: String?
+    let minGames: Int
+}
+
+struct BoardRows: Codable {
+    let league: [BoardRow]
+    let mine: [BoardRow]
+    let theirs: [BoardRow]
+}
+
+struct BoardRow: Codable, Identifiable {
+    var id: String { playerName }
+    let playerName: String
+    let team: String
+    let positions: String
+    let owner: String
+    let games: Int
+    let min: Double
+    let pts: Double
+    let reb: Double
+    let ast: Double
+    let fg3m: Double
+    let stl: Double
+    let blk: Double
+    let to: Double
+    let fgPct: Double?
+    let ftPct: Double?
+    let dd: Int
+    let value: Double
+    let rank: Int?
+    let fewGames: Bool?
+
+    var ownerLabel: String {
+        switch owner {
+        case "mine": return "Yours"
+        case "theirs": return "Opponent"
+        case "free": return "Free agent"
+        default: return owner
+        }
     }
 }
