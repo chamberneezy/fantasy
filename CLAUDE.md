@@ -1,6 +1,6 @@
 # NBA Fantasy draft tool — briefing for Claude
 
-Mario’s private unpublished helper for Yahoo league **51867** (Yahoo name: 3. Pilsner Fantasy Liga). Pad brand is **NBA Fantasy**, not Pilsner. 16 teams, salary-cap auction, **10 seats** (PG/SG/SF/PF/C + 5 BN). **No IL / IL+.** Live draft was Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
+Mario’s private unpublished helper for Yahoo league **51867** (Yahoo name: 3. Pilsner Fantasy Liga). Pad brand is **NBA Fantasy**, not Pilsner. 16 teams, salary-cap auction, **10 seats** (PG/SG/SF/PF/C + 5 BN) plus **IL slots (at least 4; Yahoo takes O/INJ players, not D/GTD).** Mario corrected the 5 Oct note on 26 Oct 2026. Live draft was Sunday 4 Oct 2026. This is an information pad. It does **not** open Yahoo, does **not** auto-bid, and must not grow a cheat path.
 
 Yahoo Settings (5 Oct 2026): 12 H2H cats, 16 teams, 4 divisions, 8-team playoffs in **weeks 19–21**, daily lineup (**Daily – Today**), **Lock benched players: No**, **4 adds/week**, no season add cap, **no waivers** (FA instant), commissioner trade review, custom per-team draft dollars. **No dynasty.** “Not a cash league” means Yahoo prize league is off, not that the cap is gone. Full snapshot: `context/league.md`.
 
@@ -38,7 +38,7 @@ Wordmark is **NBA Fantasy**. Do not revive Pilsner naming.
 | `/draft` | Practice **mock** (Yahoo clocks, bots) | `data/draft_session.json` |
 | `/helper` | Live-night **input pad** | `data/helper_session.json` |
 | `/lab` | Headless batch rooms + scenarios | `data/lab_report.json` |
-| `/season` | In-season pad (your 10, 4 adds/week, **no IL**) | `data/season_session.json` |
+| `/season` | In-season pad (your 10 + IL, 4 adds/week) | `data/season_session.json` |
 
 These sessions must not overwrite each other. Starting helper must not wipe a mock. Do not delete `draft_session.json` on server restart. Logo (`data-home-reset`) clears helper, mock, lab, **and** season, then goes `/`.
 
@@ -72,12 +72,12 @@ Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaul
 **Trust for this league**
 
 - 12-cat z-score contract and tests in `tests/test_math_engine.py`.
-- Yahoo Settings snapshot in `context/league.md` (51867, no IL, playoffs weeks 19–21, 4 adds/week, instant FA).
+- Yahoo Settings snapshot in `context/league.md` (51867, IL corrected 26 Oct, playoffs weeks 19–21, 4 adds/week, instant FA).
 - Yahoo list + Stay/Stretch from published sources in `market.py` (apex 1.80× / 2.40× on listed ≥ $50).
 - Helper loop: name → Stay/Stretch/Pass → Sold/Me → leftover seats.
 - Room heat after **two** hammers in a tier, **or** one nuclear first $50+ hammer. Not after one $87 Jokic.
 - Unlisted = $1 on this board. Lab “most common name at each seat” is unique greedy — never two Sabonis.
-- In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week 1 starts with all 4 adds, no IL.
+- In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week 1 starts with all 4 adds, IL in use (Kawhi, 26 Oct).
 - Season pad start/sit and matchup odds as **estimates**: strict-seat legal five, 20,000-run week vs the pasted opponent. Free ESPN feed (matches stats.nba.com: 812/812 player-games, 17 tiny stat corrections, minutes whole).
 - Injury bumps (`opportunity.py`) at their measured rate only: top named teammate gained minutes 69% / 64% / 57% of the time on high / medium / low calls (2025-26 replay). Per-minute production changes are untested.
 
@@ -100,7 +100,7 @@ src/coach.py            Stay / Stretch / Pass, feed parse
 src/room.py             live heat from logged sales
 src/sidecar.py          helper session
 src/yahoo_auction.py    mock clocks + bots
-src/season.py           in-season pad; 4 adds/week; no IL in this league
+src/season.py           in-season pad; 4 adds/week; IL slots (IL_SLOTS)
 src/espn_feed.py        this season's schedule, rosters, box scores from ESPN's free API (default; works on GitHub runners)
 src/nba_feed.py         file formats + the old stats.nba.com pull (`--nba`, laptop only; refused on cloud runners)
 src/opportunity.py      injury news: who gains minutes, the bumped line, certainty (replay-measured), vs Mario's weakest
@@ -145,13 +145,13 @@ data/                   projections, sessions; do not commit secrets
 6. Lab language: modal slot ≠ one room that happened. Squad names are unique. Alondes is $1 / not draftable.
 7. Logo from helper/draft/lab/season resets those sessions and opens `/`.
 8. No exploit, scrape, or Yahoo-live wiring.
-9. Season pad: no IL, Hezonja stays, Tre Jones, Jalen Smith and Tristan da Silva on the 10 (session); opponent `IL` rows are rostered but never simulated as starters.
+9. Season pad: IL slots work (`to_il`), Hezonja stays, roster per `data/season_session.json`; opponent `IL` rows are rostered but never simulated as starters.
 10. Season helper: no Yahoo calls anywhere in `nba_feed.py` / `injuries.py`; `/season` shows a matchup card only when `matchups.csv` names the week’s opponent; add plans never offer a rostered name or drop Hezonja.
 
-## Mario’s roster (after week 1)
+## Mario’s roster (26 Oct, week 2)
 
-Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4), then **Anfernee Simons → Tristan da Silva** (25 Oct, add 3 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
+Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4), then **Anfernee Simons → Tristan da Silva** (25 Oct, add 3 of 4). Week 2 (26 Oct): **Jalen Williams → Julian Champagnie** (Williams: open ankle fracture, season over), **Kawhi to IL**, **Anthony Black** added into the freed seat (adds 1–2 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
 
-PG Keyonte George · SG Kawhi Leonard · SF Jalen Williams · PF John Collins · C Nikola Jokić · BN Mario Hezonja, Jalen Smith, Neemias Queta, Tristan da Silva, Tre Jones.
+PG Keyonte George · SG Tre Jones · SF Mario Hezonja · PF Jalen Smith · C Nikola Jokić · BN Tristan da Silva, John Collins, Neemias Queta, Julian Champagnie, Anthony Black · IL Kawhi Leonard.
 
-Week 2 (Mon 26 Oct – Sun 1 Nov) vs **Old Stars**, 4 fresh adds. Holes: TO, PF; MIN and 3PM lean to opponents in weeks 2–5. No IL — a DNP costs a drop to stream. Week 1 record, how to answer (facts first, per-cat leans, no headline win %) and what Mario sends: `context/season_helper.md`.
+Week 2 (Mon 26 Oct – Sun 1 Nov) vs **Old Stars**, 2 adds left after Champagnie and Black. Holes: TO, PF; MIN and 3PM lean to opponents in weeks 2–5. IL exists: an O/INJ player goes to IL and frees a seat with no drop; a D/GTD player cannot. Week 1 record, how to answer (facts first, per-cat leans, no headline win %) and what Mario sends: `context/season_helper.md`.

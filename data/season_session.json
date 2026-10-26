@@ -1,7 +1,7 @@
 {
   "mode": "season",
   "week": 2,
-  "adds_used": 1,
+  "adds_used": 2,
   "roster": [
     [
       "PG",
@@ -9,23 +9,27 @@
     ],
     [
       "SG",
-      "Kawhi Leonard"
+      "Tre Jones"
     ],
     [
       "SF",
-      "Julian Champagnie"
+      "Mario Hezonja"
+    ],
+    [
+      "PF",
+      "Jalen Smith"
     ],
     [
       "C",
-      "John Collins"
-    ],
-    [
-      "BN1",
       "Nikola Jokić"
     ],
     [
+      "BN1",
+      "Tristan da Silva"
+    ],
+    [
       "BN2",
-      "Mario Hezonja"
+      "John Collins"
     ],
     [
       "BN3",
@@ -33,18 +37,19 @@
     ],
     [
       "BN4",
-      "Tre Jones"
+      "Julian Champagnie"
     ],
     [
       "BN5",
-      "Jalen Smith"
-    ],
-    [
-      "PF",
-      "Tristan Da Silva"
+      "Anthony Black"
     ]
   ],
-  "il": [],
+  "il": [
+    [
+      "IL",
+      "Kawhi Leonard"
+    ]
+  ],
   "status": {},
   "moves": [
     {
@@ -78,6 +83,10 @@
     {
       "date": "2026-10-26",
       "drop": "Jalen Williams"
+    },
+    {
+      "date": "2026-10-26",
+      "add": "Anthony Black"
     }
   ]
 }

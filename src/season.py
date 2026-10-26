@@ -30,7 +30,9 @@ from data_loader import ProjectionLoader
 from math_engine import ALL_CATEGORIES, FantasyMathEngine
 
 ADDS_PER_WEEK = 4
-IL_SLOTS = 0
+# Yahoo IL takes players marked O or INJ (not D/GTD). Mario (26 Oct): the league has IL after all;
+# Klobi Glina holds 4, so at least 4 slots. The exact count is not confirmed from Settings.
+IL_SLOTS = 4
 STREAM_LISTED_CAP = 8
 # Yahoo (19 Oct): all 4 week-1 adds open; the 5 Oct Tre Jones pickup did not count against week 1.
 OPENING_ADDS_USED = 0
@@ -677,11 +679,13 @@ class SeasonSession:
     def to_il(self, query: str) -> None:
         if IL_SLOTS <= 0:
             raise ValueError("This league has no IL. Drop someone to add a replacement.")
+        if len(self.il) >= IL_SLOTS:
+            raise ValueError(f"All {IL_SLOTS} IL slots are full.")
         player = match_player(query, [seat["player"] for seat in self.roster])
         name = player["player_name"]
         seat = next(item for item in self.roster if item["player"]["player_name"] == name)
         self.roster = [item for item in self.roster if item["player"]["player_name"] != name]
-        self.il.append({"slot_id": "IL" if not self.il else "IL+", "player": seat["player"]})
+        self.il.append({"slot_id": "IL", "player": seat["player"]})
         self._fill_starters()
 
     def from_il(self, query: str) -> None:
