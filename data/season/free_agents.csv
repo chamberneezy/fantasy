@@ -1,60 +1,49 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Jakob Poeltl,TOR,C,,124,49
-Moussa Diabaté,CHA,C,Q,145,28
-Anthony Black,ORL,PG/SG/SF,O,147,41
-Pelle Larsson,MIA,SG/SF,,153,13
-Aaron Nesmith,IND,SG/SF,Q,154,18
-Mikel Brown Jr.,BKN,PG,,155,21
-Isaiah Jackson,LAC,C,,159,20
-Bennedict Mathurin,NOP,SG/SF,,160,20
-Jeremiah Fears,NOP,PG/SG,,163,47
-Jake LaRavia,LAL,SF/PF,,164,7
-Maxime Raynaud,SAC,C,O,169,22
-Oso Ighodaro,PHX,C,Q,170,7
-Deandre Ayton,WAS,C,,177,13
-Isaiah Collier,UTA,PG/SG,,181,8
-Jordan Poole,NOP,PG/SG,,182,7
-Scoot Henderson,POR,PG,,183,11
-Kelly Oubre Jr.,IND,SF/PF,,184,14
-Kyle Filipowski,UTA,PF/C,Q,186,10
-Dennis Schröder,CHA,PG/SG,,187,26
-Tim Hardaway Jr.,MIA,SG/SF,,189,9
-Baylor Scheierman,BOS,SG/SF,,190,3
-Robert Williams III,POR,C,,191,5
-Daniss Jenkins,DET,PG/SG,,,5
-Isaiah Stewart,MEM,PF/C,O,193,14
-Dylan Cardwell,SAC,PF/C,O,195,5
-Miles McBride,NYK,PG/SG,,199,5
-Kris Dunn,LAC,PG/SG,,203,12
-Bilal Coulibaly,WAS,SG/SF,,210,23
-Derrick Jones Jr.,LAC,SF/PF,,211,8
-Tidjane Salaün,CHA,PF/C,,381,0
-Ziaire Williams,LAL,SG/SF,,270,5
-Matisse Thybulle,LAL,SG/SF,,340,3
-Kasparas Jakučionis,MIL,PG/SG,,335,8
-Javonte Green,DET,SG/SF,,259,2
-Marcus Sasser,DAL,PG,,377,4
-Julian Champagnie,SAS,SF/PF,,175,21
-Luke Kennard,PHX,SG/SF,,260,1
-DeAndre Jordan,NOP,C,,453,0
-Kentavious Caldwell-Pope,PHI,SG/SF,,288,5
+Kris Dunn,LAC,PG/SG,,203,21
 Dean Wade,PHI,SF/PF,,285,1
-Max Christie,DAL,SG/SF,,254,7
+Ja'Kobe Walter,TOR,PG/SG,,273,7
+DeAndre Jordan,NOP,C,,453,0
+Luke Kennard,PHX,SG/SF,,260,1
+Anthony Black,ORL,PG/SG/SF,,149,47
+Derrick Jones Jr.,LAC,SF/PF,,211,12
+Matisse Thybulle,LAL,SG/SF,,340,6
+Moussa Diabaté,CHA,C,,134,46
+Keon Ellis,BKN,SG/SF,,258,15
+Ziaire Williams,LAL,SG/SF,,270,9
+Dennis Schröder,CHA,PG/SG,,187,26
+Daniss Jenkins,DET,PG/SG,,192,9
+Kentavious Caldwell-Pope,PHI,SG/SF,,288,6
+Pelle Larsson,MIA,SG/SF,,153,14
+Marcus Sasser,DAL,PG,,377,3
+Bilal Coulibaly,WAS,SG/SF,,210,17
+Charles Bassey,GSW,C,P,437,1
+Kasparas Jakučionis,MIL,PG/SG,,335,8
+Terrence Shannon Jr.,MIN,SG/SF,,202,3
+Max Christie,DAL,SG/SF,,254,6
 Jordan Goodwin,PHX,PG/SG,,263,1
-Charles Bassey,GSW,C,,437,1
-Brandon Williams,GSW,PG,,283,4
-Trevon Brazile,DEN,PF,,564,6
-Ja'Kobe Walter,TOR,PG/SG,,273,4
-Graham Ike,GSW,PF,,552,1
-Svi Mykhailiuk,UTA,SG/SF,,319,1
-Tre Johnson,WAS,PG/SG/SF,,223,6
+Trevon Brazile,DEN,PF,,564,12
+Robert Williams III,POR,C,,191,5
+Ryan Kalkbrenner,CHA,C,,265,6
 Daniel Gafford,DAL,C,,135,31
-Ryan Kalkbrenner,CHA,C,,265,5
+Graham Ike,GSW,PF,,552,2
+Brandon Williams,GSW,PG,P,283,3
+Javonte Green,DET,SG/SF,,259,2
+Tre Johnson,WAS,PG/SG/SF,,223,6
+Allen Graves,TOR,PF,,248,1
+Josh Minott,BKN,SF/PF,,317,0
 Sidy Cissoko,POR,SF/PF,,350,1
+Miles McBride,NYK,PG/SG,,199,7
 Corey Kispert,ATL,SG/SF,,314,0
-Terrence Shannon Jr.,MIN,SG/SF,,202,2
-Quenton Jackson,IND,PG/SG,,343,0
-Al Horford,GSW,PF/C,O,214,3
-Bub Carrington,WAS,PG/SG,,245,2
-Sam Merrill,CLE,SG/SF,,271,3
-Anfernee Simons,PHI,PG/SG,,,
+Jay Huff,IND,C,,209,9
+Al Horford,GSW,PF/C,,214,3
+Kobe Sanders,LAC,SG/SF,,328,1
+Sam Merrill,CLE,SG/SF,,271,2
+Bub Carrington,WAS,PG/SG,,245,1
+Tidjane Salaün,CHA,PF/C,,381,0
+Sandro Mamukelashvili,LAL,PF/C,,116,40
+Jordan Poole,NOP,PG/SG,,182,7
+Isaiah Stewart,MEM,PF/C,,193,9
+Keldon Johnson,SAS,SF/PF,,215,10
+Jake LaRavia,LAL,SF/PF,,164,7
+Tobe Awaka,CHI,PF,,593,0
+Deandre Ayton,WAS,C,,177,11

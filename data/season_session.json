@@ -1,7 +1,7 @@
 {
   "mode": "season",
   "week": 2,
-  "adds_used": 0,
+  "adds_used": 1,
   "roster": [
     [
       "PG",
@@ -13,7 +13,7 @@
     ],
     [
       "SF",
-      "Jalen Williams"
+      "Julian Champagnie"
     ],
     [
       "C",
@@ -45,9 +45,7 @@
     ]
   ],
   "il": [],
-  "status": {
-    "Jalen Williams": "out"
-  },
+  "status": {},
   "moves": [
     {
       "date": "2026-10-19",
@@ -72,6 +70,14 @@
     {
       "date": "2026-10-25",
       "add": "Tristan Da Silva"
+    },
+    {
+      "date": "2026-10-26",
+      "add": "Julian Champagnie"
+    },
+    {
+      "date": "2026-10-26",
+      "drop": "Jalen Williams"
     }
   ]
 }
