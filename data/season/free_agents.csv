@@ -2,7 +2,6 @@ player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Jakob Poeltl,TOR,C,,124,49
 Moussa Diabaté,CHA,C,Q,145,28
 Anthony Black,ORL,PG/SG/SF,O,147,41
-Ace Bailey,UTA,SF/PF,,150,39
 Pelle Larsson,MIA,SG/SF,,153,13
 Aaron Nesmith,IND,SG/SF,Q,154,18
 Mikel Brown Jr.,BKN,PG,,155,21
@@ -26,14 +25,11 @@ Daniss Jenkins,DET,PG/SG,,,5
 Isaiah Stewart,MEM,PF/C,O,193,14
 Dylan Cardwell,SAC,PF/C,O,195,5
 Miles McBride,NYK,PG/SG,,199,5
-Jrue Holiday,POR,PG/SG,,144,30
 Kris Dunn,LAC,PG/SG,,203,12
 Bilal Coulibaly,WAS,SG/SF,,210,23
 Derrick Jones Jr.,LAC,SF/PF,,211,8
 Tidjane Salaün,CHA,PF/C,,381,0
 Ziaire Williams,LAL,SG/SF,,270,5
-Alex Caruso,OKC,SG/SF,,205,19
-Justin Champagnie,WAS,SF/PF,,256,3
 Matisse Thybulle,LAL,SG/SF,,340,3
 Kasparas Jakučionis,MIL,PG/SG,,335,8
 Javonte Green,DET,SG/SF,,259,2
@@ -48,7 +44,6 @@ Jordan Goodwin,PHX,PG/SG,,263,1
 Charles Bassey,GSW,C,,437,1
 Brandon Williams,GSW,PG,,283,4
 Trevon Brazile,DEN,PF,,564,6
-Sam Hauser,BOS,SF/PF,,206,4
 Ja'Kobe Walter,TOR,PG/SG,,273,4
 Graham Ike,GSW,PF,,552,1
 Svi Mykhailiuk,UTA,SG/SF,,319,1

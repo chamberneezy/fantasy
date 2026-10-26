@@ -22,6 +22,7 @@ struct NBAFantasyApp: App {
             .environment(store)
             .task {
                 await store.askForNotifications()
+                FeedStore.scheduleBackgroundRefresh()
                 await store.refresh()
             }
         }

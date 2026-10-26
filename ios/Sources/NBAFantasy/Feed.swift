@@ -22,6 +22,8 @@ struct Feed: Codable {
     let theirs: [PlayerCard]
     let stats: StatsBoard?
     let cards: [String: PlayerCard]?
+    let recap: Recap?
+    let injuries: InjuryLists?
 
     static let url = URL(string: "https://chamberneezy.github.io/fantasy/data/season/app.json")!
 
@@ -164,8 +166,60 @@ struct Injury: Codable, Identifiable {
     let status: String
     let returnDate: String
     let reported: String
-    let part: String
+    let part: String?
     let note: String
+}
+
+/// Every injury on both rosters, not only the ones ruled out.
+struct InjuryLists: Codable {
+    let mine: [Injury]
+    let theirs: [Injury]
+}
+
+/// Last night: both teams' starters, who won the night by category, the week after it.
+struct Recap: Codable {
+    let date: String
+    let played: Bool
+    let week: Int?
+    let opponent: String?
+    let mine: [RecapLine]
+    let theirs: [RecapLine]
+    let night: Tally?
+    let weekScore: Tally?
+}
+
+struct RecapLine: Codable, Identifiable {
+    var id: String { playerName }
+    let playerName: String
+    let mp: Double
+    let pts: Double
+    let reb: Double
+    let ast: Double
+    let fg3m: Double
+    let stl: Double
+    let blk: Double
+    let to: Double
+    let fgm: Double
+    let fga: Double
+
+    /// "32 pts · 6 reb · 8 ast · 3 3s": the counting stats that matter, zeros left out after points.
+    var short: String {
+        var parts = ["\(Int(pts)) pts"]
+        if reb > 0 { parts.append("\(Int(reb)) reb") }
+        if ast > 0 { parts.append("\(Int(ast)) ast") }
+        if fg3m > 0 { parts.append("\(Int(fg3m)) 3s") }
+        if stl > 0 { parts.append("\(Int(stl)) stl") }
+        if blk > 0 { parts.append("\(Int(blk)) blk") }
+        return parts.joined(separator: " · ")
+    }
+}
+
+struct Tally: Codable {
+    let won: Int
+    let lost: Int
+    let tied: Int
+
+    var text: String { tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)" }
 }
 
 struct Opportunity: Codable, Identifiable {
@@ -286,6 +340,14 @@ enum Dates {
         let out = DateFormatter()
         out.dateFormat = "EEE d MMM"
         out.locale = Locale(identifier: "en_GB")
+        return out.string(from: date)
+    }
+
+    /// A date as "2026-10-27", the feed's format, so feed dates compare as text.
+    static func iso(_ date: Date) -> String {
+        let out = DateFormatter()
+        out.dateFormat = "yyyy-MM-dd"
+        out.locale = Locale(identifier: "en_US_POSIX")
         return out.string(from: date)
     }
 }

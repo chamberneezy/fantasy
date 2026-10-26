@@ -13,6 +13,7 @@ import numpy as np
 import matchup as matchup_stats
 import opportunity
 import schedule as slate
+import season
 import stats_board
 
 FEED_VERSION = 2
@@ -289,7 +290,9 @@ def season_weeks(session, current: int, today: date) -> list[dict]:
             "opponent": opponent,
             "current": week["week"] == current,
         }
-        if week["end"] < today:
+        if week["week"] in data.finals:
+            row.update(through=row["end"], **data.finals[week["week"]], final=True)
+        elif week["end"] < today:
             day_after = date.fromordinal(week["end"].toordinal() + 1)
             live = live_totals(session.week_plan(week, day_after), day_after)
             if live:
@@ -301,6 +304,15 @@ def season_weeks(session, current: int, today: date) -> list[dict]:
                 row.update(through=live["through"], won=counted["won"], lost=counted["lost"], tied=counted["tied"], final=True)
         rows.append(row)
     return rows
+
+
+def _adds_left(session, week: dict, today: date) -> int | None:
+    """Adds left this week. A session still on last week has not been rolled: count this week's logged adds."""
+    if session.week >= week["week"]:
+        return session.state(today).get("adds_left")
+    start, end = week["start"].isoformat(), week["end"].isoformat()
+    used = sum(1 for move in session.moves if move.get("add") and start <= move["date"] <= end)
+    return max(season.ADDS_PER_WEEK - used, 0)
 
 
 def _yahoo_value(vector, cat: str) -> float:
@@ -382,7 +394,7 @@ def build(session, today: date) -> dict:
         "week_start": week["start"].isoformat(),
         "week_end": week["end"].isoformat(),
         "opponent": plan.get("opponent"),
-        "adds_left": session.state(today).get("adds_left"),
+        "adds_left": _adds_left(session, week, today),
         "today": _today(grid),
         "days": _week(grid, plan),
         "leans": (leans := _leans(grid.get("matchup"), live := live_totals(plan, today))),

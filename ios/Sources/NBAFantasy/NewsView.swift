@@ -8,14 +8,15 @@ struct NewsView: View {
         NavigationStack {
             List {
                 if let news = store.feed?.news {
-                    if !news.mineOut.isEmpty {
-                        BrandSection("Your players out") {
-                            ForEach(news.mineOut) { InjuryRow(injury: $0) }
-                        }
+                    let mine = store.feed?.injuries?.mine ?? news.mineOut
+                    let theirs = store.feed?.injuries?.theirs ?? news.opponentOut
+                    BrandSection("Your injuries") {
+                        if mine.isEmpty { Text("Nobody on the injury report").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
+                        ForEach(mine) { InjuryRow(injury: $0) }
                     }
-                    if !news.opponentOut.isEmpty {
-                        BrandSection("Opponent's players out") {
-                            ForEach(news.opponentOut) { InjuryRow(injury: $0) }
+                    if !theirs.isEmpty {
+                        BrandSection("\(store.feed?.opponent ?? "Opponent")'s injuries") {
+                            ForEach(theirs) { InjuryRow(injury: $0) }
                         }
                     }
                     BrandSection("Minutes opening up", footer: "From games with and without him, this season counted 3× last season. \"Likely free\" means he is on no roster you pasted: check Yahoo.") {

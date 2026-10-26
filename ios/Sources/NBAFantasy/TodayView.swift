@@ -10,6 +10,12 @@ struct TodayView: View {
                     BrandSection("Week \(feed.week) score") {
                         ScoreCard(feed: feed)
                     }
+                    if let recap = feed.recap, recap.played {
+                        BrandSection("Last night · \(Dates.short(recap.date))", footer: recapFooter(recap)) {
+                            RecapRows(title: "Yours", lines: recap.mine, color: Theme.blue)
+                            if !recap.theirs.isEmpty { RecapRows(title: recap.opponent ?? "Opponent", lines: recap.theirs, color: Theme.red) }
+                        }
+                    }
                     BrandSection("Starts per day vs \(feed.opponent ?? "—")", footer: feed.addsLeft.map { "\($0) add\($0 == 1 ? "" : "s") left this week" }) {
                         WeekStrip(days: feed.days, today: feed.today.date)
                     }
@@ -28,6 +34,9 @@ struct TodayView: View {
                         }
                     }
                     BrandSection {
+                        if !store.notificationsAllowed {
+                            Text("Notifications are off: Settings → NBA Fantasy → Notifications").font(Theme.ui(12.5, .semibold)).foregroundStyle(Theme.red)
+                        }
                         Stamp(feed: feed, error: store.error)
                     }
                 } else if let error = store.error {
@@ -38,6 +47,30 @@ struct TodayView: View {
             }
             .brandScreen("Today")
             .refreshable { await store.refresh() }
+        }
+    }
+}
+
+private func recapFooter(_ recap: Recap) -> String? {
+    let parts = [recap.night.map { "Night \($0.text)" }, recap.weekScore.map { "week \($0.text) after it" }].compactMap { $0 }
+    return parts.isEmpty ? nil : parts.joined(separator: " · ")
+}
+
+/// One team's starters last night, one line each.
+struct RecapRows: View {
+    let title: String
+    let lines: [RecapLine]
+    let color: Color
+
+    var body: some View {
+        Text(title.uppercased()).font(Theme.display(12)).kerning(1).foregroundStyle(color)
+        if lines.isEmpty { Text("No starter played").font(Theme.ui(13)).foregroundStyle(Theme.mute) }
+        ForEach(lines) { line in
+            HStack(alignment: .firstTextBaseline) {
+                Text(line.playerName).font(Theme.ui(14, .semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                Spacer()
+                Text(line.short).font(Theme.ui(12).monospacedDigit()).foregroundStyle(Theme.ink).lineLimit(1).minimumScaleFactor(0.8)
+            }
         }
     }
 }

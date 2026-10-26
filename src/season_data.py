@@ -143,11 +143,14 @@ class SeasonData:
         )
         self._rostered = _keyed((row.player_name, str(row.fantasy_team)) for row in self.rosters.itertuples())
         matchups_path = self.team_dir / MATCHUPS_NAME
-        self.matchups = (
-            {int(row.week): str(row.opponent) for row in pd.read_csv(matchups_path).itertuples()}
-            if matchups_path.exists()
-            else {}
-        )
+        weeks = pd.read_csv(matchups_path) if matchups_path.exists() else pd.DataFrame(columns=["week", "opponent"])
+        self.matchups = {int(row.week): str(row.opponent) for row in weeks.itertuples()}
+        # Yahoo's final score, typed in once a week is over (optional won/lost/tied columns): beats the box-score estimate.
+        self.finals = {
+            int(row["week"]): {key: int(row[key]) for key in ("won", "lost", "tied")}
+            for row in weeks.to_dict("records")
+            if all(pd.notna(row.get(key)) for key in ("won", "lost", "tied"))
+        }
         scores_path = self.team_dir / YAHOO_SCORES_NAME
         self.yahoo_scores = pd.read_csv(scores_path) if scores_path.exists() else pd.DataFrame(columns=list(YAHOO_COLUMNS))
         injuries_path = self.feed_dir / nba_feed.INJURIES_PATH.name
