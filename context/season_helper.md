@@ -25,7 +25,7 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 ## Files Mario supplies (pasted by hand, never scraped)
 
-- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **snapshot 5 Oct 2026**; weeks 2–5 opponents re-pasted **24 Oct**. Stale after any add/drop/trade. Re-paste the week’s opponent at least. Slot `IL` stays rostered but is left out of that team's simulated starts (the league has no IL; Old Stars carries two anyway).
+- `data/season/league_rosters.csv` — all 16 teams, Yahoo slot + eligibility, **all re-pasted 25 Oct 2026** (Danijel's from the 24 Oct matchup page). Kept current from Yahoo's **Transactions** screen (adds, drops, trades with dates). With every roster on file, an unrostered player is a free agent. Stale after any add/drop/trade. Re-paste the week’s opponent at least. Slot `IL` stays rostered but is left out of that team's simulated starts (the league has IL slots, corrected 26 Oct).
 - `data/season/free_agents.csv` — Yahoo's free-agent list (name, team, Yahoo positions, Q/O tag, pre-season rank, % rostered), merged from Yahoo screenshots (Players → All Available, sorted by **Current** rank, 2–3 pages), last **25 Oct 2026**, 67 names. Names missing from a fresh screenshot that ranked inside it are removed as taken; names below the pages stay until seen again. When present, add plans only offer these names and skip Yahoo "O"; Yahoo positions replace the NBA-feed guess. Re-paste before each add decision.
 - `data/season/matchups.csv` — `week,opponent`. Weeks **1–5** filled: Danijel's Dandy Team, Old Stars, BC Versus, Mother Tucker, Harlem Bricks.
 - `data/season/comebacks.csv` — players projected off an older season. Only **Tyrese Haliburton, 2024-25** (Mario’s call: expects him near that year). Kyrie Irving, Fred VanVleet, Damian Lillard missed 2025-26 too and still count as zero.
@@ -37,11 +37,21 @@ Mario’s brief: a daily start/sit and add/drop helper for Yahoo 51867. Free dat
 
 `data/season_session.json` (roster, lineup, adds used) is **committed** now, so the run and cloud sessions see Mario's ten. After a move: update the session (`SeasonSession.add/drop`, `save_season`) and `league_rosters.csv`, commit, push, `gh workflow run season.yml`.
 
-## From the Claude iPhone app
+## From the Claude iPhone app (cloud session on this repo)
 
-Mario sends Yahoo screenshots in a Claude Code session on this repo (Claude app → Code). Same routine as below: read the real score, apply moves to the session and rosters, merge free-agent pages, commit, push, start `season.yml`. Answer in the agreed format (facts first, per-cat leans, no headline win %).
+Mario opens the Claude app → Code → this repo, branch `cursor/3rd-league-draft-dollars`, and sends Yahoo screenshots. A cloud session has the code and the committed files, not the raw feed: first `git fetch origin season-feed && git archive FETCH_HEAD | tar -x -C data/season` (schedule, players, this season's logs, injuries), then `pip install -r requirements.txt`. Then, per screenshot:
 
-## Refresh on the laptop (old, still works)
+| Screenshot | Write | Notes |
+|---|---|---|
+| Matchup page (12 cats, both teams) | `data/season/yahoo_scores.csv`: two rows, `week,through,side` (`mine` / `theirs`) + `min,fgm,fga,ftm,fta,fg3m,pts,reb,ast,stl,blk,to,pf,dd` | `through` = the last day whose games are in the totals (a morning screenshot: yesterday). Keep earlier rows. The week plan then starts from these real totals. |
+| "Added X, dropped Y" / My Team | `SeasonSession.drop/add` + `save_season` (session json), Mario's lines in `league_rosters.csv` (CRLF line endings), `free_agents.csv` (X off, Y on) | Adds count against 4 per week. |
+| Transactions (League → Transactions) | append to `data/season/transactions.csv` (`when_local` in Zurich time as Yahoo shows it, `team`, `add`, `drop`; full names), then apply each add/drop/trade to that team's rows in `league_rosters.csv`, oldest first; Mario's own also via `SeasonSession.add/drop(on=date)` | Must reach back to the last row in the log (last: 25 Oct 12:19, Rapske Manige); say so if it does not. Slot `IL` = rostered but not simulated. |
+| Free agents (sorted by Current rank) | merge into `free_agents.csv`; names missing that ranked inside the pages → remove as taken | |
+| Season schedule | `matchups.csv` (`week,opponent`) | |
+
+Then commit and push: the push starts `season.yml` (paths above), which pulls ESPN, rebuilds and publishes `app.json` and Pages within a few minutes. Reply in the agreed format: facts first, per-cat leans as words, coin flips named, long-run cost first on any move. Opponent analysis stays in chat, not in commits.
+
+## Refresh on the laptop (old; its systemd timers were switched off 25 Oct 2026, GitHub publishes now)
 
 Two systemd user timers, Zurich time. **Morning** (`nba-fantasy-morning`): every 15 min 06:00–09:45 runs `refresh_season.py --morning --publish`, which pulls only once last night's final game should be over (latest tip + 2h30; west-coast tips are 04:00–05:00 Zurich, so usually 06:30–07:30) and does nothing once every game of the night is in the logs (`nba_feed.night_status`). **Evening** (`nba-fantasy-refresh`): 18:00 and 23:30, injury news before tip-off. Both republish Pages after a pull. `Persistent=true` catches up after the laptop sleeps. Units live in `scripts/systemd/`, installed to `~/.config/systemd/user/`. A running server picks up new files on its next request.
 
@@ -62,6 +72,7 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 - Injury bumps, 2025-26 replay (one rotation player out, earlier games only, top named teammate): shrink 15 games predicts +4.5 min on high calls vs +3.7 real (shrink 5 predicted +6.6). Gained minutes: high 69% (132 calls), medium 64%, low 57%. Per-player single-game minutes error stays ~4.9 whatever the method.
 - ESPN vs stats.nba.com, 20–24 Oct 2026: 812/812 player-games, schedule 1,200/1,200, 515 players same team; 17 small stat differences; ESPN minutes are whole.
 
+- This season's games vs the anchor, 2026-27 walk-forward (26–30 Oct, 569 player-games, 3+ earlier games): a this-season-only model lost to `daily.py` in 13 of 14 stats (about 3% worse on average) and opponent factors made it worse, so it was not kept. Minutes anchor cut from 4 games to 1: minutes error 6.15 to 5.98. Share of one game explained: MIN .52, PTS .49, AST .48, REB .45, STL .04, PF .10, BLK .13. Re-run as games come in; the sample is small.
 - Daily line vs naive, 2025-26 walk-forward (140 players, first 20 games as anchor): total error 17.32 vs 17.80 season-to-date vs 18.88 fixed line. Most of the gain is minutes.
 - Opponent + home factors improve error by only ~0.1%. Shown, clamped, not trusted to swing a call.
 - Second night of a back-to-back does **not** cut minutes of those who play (ratio 1.025). It is a sit chance only.

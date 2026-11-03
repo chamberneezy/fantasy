@@ -53,7 +53,7 @@ def started(by_day: dict[str, list[dict]], lineups: dict[str, dict[str, str]]) -
     entries = []
     for day, day_entries in by_day.items():
         names = set(lineups.get(day, {}).values())
-        entries.extend(entry for entry in day_entries if entry["name"] in names)
+        entries.extend({**entry, "day": day} for entry in day_entries if entry["name"] in names)
     return entries
 
 
@@ -62,37 +62,50 @@ def simulate(mine: list[dict], theirs: list[dict], runs: int, seed: int) -> tupl
     return matchup.team_totals(mine, runs, rng), matchup.team_totals(theirs, runs, rng)
 
 
+def _banked(entries: list[dict], banked: dict | None, side: str) -> list[dict]:
+    """Days Yahoo has scored become one fixed entry with the real totals; later days stay as games."""
+    if not banked:
+        return entries
+    later = [entry for entry in entries if entry["day"] > banked["through"]]
+    return [{"name": f"Yahoo {side}", "day": banked["through"], "fixed": banked[side]}, *later]
+
+
 def plan_week(
     mine: dict[str, list[dict]],
     theirs: dict[str, list[dict]],
     today: str,
     runs: int = matchup.RUNS,
     seed: int = matchup.SEED,
+    banked: dict | None = None,
 ) -> dict:
     """Pick my five for each day still to play, to win the most categories.
 
     The opponent is assumed to start his best legal five by value every day.
     Days already played keep the best-by-value five: the pad does not know
-    who was really started. From today on, each game is scored by how much it
-    moves the categories still in play, and the fives are picked on that.
+    who was really started. ``banked`` (``through`` a day, ``mine`` and
+    ``theirs`` as ``matchup.STATS`` vectors from Yahoo's matchup page) replaces
+    every day up to ``through`` with the real score. From today on, each game is
+    scored by how much it moves the categories still in play, and the fives are
+    picked on that.
     """
     their_lineups = {day: by_value(entries) for day, entries in theirs.items()}
-    their_games = started(theirs, their_lineups)
+    their_started = started(theirs, their_lineups)
+    their_games = _banked(their_started, banked, "theirs")
     lineups = {day: by_value(entries) for day, entries in mine.items()}
     weights: dict = {}
     for _ in range(PASSES):
-        my_totals, their_totals = simulate(started(mine, lineups), their_games, runs, seed)
+        my_totals, their_totals = simulate(_banked(started(mine, lineups), banked, "mine"), their_games, runs, seed)
         weights = matchup.swing_weights(my_totals, their_totals)
         for day, entries in mine.items():
             if day >= today:
                 lineups[day] = by_swing(entries, weights)
-    my_totals, their_totals = simulate(started(mine, lineups), their_games, runs, seed)
+    my_totals, their_totals = simulate(_banked(started(mine, lineups), banked, "mine"), their_games, runs, seed)
     return {
         "lineups": lineups,
         "their_lineups": their_lineups,
         "weights": weights,
         "result": matchup.compare(my_totals, their_totals),
-        "their_games": their_games,
+        "their_games": their_started,
     }
 
 

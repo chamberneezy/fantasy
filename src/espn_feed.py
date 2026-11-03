@@ -231,6 +231,42 @@ def shape_box(summary: dict, game: dict, ids: dict[int, tuple[int, str]]) -> lis
     return rows
 
 
+def shape_starters(summary: dict) -> dict[str, bool]:
+    """Who started one game, by ``name_key``."""
+    started = {}
+    for side in (summary.get("boxscore") or {}).get("players") or []:
+        for block in side.get("statistics") or []:
+            for athlete in block.get("athletes") or []:
+                name = (athlete.get("athlete") or {}).get("displayName")
+                if name:
+                    started[name_key(name)] = bool(athlete.get("starter"))
+    return started
+
+
+def shape_line(summary: dict) -> dict | None:
+    """The first betting line ESPN lists for a game. ``None`` until one is posted."""
+    lines = summary.get("pickcenter") or []
+    if not lines:
+        return None
+    return {"details": lines[0].get("details"), "total": lines[0].get("overUnder"), "spread": lines[0].get("spread")}
+
+
+def game_notes(game_ids: list[str], session=None) -> dict[str, dict]:
+    """Starters and the betting line per game. A failed game is left out, the report goes on."""
+    import requests
+
+    session = session or requests.Session()
+    notes = {}
+    for game_id in dict.fromkeys(str(game_id) for game_id in game_ids):
+        try:
+            summary = _get(session, "summary", event=game_id)
+        except Exception:  # a public endpoint; the report does not need every game
+            continue
+        notes[game_id] = {"starters": shape_starters(summary), "line": shape_line(summary)}
+        time.sleep(PAUSE_SECONDS)
+    return notes
+
+
 def fetch_logs(session, schedule: pd.DataFrame, old: pd.DataFrame, ids: dict[int, tuple[int, str]]) -> tuple[pd.DataFrame, int]:
     """Finished games not yet in ``old``, one summary call each. Returns all logs and the games added."""
     have = set(old["game_id"].astype(str)) if len(old) else set()

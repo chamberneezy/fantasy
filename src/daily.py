@@ -33,7 +33,7 @@ MINUTES_HALF_LIFE = 5.0
 # The season line counts as this many of the latest game. Role changes show
 # up in minutes first, so minutes lean on the anchor less than rates do.
 ANCHOR_GAMES = 10.0
-MINUTES_ANCHOR_GAMES = 4.0
+MINUTES_ANCHOR_GAMES = 1.0
 
 
 def recency_weights(count: int, half_life: float) -> list[float]:

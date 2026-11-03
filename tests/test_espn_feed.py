@@ -77,3 +77,18 @@ def test_schedule_keeps_regular_season_and_uses_the_eastern_day():
     assert schedule.iloc[0]["date"] == "2026-10-22"
     assert schedule.iloc[0]["tip_utc"] == "2026-10-23T01:30:00Z"
     assert bool(schedule.iloc[0]["final"])
+
+
+def test_starters_and_line_come_from_the_summary() -> None:
+    summary = {
+        "boxscore": {"players": [{"statistics": [{"athletes": [
+            {"athlete": {"displayName": "Keyonte George"}, "starter": True},
+            {"athlete": {"displayName": "Kyle Filipowski"}, "starter": False},
+        ]}]}]},
+        "pickcenter": [{"details": "POR -6.5", "overUnder": 232.5, "spread": 6.5}],
+    }
+    started = espn_feed.shape_starters(summary)
+    assert started[espn_feed.name_key("Keyonte George")] is True
+    assert started[espn_feed.name_key("Kyle Filipowski")] is False
+    assert espn_feed.shape_line(summary) == {"details": "POR -6.5", "total": 232.5, "spread": 6.5}
+    assert espn_feed.shape_line({"pickcenter": []}) is None

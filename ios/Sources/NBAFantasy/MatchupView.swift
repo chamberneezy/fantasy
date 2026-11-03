@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Per-category leans for the week. Words, not percentages.
+/// Per-category: Yahoo's real score now, and where the week is heading, as a word.
 struct MatchupView: View {
     @Environment(FeedStore.self) private var store
 
@@ -9,23 +9,48 @@ struct MatchupView: View {
             List {
                 if let feed = store.feed {
                     if feed.leans.isEmpty {
-                        Text("No opponent on file for week \(feed.week).").foregroundStyle(.secondary)
+                        BrandSection { Text("No opponent on file for week \(feed.week).").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
                     } else {
-                        Section {
+                        BrandSection("Week \(feed.week) vs \(feed.opponent ?? "—")", footer: feed.leansNote) {
+                            ScoreHeader(through: feed.yahooThrough)
                             ForEach(feed.leans) { LeanRow(lean: $0) }
-                        } header: {
-                            Text("Week \(feed.week) vs \(feed.opponent ?? "—")")
-                        } footer: {
-                            Text(feed.leansNote)
+                        }
+                    }
+                    if let season = feed.season, !season.isEmpty {
+                        BrandSection(seasonTitle(season), footer: "Scores come from the Yahoo matchup screenshots you send; a week is final once its Sunday is in.") {
+                            ForEach(season) { SeasonRow(week: $0) }
                         }
                     }
                 } else {
                     ProgressView()
                 }
             }
-            .navigationTitle("Matchup")
+            .brandScreen("Matchup")
             .refreshable { await store.refresh() }
         }
+    }
+}
+
+/// "Season · 1–0–0" once weeks are final, else just "Season".
+private func seasonTitle(_ weeks: [SeasonWeek]) -> String {
+    let done = weeks.compactMap(\.outcome)
+    guard !done.isEmpty else { return "Season" }
+    let count = { (mark: String) in done.filter { $0 == mark }.count }
+    return "Season · \(count("W"))–\(count("L"))–\(count("T"))"
+}
+
+struct ScoreHeader: View {
+    let through: String?
+
+    var body: some View {
+        HStack {
+            Text("CAT").frame(width: 48, alignment: .leading)
+            Text(through.map { "SO FAR (\(Dates.short($0).uppercased()))  →  WEEK END" } ?? "WEEK END")
+            Spacer()
+            Text("LEAN")
+        }
+        .font(Theme.ui(10.5, .semibold))
+        .foregroundStyle(Theme.mute)
     }
 }
 
@@ -34,28 +59,25 @@ struct LeanRow: View {
 
     var body: some View {
         HStack {
-            Text(lean.cat).font(.body.weight(.semibold)).frame(width: 48, alignment: .leading)
-            Text("\(value(lean.mine)) – \(value(lean.theirs))")
-                .font(.callout.monospacedDigit())
-                .foregroundStyle(.secondary)
+            Text(lean.cat).font(Theme.display(16)).foregroundStyle(Theme.heading).frame(width: 48, alignment: .leading)
+            VStack(alignment: .leading, spacing: 1) {
+                if let mine = lean.yahooMine, let theirs = lean.yahooTheirs {
+                    Text("\(value(mine)) – \(value(theirs))")
+                        .font(Theme.display(17).monospacedDigit())
+                        .foregroundStyle(mine == theirs ? Theme.ink : (leads(mine, theirs) ? Theme.blue : Theme.red))
+                }
+                Text("→ \(value(lean.mine)) – \(value(lean.theirs))")
+                    .font(Theme.ui(12).monospacedDigit())
+                    .foregroundStyle(Theme.mute)
+            }
             Spacer()
-            Text(lean.lean)
-                .font(.caption.bold())
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(color.opacity(0.18), in: Capsule())
-                .foregroundStyle(color)
+            Pill(text: lean.lean, color: Palette.lean(lean.lean))
         }
     }
 
-    private var color: Color {
-        switch lean.lean {
-        case "likely yours": return .green
-        case "lean yours": return .mint
-        case "coin flip": return .orange
-        case "lean his": return .pink
-        default: return .red
-        }
+    /// TO and PF: fewer is better.
+    private func leads(_ mine: Double, _ theirs: Double) -> Bool {
+        lean.cat == "TO" || lean.cat == "PF" ? mine < theirs : mine > theirs
     }
 
     private func value(_ number: Double) -> String {

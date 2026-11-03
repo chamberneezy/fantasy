@@ -13,10 +13,17 @@ struct Feed: Codable {
     let today: Today
     let days: [Day]
     let leans: [Lean]
+    let score: Score?
+    let season: [SeasonWeek]?
+    let yahooThrough: String?
     let leansNote: String
     let news: News
     let mine: [PlayerCard]
     let theirs: [PlayerCard]
+    let stats: StatsBoard?
+    let cards: [String: PlayerCard]?
+    let recap: Recap?
+    let injuries: InjuryLists?
 
     static let url = URL(string: "https://chamberneezy.github.io/fantasy/data/season/app.json")!
 
@@ -79,6 +86,8 @@ struct Lean: Codable, Identifiable {
     let mine: Double
     let theirs: Double
     let lean: String
+    let yahooMine: Double?
+    let yahooTheirs: Double?
 }
 
 struct News: Codable {
@@ -97,6 +106,54 @@ struct TrackRecord: Codable {
     let calls: Int
 }
 
+/// The week as Yahoo scores it (categories won / lost / tied through a day) and the outlook as lean counts.
+struct Score: Codable {
+    let through: String?
+    let won: Int?
+    let lost: Int?
+    let tied: Int?
+    let outlook: Outlook
+    /// Where the score comes from, e.g. "Yahoo to Fri 23 Oct + box scores to Sat 24 Oct".
+    let basis: String?
+
+    var text: String? {
+        guard let won, let lost, let tied else { return nil }
+        return tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)"
+    }
+}
+
+struct Outlook: Codable {
+    let yours: Int
+    let coinFlip: Int
+    let his: Int
+}
+
+/// One week of the season: opponent, and Yahoo's score once one is on file.
+struct SeasonWeek: Codable, Identifiable {
+    var id: Int { week }
+    let week: Int
+    let start: String
+    let end: String
+    let opponent: String
+    let current: Bool
+    let through: String?
+    let won: Int?
+    let lost: Int?
+    let tied: Int?
+    let final: Bool?
+
+    var scoreText: String? {
+        guard let won, let lost, let tied else { return nil }
+        return tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)"
+    }
+
+    /// Won, lost or tied the week, once it is final.
+    var outcome: String? {
+        guard final == true, let won, let lost else { return nil }
+        return won > lost ? "W" : won < lost ? "L" : "T"
+    }
+}
+
 /// Mario's lowest-value player who is not protected: the bar a pickup must clear.
 struct Weakest: Codable {
     let playerName: String
@@ -109,8 +166,60 @@ struct Injury: Codable, Identifiable {
     let status: String
     let returnDate: String
     let reported: String
-    let part: String
+    let part: String?
     let note: String
+}
+
+/// Every injury on both rosters, not only the ones ruled out.
+struct InjuryLists: Codable {
+    let mine: [Injury]
+    let theirs: [Injury]
+}
+
+/// Last night: both teams' starters, who won the night by category, the week after it.
+struct Recap: Codable {
+    let date: String
+    let played: Bool
+    let week: Int?
+    let opponent: String?
+    let mine: [RecapLine]
+    let theirs: [RecapLine]
+    let night: Tally?
+    let weekScore: Tally?
+}
+
+struct RecapLine: Codable, Identifiable {
+    var id: String { playerName }
+    let playerName: String
+    let mp: Double
+    let pts: Double
+    let reb: Double
+    let ast: Double
+    let fg3m: Double
+    let stl: Double
+    let blk: Double
+    let to: Double
+    let fgm: Double
+    let fga: Double
+
+    /// "32 pts · 6 reb · 8 ast · 3 3s": the counting stats that matter, zeros left out after points.
+    var short: String {
+        var parts = ["\(Int(pts)) pts"]
+        if reb > 0 { parts.append("\(Int(reb)) reb") }
+        if ast > 0 { parts.append("\(Int(ast)) ast") }
+        if fg3m > 0 { parts.append("\(Int(fg3m)) 3s") }
+        if stl > 0 { parts.append("\(Int(stl)) stl") }
+        if blk > 0 { parts.append("\(Int(blk)) blk") }
+        return parts.joined(separator: " · ")
+    }
+}
+
+struct Tally: Codable {
+    let won: Int
+    let lost: Int
+    let tied: Int
+
+    var text: String { tied > 0 ? "\(won)–\(lost)–\(tied)" : "\(won)–\(lost)" }
 }
 
 struct Opportunity: Codable, Identifiable {
@@ -232,5 +341,66 @@ enum Dates {
         out.dateFormat = "EEE d MMM"
         out.locale = Locale(identifier: "en_GB")
         return out.string(from: date)
+    }
+
+    /// A date as "2026-10-27", the feed's format, so feed dates compare as text.
+    static func iso(_ date: Date) -> String {
+        let out = DateFormatter()
+        out.dateFormat = "yyyy-MM-dd"
+        out.locale = Locale(identifier: "en_US_POSIX")
+        return out.string(from: date)
+    }
+}
+
+/// Rolling stats: per window (7 days, 30 days, season), the league's top players by value and both teams.
+struct StatsBoard: Codable {
+    let windows: [StatsWindow]
+    let rows: [String: BoardRows]
+}
+
+struct StatsWindow: Codable, Identifiable {
+    var id: String { key }
+    let key: String
+    let label: String
+    let from: String?
+    let to: String?
+    let minGames: Int
+}
+
+struct BoardRows: Codable {
+    let league: [BoardRow]
+    let mine: [BoardRow]
+    let theirs: [BoardRow]
+}
+
+struct BoardRow: Codable, Identifiable {
+    var id: String { playerName }
+    let playerName: String
+    let team: String
+    let positions: String
+    let owner: String
+    let games: Int
+    let min: Double
+    let pts: Double
+    let reb: Double
+    let ast: Double
+    let fg3m: Double
+    let stl: Double
+    let blk: Double
+    let to: Double
+    let fgPct: Double?
+    let ftPct: Double?
+    let dd: Int
+    let value: Double
+    let rank: Int?
+    let fewGames: Bool?
+
+    var ownerLabel: String {
+        switch owner {
+        case "mine": return "Yours"
+        case "theirs": return "Opponent"
+        case "free": return "Free agent"
+        default: return owner
+        }
     }
 }

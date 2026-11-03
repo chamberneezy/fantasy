@@ -1,27 +1,31 @@
 {
   "mode": "season",
-  "week": 1,
-  "adds_used": 3,
+  "week": 3,
+  "adds_used": 2,
   "roster": [
     [
       "PG",
-      "Keyonte George"
+      "Jrue Holiday"
     ],
     [
       "SG",
-      "Kawhi Leonard"
+      "Keyonte George"
     ],
     [
       "SF",
-      "Jalen Williams"
+      "Julian Champagnie"
+    ],
+    [
+      "PF",
+      "Tristan da Silva"
     ],
     [
       "C",
-      "John Collins"
+      "Nikola Jokić"
     ],
     [
       "BN1",
-      "Nikola Joki\u0107"
+      "Tre Jones"
     ],
     [
       "BN2",
@@ -33,17 +37,69 @@
     ],
     [
       "BN4",
-      "Tre Jones"
+      "Saddiq Bey"
     ],
     [
       "BN5",
       "Jalen Smith"
-    ],
-    [
-      "PF",
-      "Tristan Da Silva"
     ]
   ],
-  "il": [],
-  "status": {}
+  "il": [
+    [
+      "IL",
+      "Anthony Black"
+    ],
+    [
+      "IL",
+      "Kawhi Leonard"
+    ]
+  ],
+  "status": {},
+  "moves": [
+    {
+      "date": "2026-10-19",
+      "drop": "Dillon Brooks"
+    },
+    {
+      "date": "2026-10-19",
+      "add": "Anfernee Simons"
+    },
+    {
+      "date": "2026-10-21",
+      "drop": "Jrue Holiday"
+    },
+    {
+      "date": "2026-10-21",
+      "add": "Jalen Smith"
+    },
+    {
+      "date": "2026-10-25",
+      "drop": "Anfernee Simons"
+    },
+    {
+      "date": "2026-10-25",
+      "add": "Tristan Da Silva"
+    },
+    {
+      "date": "2026-10-26",
+      "add": "Julian Champagnie"
+    },
+    {
+      "date": "2026-10-26",
+      "drop": "Jalen Williams"
+    },
+    {
+      "date": "2026-10-26",
+      "add": "Anthony Black"
+    },
+    {
+      "date": "2026-11-02",
+      "add": "Jrue Holiday"
+    },
+    {
+      "date": "2026-11-03",
+      "add": "Saddiq Bey",
+      "drop": "John Collins"
+    }
+  ]
 }

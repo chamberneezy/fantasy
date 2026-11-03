@@ -1,33 +1,57 @@
-"""App icon: a basketball on navy, drawn at 4x and scaled down. No NBA marks.
+"""App icon from the NBA Fantasy mark (docs/img/mark.png), as the site's header shows it:
+the mark inside a blue→red conic ring, on the dark page colour.
 
-    ../../.venv/bin/python Resources/icon-source/make_icon.py
+    .venv/bin/python ios/Resources/icon-source/make_icon.py
 """
+import math
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
-SIZE, SCALE = 1024, 4
-NAVY, ORANGE, SEAM = (17, 30, 58), (240, 128, 34), (28, 22, 20)
+ROOT = Path(__file__).resolve().parents[3]
+MARK = ROOT / "docs" / "img" / "mark.png"
 OUT = Path(__file__).resolve().parents[1] / "Assets.xcassets" / "AppIcon.appiconset" / "AppIcon-1024.png"
+SIZE = 1024
+PAGE = (7, 13, 26)  # --page-bg, dark theme
+BLUE, RED = (43, 119, 231), (231, 63, 43)
+RING = 0.80  # ring diameter as a share of the icon
+RING_WIDTH = 0.022
 
-big = SIZE * SCALE
-image = Image.new("RGB", (big, big), NAVY)
-draw = ImageDraw.Draw(image)
-c, r = big / 2, big * 0.34
-box = (c - r, c - r, c + r, c + r)
-draw.ellipse(box, fill=ORANGE)
-w = int(big * 0.022)
-draw.line((c, c - r, c, c + r), fill=SEAM, width=w)
-draw.line((c - r, c, c + r, c), fill=SEAM, width=w)
-# The two curved seams: arcs of circles centred off the ball, left and right.
-for side in (-1, 1):
-    cx = c + side * r * 1.45
-    rr = r * 1.05
-    draw.arc((cx - rr, c - rr, cx + rr, c + rr), 0, 360, fill=SEAM, width=w)
-# Clip the seams to the ball, keep the navy outside.
-mask = Image.new("L", (big, big), 0)
-ImageDraw.Draw(mask).ellipse(box, fill=255)
-image = Image.composite(image, Image.new("RGB", (big, big), NAVY), mask)
-ImageDraw.Draw(image).ellipse(box, outline=SEAM, width=w)
-image.resize((SIZE, SIZE), Image.LANCZOS).save(OUT)
-print(OUT)
+
+def conic(size: int) -> Image.Image:
+    """Blue → red → blue around the circle, starting at 200°, like the site's .mark-wrap."""
+    image = Image.new("RGB", (size, size))
+    pixels = image.load()
+    centre = (size - 1) / 2
+    for y in range(size):
+        for x in range(size):
+            turn = (math.degrees(math.atan2(x - centre, centre - y)) - 200) % 360 / 360
+            mix = 1 - abs(turn * 2 - 1)  # 0 at blue, 1 at red
+            pixels[x, y] = tuple(round(b + (r - b) * mix) for b, r in zip(BLUE, RED))
+    return image
+
+
+def main() -> None:
+    icon = Image.new("RGB", (SIZE, SIZE), PAGE)
+    ring = round(SIZE * RING)
+    corner = (SIZE - ring) // 2
+    # Soft blue and red glow behind the ring.
+    glow = Image.new("RGB", (SIZE, SIZE), PAGE)
+    ImageDraw.Draw(glow).ellipse((corner - 20, corner - 20, corner + ring + 20, corner + ring + 20), fill=(30, 70, 150))
+    icon = Image.blend(icon, glow.filter(ImageFilter.GaussianBlur(60)), 0.55)
+    disc = Image.new("L", (ring, ring), 0)
+    ImageDraw.Draw(disc).ellipse((0, 0, ring - 1, ring - 1), fill=255)
+    icon.paste(conic(ring), (corner, corner), disc)
+    inner = round(ring * (1 - 2 * RING_WIDTH))
+    mark = Image.open(MARK).convert("RGBA").resize((inner, inner), Image.LANCZOS)
+    backing = Image.new("L", (inner, inner), 0)
+    ImageDraw.Draw(backing).ellipse((0, 0, inner - 1, inner - 1), fill=255)
+    offset = (SIZE - inner) // 2
+    icon.paste(Image.new("RGB", (inner, inner), PAGE), (offset, offset), backing)
+    icon.paste(mark, (offset, offset), mark)
+    icon.save(OUT)
+    print(OUT)
+
+
+if __name__ == "__main__":
+    main()

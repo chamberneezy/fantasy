@@ -1,4 +1,4 @@
-"""In-season pad: seeded 10, no IL, 4 adds/week."""
+"""In-season pad: seeded 10, IL slots, 4 adds/week."""
 
 from __future__ import annotations
 
@@ -38,11 +38,9 @@ def test_opening_roster_is_yahoo_ten() -> None:
         raise AssertionError("Hezonja must stay")
     except ValueError as exc:
         assert "stay" in str(exc).lower()
-    try:
-        session.to_il("Jalen Williams")
-        raise AssertionError("no IL")
-    except ValueError as exc:
-        assert "no IL" in str(exc)
+    session.to_il("Jalen Williams")
+    assert [item["player"]["player_name"] for item in session.il] == ["Jalen Williams"]
+    assert "Jalen Williams" not in [seat["player"]["player_name"] for seat in session.roster]
 
 
 def test_add_drop_and_week(tmp_path) -> None:
@@ -115,7 +113,7 @@ def test_season_http_seeds_and_resets(tmp_path, monkeypatch) -> None:
     payload = started.get_json()
     assert payload["started"] is True
     assert payload["adds_left"] == 4
-    assert payload["il_enabled"] is False
+    assert payload["il_enabled"] is True
     names = [row["player_name"] for row in payload["roster"]]
     assert "Nikola Jokić" in names
     assert "Mario Hezonja" in names

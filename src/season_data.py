@@ -28,6 +28,9 @@ MIN_ANCHOR_GAMES = 5
 HISTORY_GAMES = 60
 ROSTERS_NAME = "league_rosters.csv"
 MATCHUPS_NAME = "matchups.csv"
+# Yahoo's matchup page, typed in from a screenshot: both teams' week totals through a day.
+YAHOO_SCORES_NAME = "yahoo_scores.csv"
+YAHOO_COLUMNS = ("week", "through", "side", "min", "fgm", "fga", "ftm", "fta", "fg3m", "pts", "reb", "ast", "stl", "blk", "to", "pf", "dd")
 # Yahoo's free-agent list, pasted by hand. When present, only these names are offered as adds.
 FREE_AGENTS_NAME = "free_agents.csv"
 # NBA feed positions are G / F / C. Yahoo's are finer; this is the nearest guess
@@ -85,8 +88,12 @@ def _find(table: dict, name: str):
 
 
 class SeasonData:
-    def __init__(self, feed_dir: Path | None = None, lines: pd.DataFrame | None = None, baselines: dict | None = None) -> None:
+    def __init__(
+        self, feed_dir: Path | None = None, lines: pd.DataFrame | None = None, baselines: dict | None = None, team_dir: Path | None = None
+    ) -> None:
         self.feed_dir = feed_dir or nba_feed.FEED_DIR
+        # One team's own files (its weekly opponents, Yahoo scores); the league's feed is shared.
+        self.team_dir = team_dir or self.feed_dir
         self.schedule = slate.load_schedule(self.feed_dir / nba_feed.SCHEDULE_PATH.name)
         self.weeks = slate.load_weeks(self.schedule, self.feed_dir / slate.WEEKS_PATH.name)
         self.logs = _read_logs(self.feed_dir / f"gamelogs_{nba_feed.SEASON}.csv")
@@ -135,15 +142,36 @@ class SeasonData:
             + [(row.player_name, str(row.positions)) for row in self.rosters.itertuples()]
         )
         self._rostered = _keyed((row.player_name, str(row.fantasy_team)) for row in self.rosters.itertuples())
-        matchups_path = self.feed_dir / MATCHUPS_NAME
-        self.matchups = (
-            {int(row.week): str(row.opponent) for row in pd.read_csv(matchups_path).itertuples()}
-            if matchups_path.exists()
-            else {}
-        )
+        matchups_path = self.team_dir / MATCHUPS_NAME
+        weeks = pd.read_csv(matchups_path) if matchups_path.exists() else pd.DataFrame(columns=["week", "opponent"])
+        self.matchups = {int(row.week): str(row.opponent) for row in weeks.itertuples()}
+        # Yahoo's final score, typed in once a week is over (optional won/lost/tied columns): beats the box-score estimate.
+        self.finals = {
+            int(row["week"]): {key: int(row[key]) for key in ("won", "lost", "tied")}
+            for row in weeks.to_dict("records")
+            if all(pd.notna(row.get(key)) for key in ("won", "lost", "tied"))
+        }
+        scores_path = self.team_dir / YAHOO_SCORES_NAME
+        self.yahoo_scores = pd.read_csv(scores_path) if scores_path.exists() else pd.DataFrame(columns=list(YAHOO_COLUMNS))
         injuries_path = self.feed_dir / nba_feed.INJURIES_PATH.name
         report = pd.read_csv(injuries_path).fillna("") if injuries_path.exists() else pd.DataFrame()
         self.injuries = _keyed((row["player_name"], row) for row in report.to_dict("records"))
+
+    def yahoo_banked(self, week: int) -> dict | None:
+        """The latest Yahoo score for ``week``: ``through`` a day, both sides as ``matchup.STATS`` vectors."""
+        rows = self.yahoo_scores.loc[self.yahoo_scores["week"] == week] if len(self.yahoo_scores) else self.yahoo_scores
+        if rows.empty:
+            return None
+        through = str(rows["through"].max())
+        latest = rows.loc[rows["through"].astype(str) == through]
+        sides = {}
+        for side in ("mine", "theirs"):
+            row = latest.loc[latest["side"] == side]
+            if row.empty:
+                return None
+            values = row.iloc[0]
+            sides[side] = np.array([float(values["min" if stat == "mp" else stat]) for stat in matchup.STATS])
+        return {"through": through, **sides}
 
     def team_names(self, fantasy_team: str) -> list[str]:
         return [str(name) for name in self.rosters.loc[self.rosters["fantasy_team"] == fantasy_team, "player_name"]]
@@ -318,14 +346,15 @@ class SeasonData:
         return None
 
 
-def load(feed_dir: Path | None = None) -> SeasonData:
+def load(feed_dir: Path | None = None, team_dir: Path | None = None) -> SeasonData:
     """Read the feed once and again only when a file on disk changes."""
     target = feed_dir or nba_feed.FEED_DIR
+    folders = [target] + ([team_dir] if team_dir else [])
     stamp = tuple(
-        sorted((path.name, path.stat().st_mtime_ns) for path in target.glob("*") if path.is_file())
-    ) if target.exists() else ()
-    key = (str(target), stamp)
+        sorted((str(path), path.stat().st_mtime_ns) for folder in folders if folder.exists() for path in folder.glob("*") if path.is_file())
+    )
+    key = (str(target), str(team_dir), stamp)
     if key not in _CACHE:
         _CACHE.clear()
-        _CACHE[key] = SeasonData(target)
+        _CACHE[key] = SeasonData(target, team_dir=team_dir)
     return _CACHE[key]

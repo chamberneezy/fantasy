@@ -30,7 +30,9 @@ from data_loader import ProjectionLoader
 from math_engine import ALL_CATEGORIES, FantasyMathEngine
 
 ADDS_PER_WEEK = 4
-IL_SLOTS = 0
+# Yahoo IL takes players marked O or INJ (not D/GTD). Mario (26 Oct): the league has IL after all;
+# Klobi Glina holds 4, so at least 4 slots. The exact count is not confirmed from Settings.
+IL_SLOTS = 4
 STREAM_LISTED_CAP = 8
 # Yahoo (19 Oct): all 4 week-1 adds open; the 5 Oct Tre Jones pickup did not count against week 1.
 OPENING_ADDS_USED = 0
@@ -160,6 +162,12 @@ class SeasonSession:
         self.il: list[dict] = []
         self.adds_used = OPENING_ADDS_USED
         self.week = 1
+        # Dated adds and drops, so a past day is scored with the roster of that day.
+        self.moves: list[dict] = []
+        # Whose pad this is. Another team runs the same engine from its own folder (export_season --team-dir).
+        self.team = "Lipicaneri"
+        self.protected: frozenset = PROTECTED
+        self.team_dir: Path | None = None
         self._seed()
 
     def _lookup(self, name: str) -> dict:
@@ -186,7 +194,7 @@ class SeasonSession:
 
     @property
     def data(self) -> season_data.SeasonData:
-        return self._data or season_data.load()
+        return self._data or season_data.load(team_dir=self.team_dir)
 
     def _team(self, player: dict) -> str:
         return self.data.team_of(player["player_name"], player.get("team"))
@@ -247,22 +255,49 @@ class SeasonSession:
             for seat in self.roster
         ]
 
+    def _on_roster(self, name: str, day: str) -> bool:
+        """Was ``name`` mine on ``day``? Added from his add date; dropped players count until their drop date."""
+        added = [move["date"] for move in self.moves if move.get("add") == name]
+        dropped = [move["date"] for move in self.moves if move.get("drop") == name]
+        if added and day < max(added):
+            return False
+        if dropped and (not added or max(dropped) > max(added)) and day >= max(dropped):
+            return False
+        return True
+
+    def _week_players(self, week: dict) -> list[tuple[str, str, str]]:
+        """My ten plus anyone I dropped during ``week``: his games before the drop still count."""
+        players = self._my_players()
+        held = {name for name, _, _ in players}
+        start = week["start"].isoformat()
+        for move in self.moves:
+            name = move.get("drop")
+            if name and name not in held and move["date"] > start:
+                players.append((name, self.data.positions_for(name)[0], self.data.team_of(name)))
+                held.add(name)
+        return players
+
     def week_plan(self, week: dict, today: date) -> dict:
         """My five for each day of the week, and the matchup if the opponent is known."""
-        key = (week["week"], today, tuple(self._my_players()), tuple(sorted(self.status.items())), id(self.data))
+        key = (week["week"], today, tuple(self._my_players()), tuple(map(str, self.moves)), tuple(sorted(self.status.items())), id(self.data))
         if self._plan_cache.get("key") == key:
             return self._plan_cache["plan"]
         data = self.data
-        mine = self._by_day(self._my_players(), week, today)
+        mine = {
+            day: [entry for entry in entries if self._on_roster(entry["name"], day)]
+            for day, entries in self._by_day(self._week_players(week), week, today).items()
+        }
         opponent = data.matchups.get(week["week"])
         their_names = data.active_names(opponent) if opponent else []
         if their_names:
             theirs = self._by_day(
                 [(name, data.positions_for(name)[0], data.team_of(name)) for name in their_names], week, today
             )
-            plan = lineup.plan_week(mine, theirs, today.isoformat())
+            banked = data.yahoo_banked(week["week"])
+            plan = lineup.plan_week(mine, theirs, today.isoformat(), banked=banked)
             plan["opponent"] = opponent
             plan["theirs"] = theirs
+            plan["banked"] = banked
         else:
             plan = {"lineups": {day: lineup.by_value(entries) for day, entries in mine.items()}, "result": None, "weights": None}
         plan["mine"] = mine
@@ -294,7 +329,7 @@ class SeasonSession:
         grid["prev"] = data.weeks[position - 1]["start"].isoformat() if position else None
         grid["next"] = data.weeks[position + 1]["start"].isoformat() if position + 1 < len(data.weeks) else None
         grid["day"] = self._day_card(chosen, grid, plan)
-        grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, PROTECTED)
+        grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, self.protected)
         grid["today"] = now.isoformat()
         grid["matchup"] = self._matchup_card(plan)
         grid["plans"] = self.stream_plans(week, now, plan) if week is slate.week_for(now, data.weeks) else []
@@ -471,7 +506,7 @@ class SeasonSession:
         for seat in self.roster:
             name = seat["player"]["player_name"]
             line = self.data.line_for(name)
-            if name not in PROTECTED and line is not None:
+            if name not in self.protected and line is not None:
                 valued.append((line["value"], name))
         return [name for _, name in sorted(valued)[:STREAM_DROPS]]
 
@@ -485,7 +520,7 @@ class SeasonSession:
         for day in by_day:
             if day < iso and day in plan["mine"]:
                 by_day[day] = plan["mine"][day]
-        swapped = lineup.plan_week(by_day, plan["theirs"], iso)["result"]
+        swapped = lineup.plan_week(by_day, plan["theirs"], iso, banked=plan.get("banked"))["result"]
         before = plan["result"]
         add_line = self.data.line_for(row["add"])
         drop_line = self.data.line_for(row["drop"])
@@ -533,7 +568,7 @@ class SeasonSession:
                     "games": games,
                     "unlisted": bool(player.get("unlisted") or player["player_name"] == "Mario Hezonja"),
                     "total_value": float(player.get("total_value") or 0),
-                    "protected": player["player_name"] in PROTECTED,
+                    "protected": player["player_name"] in self.protected,
                 }
             )
         ranked = [row for row in ranked if not row["protected"]]
@@ -595,7 +630,7 @@ class SeasonSession:
         ranked.sort(key=lambda row: (-row["help"], -(row["games"] or 0)))
         return ranked[:8]
 
-    def add(self, query: str) -> None:
+    def add(self, query: str, on: date | None = None) -> None:
         if self.adds_used >= ADDS_PER_WEEK:
             raise ValueError(f"You already used {ADDS_PER_WEEK} adds this week.")
         player = self._lookup(query)
@@ -605,6 +640,7 @@ class SeasonSession:
         slot_id = self._open_seat(player.get("positions"))
         self.roster.append({"slot_id": slot_id, "player": player})
         self.adds_used += 1
+        self.moves.append({"date": (on or league_today()).isoformat(), "add": name})
 
     def _fill_starters(self) -> None:
         for slot_id, label in SLOTS:
@@ -628,11 +664,12 @@ class SeasonSession:
                 return empty_bn[0]
             raise ValueError("No empty eligible seat. Drop a bench name first.") from None
 
-    def drop(self, query: str) -> None:
+    def drop(self, query: str, on: date | None = None) -> None:
         player = match_player(query, [seat["player"] for seat in self.roster] + [item["player"] for item in self.il])
         name = player["player_name"]
-        if name in PROTECTED:
-            raise ValueError("Hezonja stays.")
+        if name in self.protected:
+            raise ValueError(f"{name} stays." if name == "Mario Hezonja" else f"{name} is protected.")
+        self.moves.append({"date": (on or league_today()).isoformat(), "drop": name})
         self.roster = [seat for seat in self.roster if seat["player"]["player_name"] != name]
         self.il = [item for item in self.il if item["player"]["player_name"] != name]
         self._fill_starters()
@@ -642,11 +679,13 @@ class SeasonSession:
     def to_il(self, query: str) -> None:
         if IL_SLOTS <= 0:
             raise ValueError("This league has no IL. Drop someone to add a replacement.")
+        if len(self.il) >= IL_SLOTS:
+            raise ValueError(f"All {IL_SLOTS} IL slots are full.")
         player = match_player(query, [seat["player"] for seat in self.roster])
         name = player["player_name"]
         seat = next(item for item in self.roster if item["player"]["player_name"] == name)
         self.roster = [item for item in self.roster if item["player"]["player_name"] != name]
-        self.il.append({"slot_id": "IL" if not self.il else "IL+", "player": seat["player"]})
+        self.il.append({"slot_id": "IL", "player": seat["player"]})
         self._fill_starters()
 
     def from_il(self, query: str) -> None:
@@ -691,7 +730,7 @@ class SeasonSession:
                     "team": self._team(seat["player"]),
                     "games": seat["player"].get("predicted_games"),
                     "unlisted": bool(seat["player"].get("unlisted")),
-                    "protected": seat["player"]["player_name"] in PROTECTED,
+                    "protected": seat["player"]["player_name"] in self.protected,
                 }
                 for seat in self.roster
             ],
@@ -731,13 +770,19 @@ def save_season(session: SeasonSession, path: Path | None = None) -> None:
         "roster": [[seat["slot_id"], seat["player"]["player_name"]] for seat in session.roster],
         "il": [[item["slot_id"], item["player"]["player_name"]] for item in session.il],
         "status": dict(session.status),
+        "moves": list(session.moves),
     }
+    if session.team != "Lipicaneri":
+        payload["team"] = session.team
+        payload["protected"] = sorted(session.protected)
     target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def load_season(players: list[dict], path: Path | None = None) -> SeasonSession:
-    target = path or SEASON_PATH
+def load_season(players: list[dict], path: Path | None = None, team_dir: Path | None = None) -> SeasonSession:
+    """``team_dir``: another team's folder (its session.json, matchups.csv, yahoo_scores.csv)."""
+    target = path or (team_dir / "session.json" if team_dir else SEASON_PATH)
     session = SeasonSession(players)
+    session.team_dir = team_dir
     if not target.exists():
         return session
     payload = json.loads(target.read_text(encoding="utf-8"))
@@ -751,6 +796,10 @@ def load_season(players: list[dict], path: Path | None = None) -> SeasonSession:
         for slot_id, name in roster:
             session.roster.append({"slot_id": slot_id, "player": session._lookup(name)})
     session.status = {str(name): str(mark) for name, mark in (payload.get("status") or {}).items()}
+    session.moves = [dict(move) for move in payload.get("moves") or []]
+    if payload.get("team"):
+        session.team = str(payload["team"])
+        session.protected = frozenset(payload.get("protected") or [])
     session.il = []
     for slot_id, name in payload.get("il") or []:
         session.il.append({"slot_id": slot_id, "player": session._lookup(name)})
