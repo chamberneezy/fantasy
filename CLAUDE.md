@@ -6,7 +6,7 @@ Yahoo Settings (5 Oct 2026): 12 H2H cats, 16 teams, 4 divisions, 8-team playoffs
 
 If you are double-checking work, treat `context/system_rules.md` and `.cursorrules` as the contract. This file is the map of what exists and what is trustworthy.
 
-**Continuing the in-season helper?** Read `context/season_helper.md` first: what is built, what was measured, the files Mario pastes, and the next steps in order.
+**Daily routine?** `context/daily_routine.md`. **Continuing the in-season helper?** Read `context/season_helper.md` first: what is built, what was measured, the files Mario pastes, and the next steps in order.
 
 ## League math (do not “improve”)
 
@@ -107,6 +107,8 @@ src/opportunity.py      injury news: who gains minutes, the bumped line, certain
 src/app_feed.py         app.json for the iPhone app (today, week starts, per-cat leans as words, news, stat cards)
 src/schedule.py         fantasy weeks, week grid, back-to-backs (Eastern day)
 src/daily.py            per-game line: per-minute rates × minutes, season-line anchor
+src/category_board.py   morning report: 12 z-scores and ranks for every player, category outlooks, every add/drop in all 12, forecast log and grading
+src/yahoo_snapshot.py   text read from Yahoo pages into the pad's files (read only; talks to nobody)
 src/season_data.py      reads data/season/ (feed, pasted rosters, matchups) for the pad
 src/context.py          opponent / home factors and per-player back-to-back rest, from logs
 src/injuries.py         ESPN free injury feed → chance to play; manual mark beats it
@@ -116,6 +118,7 @@ src/matchup.py          simulated week: 12-cat totals, chance per cat, swing wei
 src/lineup.py           legal five (strict PG/SG/SF/PF/C) and the week plan
 src/outlook.py          3-season + age model for the season pad's anchor line (data/season/outlook.csv); not the draft board
 scripts/refresh_season.py  season feed refresh (ESPN). Runs on GitHub Actions (`.github/workflows/season.yml` on **main**: mornings 06–08 UTC with --morning, evenings 17 and 22 UTC, or by hand); raw feed kept on branch `season-feed`
+scripts/daily_plan.py   the morning report; scripts/apply_yahoo.py writes what was read from Yahoo first (context/daily_routine.md)
 scripts/publish_season.py  after each refresh: export the week (+ app.json) → season-data branch → Pages (docs/season.html, read-only)
 ios/                    NBA Fantasy iPhone app (SwiftUI, built on Linux with xtool; see ios/README.md)
 src/lab.py              headless 2k/10k rooms; unique greedy squad
@@ -131,7 +134,7 @@ data/                   projections, sessions; do not commit secrets
 - No Yahoo API (tried Oct 2026: Yahoo now requires app approval; Mario chose screenshots instead). No official NBA logo.
 - Secrets never leave the laptop: `.env*`, keys and token files are git-ignored, and `scripts/git-hooks/pre-commit` (`git config core.hooksPath scripts/git-hooks`) refuses commits with them or secret-looking lines. Pages publishes only `docs/` plus the week's day JSON (`publish_season.PUBLIC_NAME`).
 - Do not edit the original plan file.
-- Do not scrape Yahoo or wire a live league.
+- No Yahoo scraper or live wiring in the code. Mario asked (31 Oct 2026) that Claude read his league in his own Chrome each morning: read only, and ask before changing a lineup or making a move.
 - Do not commit unless Mario asks.
 - UI changes: verify `/season`, `/helper`, `/draft`, `/lab` as touched. Helper and mock must stay consistent.
 
@@ -148,10 +151,10 @@ data/                   projections, sessions; do not commit secrets
 9. Season pad: IL slots work (`to_il`), Hezonja stays, roster per `data/season_session.json`; opponent `IL` rows are rostered but never simulated as starters.
 10. Season helper: no Yahoo calls anywhere in `nba_feed.py` / `injuries.py`; `/season` shows a matchup card only when `matchups.csv` names the week’s opponent; add plans never offer a rostered name or drop Hezonja.
 
-## Mario’s roster (26 Oct, week 2)
+## Mario’s roster (3 Nov, week 3)
 
-Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4), then **Anfernee Simons → Tristan da Silva** (25 Oct, add 3 of 4). Week 2 (26 Oct): **Jalen Williams → Julian Champagnie** (Williams: open ankle fracture, season over), **Kawhi to IL**, **Anthony Black** added into the freed seat (adds 1–2 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
+Yahoo My Team, 19 Oct 2026: Davion Mitchell → Tre Jones (5 Oct, did not count against week 1), then **Dillon Brooks → Anfernee Simons** (19 Oct, week-1 add 1 of 4), then **Jrue Holiday → Jalen Smith** (21 Oct, add 2 of 4), then **Anfernee Simons → Tristan da Silva** (25 Oct, add 3 of 4). Week 2 (26 Oct): **Jalen Williams → Julian Champagnie** (Williams: open ankle fracture, season over), **Kawhi to IL**, **Anthony Black** added into the freed seat (adds 1–2 of 4); lost week 2 to Old Stars 5–7. Week 3: **Black to IL (rest), Jrue Holiday** added into the freed seat (2 Nov, add 1 of 4), **John Collins → Saddiq Bey** (3 Nov, add 2 of 4). **Hezonja stays.** The live roster and lineup are in `data/season_session.json`; `OPENING_ROSTER` in `src/season.py` is only the reset default.
 
-PG Keyonte George · SG Tre Jones · SF Mario Hezonja · PF Jalen Smith · C Nikola Jokić · BN Tristan da Silva, John Collins, Neemias Queta, Julian Champagnie, Anthony Black · IL Kawhi Leonard.
+PG Jrue Holiday · SG Keyonte George · SF Julian Champagnie · PF Tristan da Silva · C Nikola Jokić · BN Tre Jones, Mario Hezonja, Neemias Queta, Saddiq Bey, Jalen Smith · IL Anthony Black, Kawhi Leonard.
 
-Week 2 (Mon 26 Oct – Sun 1 Nov) vs **Old Stars**, 2 adds left after Champagnie and Black. Holes: TO, PF; MIN and 3PM lean to opponents in weeks 2–5. IL exists: an O/INJ player goes to IL and frees a seat with no drop; a D/GTD player cannot. Week 1 record, how to answer (facts first, per-cat leans, no headline win %) and what Mario sends: `context/season_helper.md`.
+Week 3 (Mon 2 – Sun 8 Nov) vs **BC Versus**, 2 adds left. Plan: Black back Thu 5 Nov (off IL, drop Tre Jones). IL exists: an O/INJ player goes to IL and frees a seat with no drop; a D/GTD player cannot. Week 1 record, how to answer (facts first, per-cat leans, no headline win %) and what Mario sends: `context/season_helper.md`; the daily routine: `context/daily_routine.md`.

@@ -72,6 +72,7 @@ Committed: hand-pasted files, `history/`, `gamelogs_2025-26.csv`, `gamelogs_olde
 - Injury bumps, 2025-26 replay (one rotation player out, earlier games only, top named teammate): shrink 15 games predicts +4.5 min on high calls vs +3.7 real (shrink 5 predicted +6.6). Gained minutes: high 69% (132 calls), medium 64%, low 57%. Per-player single-game minutes error stays ~4.9 whatever the method.
 - ESPN vs stats.nba.com, 20–24 Oct 2026: 812/812 player-games, schedule 1,200/1,200, 515 players same team; 17 small stat differences; ESPN minutes are whole.
 
+- This season's games vs the anchor, 2026-27 walk-forward (26–30 Oct, 569 player-games, 3+ earlier games): a this-season-only model lost to `daily.py` in 13 of 14 stats (about 3% worse on average) and opponent factors made it worse, so it was not kept. Minutes anchor cut from 4 games to 1: minutes error 6.15 to 5.98. Share of one game explained: MIN .52, PTS .49, AST .48, REB .45, STL .04, PF .10, BLK .13. Re-run as games come in; the sample is small.
 - Daily line vs naive, 2025-26 walk-forward (140 players, first 20 games as anchor): total error 17.32 vs 17.80 season-to-date vs 18.88 fixed line. Most of the gain is minutes.
 - Opponent + home factors improve error by only ~0.1%. Shown, clamped, not trusted to swing a call.
 - Second night of a back-to-back does **not** cut minutes of those who play (ratio 1.025). It is a sit chance only.

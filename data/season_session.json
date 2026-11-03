@@ -1,23 +1,23 @@
 {
   "mode": "season",
-  "week": 2,
+  "week": 3,
   "adds_used": 2,
   "roster": [
     [
       "PG",
-      "Keyonte George"
+      "Jrue Holiday"
     ],
     [
       "SG",
-      "Tre Jones"
+      "Keyonte George"
     ],
     [
       "SF",
-      "Mario Hezonja"
+      "Julian Champagnie"
     ],
     [
       "PF",
-      "Jalen Smith"
+      "Tristan da Silva"
     ],
     [
       "C",
@@ -25,11 +25,11 @@
     ],
     [
       "BN1",
-      "Tristan da Silva"
+      "Tre Jones"
     ],
     [
       "BN2",
-      "John Collins"
+      "Mario Hezonja"
     ],
     [
       "BN3",
@@ -37,14 +37,18 @@
     ],
     [
       "BN4",
-      "Julian Champagnie"
+      "Saddiq Bey"
     ],
     [
       "BN5",
-      "Anthony Black"
+      "Jalen Smith"
     ]
   ],
   "il": [
+    [
+      "IL",
+      "Anthony Black"
+    ],
     [
       "IL",
       "Kawhi Leonard"
@@ -87,6 +91,15 @@
     {
       "date": "2026-10-26",
       "add": "Anthony Black"
+    },
+    {
+      "date": "2026-11-02",
+      "add": "Jrue Holiday"
+    },
+    {
+      "date": "2026-11-03",
+      "add": "Saddiq Bey",
+      "drop": "John Collins"
     }
   ]
 }

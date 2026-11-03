@@ -61,10 +61,10 @@ def test_no_anchor_and_no_games_is_no_line() -> None:
 def test_one_game_blends_minutes_and_rates_with_the_anchor() -> None:
     game = _games([{"min": 20.0, "pts": 20.0, "fgm": 8.0, "fga": 10.0, "dd": 1.0}])
     line = project_line(anchor_from_row(ANCHOR_ROW), game)
-    # Minutes: (20 + 4 anchor games x 30) / 5.
-    assert line["mp"] == pytest.approx(28.0)
-    # Points per minute: (20 + 10 x 15) / (20 + 10 x 30), times 28 minutes.
-    assert line["pts"] == pytest.approx(28.0 * 170.0 / 320.0)
+    # Minutes: (20 + 1 anchor game x 30) / 2.
+    assert line["mp"] == pytest.approx(25.0)
+    # Points per minute: (20 + 10 x 15) / (20 + 10 x 30), times 25 minutes.
+    assert line["pts"] == pytest.approx(25.0 * 170.0 / 320.0)
     assert line["fg_pct"] == pytest.approx((8.0 + 60.0) / (10.0 + 120.0))
     assert line["dd"] == pytest.approx((1.0 + 10 * 0.2) / 11.0)
     assert line["games"] == 1

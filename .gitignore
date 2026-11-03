@@ -35,3 +35,6 @@ ios/.build/
 ios/.bsp/
 ios/xtool/
 ios/.swiftpm/
+
+# The morning report and forecast log name opponents: they stay on this laptop.
+data/season/daily/
