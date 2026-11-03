@@ -34,6 +34,10 @@ If `apply_yahoo.py` stops on a row, fix the row rather than skipping it. If the 
 - Any move: every category it helps and hurts, league ranks, later weeks. Long-run cost first. Hezonja stays.
 - Value is the plain sum of 12 z-scores. Never let points stand in for the whole team.
 
+## 4. Save
+
+Commit on `cursor/3rd-league-draft-dollars`, push (the push starts the season feed, app and Pages), merge into `main` with `--no-ff` keeping main's `.github/workflows/season.yml`, push `main`, switch back. Mario asked for this after every update (3 Nov 2026); the reports in `data/season/daily/` stay on the laptop.
+
 ## What is measured
 
 - Chances are shrunk to 60% of their log-odds (`CONFIDENCE_SHRINK`), from a replay of last season on a simplified model. Replace it once this season's graded forecasts are enough to measure it.

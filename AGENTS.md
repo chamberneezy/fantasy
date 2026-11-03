@@ -13,6 +13,6 @@ Full briefing: [CLAUDE.md](CLAUDE.md). League contract: [context/system_rules.md
 - Room heat (`src/room.py`): a quiet first star is noise; a nuclear first $50+ hammer (≈1.25× Stay, a steal, or over Stretch) or two sales in a tier moves this room’s Stay (clamp 0.85–1.22). Dynasty Keep/Locked at Yahoo list do not teach heat.
 - `/lab` “most common name at each seat” is a unique greedy collage, not one roster. Never two of the same player.
 - In-season helper (schedule, daily lines, matchup simulation, start/sit, add plans): state, measurements and next steps are in [context/season_helper.md](context/season_helper.md). Free NBA (`nba_api`) and ESPN injury feeds only; league rosters and matchups are pasted by Mario into `data/season/`.
-- No Yahoo API, no auto-bid. Do not commit unless asked.
+- No Yahoo API, no auto-bid. After each update: commit, push, merge into `main` (Mario, 3 Nov 2026).
 - Tests: `.venv/bin/python -m pytest tests/ -q`
 - Server: same interpreter, `src/draft_server.py`, `127.0.0.1:5340`.

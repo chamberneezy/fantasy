@@ -135,7 +135,7 @@ data/                   projections, sessions; do not commit secrets
 - Secrets never leave the laptop: `.env*`, keys and token files are git-ignored, and `scripts/git-hooks/pre-commit` (`git config core.hooksPath scripts/git-hooks`) refuses commits with them or secret-looking lines. Pages publishes only `docs/` plus the week's day JSON (`publish_season.PUBLIC_NAME`).
 - Do not edit the original plan file.
 - No Yahoo scraper or live wiring in the code. Mario asked (31 Oct 2026) that Claude read his league in his own Chrome each morning: read only, and ask before changing a lineup or making a move.
-- Do not commit unless Mario asks.
+- After every update (moves, rosters, Yahoo scores, session, code with tests passing): commit on `cursor/3rd-league-draft-dollars`, push, merge into `main` (no-ff; keep main's `.github/workflows/season.yml`), push `main`. Mario's standing ask, 3 Nov 2026. Never secrets, never `data/season/daily/`.
 - UI changes: verify `/season`, `/helper`, `/draft`, `/lab` as touched. Helper and mock must stay consistent.
 
 ## Double-check list

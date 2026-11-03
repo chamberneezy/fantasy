@@ -1,6 +1,6 @@
 # Season helper — where it stands and what is next
 
-Last worked on **19 Oct 2026**, committed and pushed on `cursor/3rd-league-draft-dollars`. Suite: **116 tests pass** (`.venv/bin/python -m pytest tests/ -q`). Restart the server on 5340 after pulling changes; a stale process keeps serving old code.
+Last worked on **3 Nov 2026**, committed, pushed and merged into `main` (`cursor/3rd-league-draft-dollars` is the working branch). Daily steps: `context/daily_routine.md`. Week 3 vs BC Versus: Jrue added 2 Nov (Black to IL), Collins → Bey 3 Nov (adds 2 of 4); Thu 5 Nov Black off IL, drop Tre Jones. Suite: **156 tests pass** (`.venv/bin/python -m pytest tests/ -q`). Restart the server on 5340 after pulling changes; a stale process keeps serving old code.
 
 **18 Oct 2026:** restored on the Arch Linux machine from the `chamberneezy/backup` snapshot (16 Oct) into `~/Projects/fantasy`, still uncommitted on `cursor/3rd-league-draft-dollars`. Runs in `.venv` (Python 3.14); `scipy` added to `requirements.txt`. 96 tests pass.
 
