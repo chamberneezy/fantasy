@@ -1,35 +1,35 @@
 fantasy_team,manager,slot,player_name,nba_team,positions
-Mother Tucker,Bat,PG,Austin Reaves,LAL,PG/SG/SF
-Mother Tucker,Bat,SG,Cedric Coward,MEM,SG/SF
-Mother Tucker,Bat,SF,Jarace Walker,IND,SF/PF
-Mother Tucker,Bat,PF,RJ Barrett,TOR,SG/SF/PF
-Mother Tucker,Bat,C,Paul Reed,DET,PF/C
-Mother Tucker,Bat,BN,Jamal Murray,DEN,PG
+Mother Tucker,Bat,PG,Jamal Murray,DEN,PG
+Mother Tucker,Bat,SG,Devin Booker,PHX,PG/SG
+Mother Tucker,Bat,SF,Austin Reaves,LAL,PG/SG/SF
+Mother Tucker,Bat,PF,Miles Bridges,PHX,PF
+Mother Tucker,Bat,C,Charles Bassey,GSW,C
 Mother Tucker,Bat,BN,Zion Williamson,NOP,PF/C
-Mother Tucker,Bat,BN,Devin Booker,PHX,PG/SG
-Mother Tucker,Bat,BN,Miles Bridges,PHX,PF
+Mother Tucker,Bat,BN,RJ Barrett,TOR,SG/SF/PF
+Mother Tucker,Bat,BN,Paul Reed,DET,PF/C
+Mother Tucker,Bat,BN,Cedric Coward,MEM,SG/SF
 Mother Tucker,Bat,BN,Norman Powell,CHI,SG/SF
 Mother Tucker,Bat,IL,Chet Holmgren,OKC,PF/C
-Brzi Botaničari,Fix,PG,Nickeil Alexander-Walker,ATL,PG/SG
-Brzi Botaničari,Fix,SG,Darryn Peterson,UTA,SG
-Brzi Botaničari,Fix,SF,Obi Toppin,IND,SF/PF
+Brzi Botaničari,Fix,PG,Jalen Brunson,NYK,PG
+Brzi Botaničari,Fix,SG,Nickeil Alexander-Walker,ATL,PG/SG
+Brzi Botaničari,Fix,SF,Zaccharie Risacher,DAL,SF/PF
 Brzi Botaničari,Fix,PF,Lauri Markkanen,UTA,SF/PF
-Brzi Botaničari,Fix,C,Brook Lopez,LAC,C
+Brzi Botaničari,Fix,C,Victor Wembanyama,SAS,C
+Brzi Botaničari,Fix,BN,Obi Toppin,IND,SF/PF
+Brzi Botaničari,Fix,BN,Darryn Peterson,UTA,SG
+Brzi Botaničari,Fix,BN,Brook Lopez,LAC,C
 Brzi Botaničari,Fix,BN,Aaron Wiggins,ATL,SG/SF
-Brzi Botaničari,Fix,BN,Victor Wembanyama,SAS,C
-Brzi Botaničari,Fix,BN,Jalen Brunson,NYK,PG
-Brzi Botaničari,Fix,BN,Zaccharie Risacher,DAL,SF/PF
 Brzi Botaničari,Fix,BN,Devin Vassell,SAS,SG/SF
 Brzi Botaničari,Fix,IL,Tobias Harris,SAS,PF
 John Zid,Zvonimir,PG,Ayo Dosunmu,MIN,PG/SG
 John Zid,Zvonimir,SG,Tyler Herro,MIL,PG/SG
 John Zid,Zvonimir,SF,Jaylen Brown,PHI,SG/SF/PF
-John Zid,Zvonimir,PF,Jalen Johnson,ATL,SF/PF
-John Zid,Zvonimir,C,Ivica Zubac,IND,C
+John Zid,Zvonimir,PF,Caleb Wilson,CHI,PF
+John Zid,Zvonimir,C,Aaron Gordon,DEN,PF/C
+John Zid,Zvonimir,BN,Jalen Johnson,ATL,SF/PF
+John Zid,Zvonimir,BN,Ivica Zubac,IND,C
 John Zid,Zvonimir,BN,Joan Beringer,MIN,PF/C
 John Zid,Zvonimir,BN,Zach LaVine,SAC,PG/SG/SF
-John Zid,Zvonimir,BN,Caleb Wilson,CHI,PF
-John Zid,Zvonimir,BN,Aaron Gordon,DEN,PF/C
 John Zid,Zvonimir,BN,Kyle Kuzma,MIL,SF/PF
 BC Versus,Davor M,PG,Quenton Jackson,IND,PG/SG
 BC Versus,Davor M,SG,Desmond Bane,ORL,SG/SF
@@ -41,141 +41,140 @@ BC Versus,Davor M,BN,LaMelo Ball,MIN,PG
 BC Versus,Davor M,BN,Grayson Allen,CHA,SG/SF
 BC Versus,Davor M,BN,Gary Trent Jr.,MIL,SG/SF
 BC Versus,Davor M,BN,Zach Edey,MEM,C
-Klobi Glina,Alen,PG,Anfernee Simons,PHI,PG/SG
+Klobi Glina,Alen,PG,Brandon Williams,GSW,PG
 Klobi Glina,Alen,SG,James Harden,CLE,PG/SG
-Klobi Glina,Alen,SF,DeMar DeRozan,DEN,SF/PF
-Klobi Glina,Alen,PF,Cameron Boozer,MEM,PF
+Klobi Glina,Alen,SF,LeBron James,PHI,SF/PF
+Klobi Glina,Alen,PF,Karl-Anthony Towns,NYK,PF/C
 Klobi Glina,Alen,C,Joel Embiid,PHI,C
+Klobi Glina,Alen,BN,Kyrie Irving,DAL,PG/SG
 Klobi Glina,Alen,BN,Fred VanVleet,HOU,PG
-Klobi Glina,Alen,BN,LeBron James,PHI,SF/PF
-Klobi Glina,Alen,BN,Karl-Anthony Towns,NYK,PF/C
-Klobi Glina,Alen,BN,Keaton Wagler,LAC,SG
-Klobi Glina,Alen,BN,Kyrie Irving,DAL,PG
-Klobi Glina,Alen,IL,Ja Morant,POR,PG
+Klobi Glina,Alen,BN,Cameron Boozer,MEM,PF
+Klobi Glina,Alen,BN,DeMar DeRozan,DEN,SF/PF
+Klobi Glina,Alen,BN,Anfernee Simons,PHI,PG/SG
 Klobi Glina,Alen,IL,Kon Knueppel,CHA,SG/SF
+Klobi Glina,Alen,IL,Ja Morant,POR,PG
 Klobi Glina,Alen,IL,Jusuf Nurkić,UTA,C
 Old Stars,Pere,PG,Darius Garland,LAC,PG
-Old Stars,Pere,SG,Immanuel Quickley,TOR,PG/SG
+Old Stars,Pere,SG,Klay Thompson,MIA,SG/SF
 Old Stars,Pere,SF,Michael Porter Jr.,BKN,SF/PF
-Old Stars,Pere,PF,Karlo Matković,NOP,PF/C
+Old Stars,Pere,PF,Bam Adebayo,MIA,PF/C
 Old Stars,Pere,C,Evan Mobley,CLE,PF/C
+Old Stars,Pere,BN,Immanuel Quickley,TOR,PG/SG
 Old Stars,Pere,BN,Duncan Robinson,DET,SG/SF
-Old Stars,Pere,BN,Jordan Goodwin,PHX,PG/SG
-Old Stars,Pere,BN,Bam Adebayo,MIA,PF/C
-Old Stars,Pere,IL,AJ Dybantsa,WAS,SF
+Old Stars,Pere,BN,Karlo Matković,NOP,PF/C
+Old Stars,Pere,BN,AJ Dybantsa,WAS,SF
+Old Stars,Pere,BN,Coby White,CHA,PG/SG
 Old Stars,Pere,IL,Jaren Jackson Jr.,UTA,PF/C
-Old Stars,Pere,IL,Coby White,CHA,PG/SG
 Rapske Manige,Rapske Manige,PG,Payton Pritchard,BOS,PG
 Rapske Manige,Rapske Manige,SG,Kevin Durant,HOU,SG/SF/PF
-Rapske Manige,Rapske Manige,SF,Bobby Portis Jr.,MIA,PF/C
-Rapske Manige,Rapske Manige,PF,Noah Clowney,BKN,PF/C
+Rapske Manige,Rapske Manige,SF,Dyson Daniels,ATL,SG/SF
+Rapske Manige,Rapske Manige,PF,Bobby Portis Jr.,MIA,PF/C
 Rapske Manige,Rapske Manige,C,Donovan Clingan,POR,C
+Rapske Manige,Rapske Manige,BN,Noah Clowney,BKN,PF/C
 Rapske Manige,Rapske Manige,BN,Domantas Sabonis,SAC,PF/C
 Rapske Manige,Rapske Manige,BN,Damian Lillard,POR,PG
-Rapske Manige,Rapske Manige,BN,Dyson Daniels,ATL,SG/SF
 Rapske Manige,Rapske Manige,BN,CJ McCollum,ATL,PG/SG
 Rapske Manige,Rapske Manige,BN,Moussa Diabaté,CHA,C
 Rapske Manige,Rapske Manige,IL,Brandon Ingram,LAC,SG/SF/PF
-Čabar Hunters,Andrej,PG,Ja'Kobe Walter,TOR,PG/SG
-Čabar Hunters,Andrej,SG,Matisse Thybulle,LAL,SG/SF
-Čabar Hunters,Andrej,SF,Jayson Tatum,BOS,SF/PF
-Čabar Hunters,Andrej,PF,Rui Hachimura,LAC,SF/PF
+Čabar Hunters,Andrej,PG,De'Aaron Fox,SAS,PG
+Čabar Hunters,Andrej,SG,Cooper Flagg,DAL,SG/SF/PF
+Čabar Hunters,Andrej,SF,Rui Hachimura,LAC,SF/PF
+Čabar Hunters,Andrej,PF,Jonathan Kuminga,MIN,SF/PF
 Čabar Hunters,Andrej,C,P.J. Washington,DAL,PF/C
-Čabar Hunters,Andrej,BN,Cooper Flagg,DAL,SG/SF/PF
-Čabar Hunters,Andrej,BN,Jonathan Kuminga,MIN,SF/PF
+Čabar Hunters,Andrej,BN,Matisse Thybulle,LAL,SG/SF
+Čabar Hunters,Andrej,BN,Ja'Kobe Walter,TOR,PG/SG
 Čabar Hunters,Andrej,BN,Dennis Schröder,CHA,PG/SG
-Čabar Hunters,Andrej,BN,De'Aaron Fox,SAS,PG
 Čabar Hunters,Andrej,BN,Dillon Brooks,PHX,SF/PF
+Čabar Hunters,Andrej,IL,Jayson Tatum,BOS,SF/PF
 Čabar Hunters,Andrej,IL,Anthony Edwards,MIN,PG/SG
 ČKicago Bulls,Leon,PG,Darius Acuff Jr.,SAC,PG
-ČKicago Bulls,Leon,SG,Jeremiah Fears,NOP,PG/SG
+ČKicago Bulls,Leon,SG,Andrew Wiggins,MIA,SG/SF/PF
 ČKicago Bulls,Leon,SF,Ausar Thompson,DET,SG/SF/PF
 ČKicago Bulls,Leon,PF,OG Anunoby,NYK,SF/PF
 ČKicago Bulls,Leon,C,Day'Ron Sharpe,BKN,C
-ČKicago Bulls,Leon,BN,Onyeka Okongwu,ATL,C
 ČKicago Bulls,Leon,BN,Cade Cunningham,DET,PG/SG
-ČKicago Bulls,Leon,BN,Andrew Wiggins,MIA,SG/SF/PF
+ČKicago Bulls,Leon,BN,Jeremiah Fears,NOP,PG/SG
+ČKicago Bulls,Leon,BN,Onyeka Okongwu,ATL,C
 ČKicago Bulls,Leon,BN,Ryan Rollins,MIL,PG/SG
 ČKicago Bulls,Leon,BN,Christian Braun,DEN,SG/SF/PF
-Silver Hill Capybaras,Blaz,PG,Andrew Nembhard,IND,PG/SG
-Silver Hill Capybaras,Blaz,SG,Trey Murphy III,NOP,SG/SF
-Silver Hill Capybaras,Blaz,SF,Sam Hauser,BOS,SF/PF
-Silver Hill Capybaras,Blaz,PF,Toumani Camara,POR,SF/PF
-Silver Hill Capybaras,Blaz,C,Isaiah Jackson,LAC,C
-Silver Hill Capybaras,Blaz,BN,Jarrett Allen,CLE,C
-Silver Hill Capybaras,Blaz,BN,Dylan Harper,SAS,PG/SG
+Silver Hill Capybaras,Blaz,PG,Josh Giddey,CHI,PG/SG
+Silver Hill Capybaras,Blaz,SG,Dylan Harper,SAS,PG/SG
+Silver Hill Capybaras,Blaz,SF,Toumani Camara,POR,SF/PF
+Silver Hill Capybaras,Blaz,PF,Giannis Antetokounmpo,MIA,PF/C
+Silver Hill Capybaras,Blaz,C,Jarrett Allen,CLE,C
+Silver Hill Capybaras,Blaz,BN,Sam Hauser,BOS,SF/PF
+Silver Hill Capybaras,Blaz,BN,Andrew Nembhard,IND,PG/SG
+Silver Hill Capybaras,Blaz,BN,Isaiah Jackson,LAC,C
 Silver Hill Capybaras,Blaz,BN,Isaiah Hartenstein,OKC,C
-Silver Hill Capybaras,Blaz,BN,Josh Giddey,CHI,PG/SG
-Silver Hill Capybaras,Blaz,BN,Giannis Antetokounmpo,MIA,PF/C
+Silver Hill Capybaras,Blaz,BN,Reed Sheppard,HOU,PG/SG
+Silver Hill Capybaras,Blaz,IL,Trey Murphy III,NOP,SG/SF
 Silver Hill Capybaras,Blaz,IL,Keegan Murray,SAC,SF/PF
-Silver Hill Capybaras,Blaz,IL,Reed Sheppard,HOU,PG/SG
-Madison Square Harden,Damir,PG,Luka Dončić,LAL,PG/SG
+Madison Square Harden,Damir,PG,Stephen Curry,GSW,PG
 Madison Square Harden,Damir,SG,De'Anthony Melton,GSW,PG/SG
 Madison Square Harden,Damir,SF,Jaden McDaniels,MIN,SF
-Madison Square Harden,Damir,PF,Yaxel Lendeborg,GSW,PF
+Madison Square Harden,Damir,PF,Yaxel Lendeborg,GSW,SF/PF
 Madison Square Harden,Damir,C,Alperen Şengün,HOU,PF/C
+Madison Square Harden,Damir,BN,Luka Dončić,LAL,PG/SG
 Madison Square Harden,Damir,BN,Tari Eason,HOU,SG/SF/PF
 Madison Square Harden,Damir,BN,Jerami Grant,MEM,SF/PF
-Madison Square Harden,Damir,BN,Stephen Curry,GSW,PG
 Madison Square Harden,Damir,BN,Kel'el Ware,MIL,C
 Madison Square Harden,Damir,BN,Myles Turner,MIL,C
 Madison Square Harden,Damir,IL,Kristaps Porziņģis,GSW,C
 Madison Square Harden,Damir,IL,Jimmy Butler III,GSW,SF/PF
 Borongajci,,PG,Collin Gillespie,PHX,PG/SG
-Borongajci,,SG,Josh Hart,NYK,SG/SF
-Borongajci,,SF,Deni Avdija,POR,SG/SF/PF
-Borongajci,,PF,Anthony Davis,WAS,PF/C
+Borongajci,,SG,Ty Jerome,MEM,PG/SG
+Borongajci,,SF,Jalen Green,PHX,SG/SF
+Borongajci,,PF,Deni Avdija,POR,SG/SF/PF
 Borongajci,,C,Wendell Carter Jr.,ORL,C
-Borongajci,,BN,Jalen Green,PHX,SG/SF
+Borongajci,,BN,Dejounte Murray,NOP,PG/SG
+Borongajci,,BN,Anthony Davis,WAS,PF/C
 Borongajci,,BN,Alex Sarr,WAS,C
-Borongajci,,BN,Ty Jerome,MEM,PG/SG
-Borongajci,,BN,Dejounte Murray,NOP,PG
-Borongajci,,BN,Moritz Wagner,BKN,C
+Borongajci,,BN,Oso Ighodaro,PHX,C
+Borongajci,,IL,Josh Hart,NYK,SG/SF
 Borongajci,,IL,Tyrese Haliburton,IND,PG/SG
 Borongajci,,IL,Jalen Duren,DET,C
-Harlem Bricks,Chosen One,PG,Derrick White,BOS,PG/SG
-Harlem Bricks,Chosen One,SG,Ajay Mitchell,OKC,PG/SG
-Harlem Bricks,Chosen One,SF,Kelly Oubre Jr.,IND,SF/PF
-Harlem Bricks,Chosen One,PF,Collin Murray-Boyles,TOR,PF/C
+Harlem Bricks,Chosen One,PG,Shai Gilgeous-Alexander,OKC,PG
+Harlem Bricks,Chosen One,SG,Derrick White,BOS,PG/SG
+Harlem Bricks,Chosen One,SF,Jaime Jaquez Jr.,MIL,SG/SF/PF
+Harlem Bricks,Chosen One,PF,Naz Reid,CHA,PF/C
 Harlem Bricks,Chosen One,C,Walker Kessler,LAL,C
-Harlem Bricks,Chosen One,BN,Naz Reid,CHA,PF/C
-Harlem Bricks,Chosen One,BN,Jaime Jaquez Jr.,MIL,SG/SF/PF
-Harlem Bricks,Chosen One,BN,Shai Gilgeous-Alexander,OKC,PG
+Harlem Bricks,Chosen One,BN,Collin Murray-Boyles,TOR,PF/C
+Harlem Bricks,Chosen One,BN,Kelly Oubre Jr.,IND,SF/PF
+Harlem Bricks,Chosen One,BN,Ajay Mitchell,OKC,PG/SG
 Harlem Bricks,Chosen One,BN,Pelle Larsson,MIA,SG/SF
 Harlem Bricks,Chosen One,BN,Mikal Bridges,NYK,SF/PF
 Harlem Bricks,Chosen One,IL,Yves Missi,NOP,C
-Varteks Banfica,Marko B.,PG,Tyrese Maxey,PHI,PG
+Varteks Banfica,Marko B.,PG,Davion Mitchell,MIA,PG
 Varteks Banfica,Marko B.,SG,VJ Edgecombe,PHI,PG/SG
 Varteks Banfica,Marko B.,SF,Franz Wagner,ORL,SF/PF
-Varteks Banfica,Marko B.,PF,Peyton Watson,CLE,SF/PF
+Varteks Banfica,Marko B.,PF,Ace Bailey,UTA,SF/PF
 Varteks Banfica,Marko B.,C,Rudy Gobert,MIN,C
-Varteks Banfica,Marko B.,BN,Terrence Shannon Jr.,MIN,SG/SF
-Varteks Banfica,Marko B.,BN,Ace Bailey,UTA,SF/PF
+Varteks Banfica,Marko B.,BN,Alex Caruso,OKC,SG/SF
+Varteks Banfica,Marko B.,BN,Tyrese Maxey,PHI,PG
+Varteks Banfica,Marko B.,BN,Dylan Cardwell,SAC,PF/C
 Varteks Banfica,Marko B.,BN,Trae Young,WAS,PG
-Varteks Banfica,Marko B.,BN,Andre Drummond,NYK,C
-Varteks Banfica,Marko B.,BN,Davion Mitchell,MIA,PG
-Varteks Banfica,Marko B.,IL,Nic Claxton,CHI,C
+Varteks Banfica,Marko B.,BN,Nic Claxton,CHI,C
+Varteks Banfica,Marko B.,IL,Peyton Watson,CLE,SF/PF
 Varteks Banfica,Marko B.,IL,Paolo Banchero,ORL,PF
 Varteks Banfica,Marko B.,IL,Jalen Suggs,ORL,PG/SG
-Lipicaneri,Mario,PG,Jrue Holiday,POR,PG/SG
+Lipicaneri,Mario,PG,Anthony Black,ORL,PG/SG/SF
 Lipicaneri,Mario,SG,Keyonte George,UTA,PG/SG
-Lipicaneri,Mario,SF,Julian Champagnie,SAS,SF/PF
+Lipicaneri,Mario,SF,Saddiq Bey,NOP,SF/PF
 Lipicaneri,Mario,PF,Tristan da Silva,ORL,SF/PF
 Lipicaneri,Mario,C,Nikola Jokić,DEN,C
-Lipicaneri,Mario,BN,Tre Jones,CHI,PG/SG
+Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
+Lipicaneri,Mario,BN,Julian Champagnie,SAS,SF/PF
 Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
 Lipicaneri,Mario,BN,Neemias Queta,BOS,C
-Lipicaneri,Mario,BN,Saddiq Bey,NOP,SF/PF
 Lipicaneri,Mario,BN,Jalen Smith,CHI,PF/C
-Lipicaneri,Mario,IL,Anthony Black,ORL,PG/SG/SF
 Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
-Vikings,Damir,PG,Kris Dunn,LAC,PG/SG
-Vikings,Damir,SG,Brandin Podziemski,GSW,PG/SG
+Vikings,Damir,PG,Donovan Mitchell,CLE,PG/SG
+Vikings,Damir,SG,Amen Thompson,HOU,PG/SG
 Vikings,Damir,SF,Paul George,BOS,SF/PF
-Vikings,Damir,PF,Derik Queen,NOP,PF/C
+Vikings,Damir,PF,Brandon Miller,CHA,SF/PF
 Vikings,Damir,C,Jabari Smith Jr.,HOU,PF/C
-Vikings,Damir,BN,Donovan Mitchell,CLE,PG/SG
-Vikings,Damir,BN,Amen Thompson,HOU,PG/SG
-Vikings,Damir,BN,Brandon Miller,CHA,SF/PF
+Vikings,Damir,BN,Derik Queen,NOP,PF/C
+Vikings,Damir,BN,Brandin Podziemski,GSW,PG/SG
+Vikings,Damir,BN,Kris Dunn,LAC,PG/SG
 Vikings,Damir,BN,Kyshawn George,WAS,SG/SF/PF
 Vikings,Damir,BN,Stephon Castle,SAS,PG/SG
