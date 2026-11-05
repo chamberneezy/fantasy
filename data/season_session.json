@@ -5,7 +5,7 @@
   "roster": [
     [
       "PG",
-      "Jrue Holiday"
+      "Anthony Black"
     ],
     [
       "SG",
@@ -13,7 +13,7 @@
     ],
     [
       "SF",
-      "Julian Champagnie"
+      "Saddiq Bey"
     ],
     [
       "PF",
@@ -25,19 +25,19 @@
     ],
     [
       "BN1",
-      "Tre Jones"
+      "Jrue Holiday"
     ],
     [
       "BN2",
-      "Mario Hezonja"
+      "Julian Champagnie"
     ],
     [
       "BN3",
-      "Neemias Queta"
+      "Mario Hezonja"
     ],
     [
       "BN4",
-      "Saddiq Bey"
+      "Neemias Queta"
     ],
     [
       "BN5",
@@ -45,10 +45,6 @@
     ]
   ],
   "il": [
-    [
-      "IL",
-      "Anthony Black"
-    ],
     [
       "IL",
       "Kawhi Leonard"
@@ -100,6 +96,10 @@
       "date": "2026-11-03",
       "add": "Saddiq Bey",
       "drop": "John Collins"
+    },
+    {
+      "date": "2026-11-04",
+      "drop": "Tre Jones"
     }
   ]
 }
