@@ -1,23 +1,23 @@
 {
   "mode": "season",
-  "week": 3,
-  "adds_used": 2,
+  "week": 4,
+  "adds_used": 0,
   "roster": [
     [
       "PG",
-      "Anthony Black"
+      "Jrue Holiday"
     ],
     [
       "SG",
-      "Keyonte George"
+      "Anthony Black"
     ],
     [
       "SF",
-      "Saddiq Bey"
+      "Mario Hezonja"
     ],
     [
       "PF",
-      "Tristan da Silva"
+      "Saddiq Bey"
     ],
     [
       "C",
@@ -25,23 +25,23 @@
     ],
     [
       "BN1",
-      "Jrue Holiday"
+      "Tristan da Silva"
     ],
     [
       "BN2",
-      "Julian Champagnie"
+      "Keyonte George"
     ],
     [
       "BN3",
-      "Mario Hezonja"
-    ],
-    [
-      "BN4",
       "Neemias Queta"
     ],
     [
-      "BN5",
+      "BN4",
       "Jalen Smith"
+    ],
+    [
+      "BN5",
+      "Julian Champagnie"
     ]
   ],
   "il": [
