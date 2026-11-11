@@ -1,16 +1,14 @@
 fantasy_team,manager,slot,player_name,nba_team,positions
-Mother Tucker,Bat,PG,Devin Booker,PHX,PG/SG
-Mother Tucker,Bat,SG,Keaton Wagler,LAC,SG
+Mother Tucker,Bat,PG,Jamal Murray,DEN,PG
+Mother Tucker,Bat,SG,Austin Reaves,LAL,PG/SG/SF
 Mother Tucker,Bat,SF,RJ Barrett,TOR,SG/SF/PF
-Mother Tucker,Bat,PF,Miles Bridges,PHX,PF
-Mother Tucker,Bat,C,Mitchell Robinson,BOS,C
+Mother Tucker,Bat,PF,Zion Williamson,NOP,PF/C
+Mother Tucker,Bat,C,Charles Bassey,GSW,C
+Mother Tucker,Bat,BN,Miles Bridges,PHX,PF
+Mother Tucker,Bat,BN,Devin Booker,PHX,PG/SG
 Mother Tucker,Bat,BN,Paul Reed,DET,PF/C
-Mother Tucker,Bat,BN,Jamal Murray,DEN,PG
 Mother Tucker,Bat,BN,Cedric Coward,MEM,SG/SF
-Mother Tucker,Bat,BN,Charles Bassey,GSW,C
 Mother Tucker,Bat,BN,Norman Powell,CHI,SG/SF
-Mother Tucker,Bat,IL,Zion Williamson,NOP,PF/C
-Mother Tucker,Bat,IL,Austin Reaves,LAL,PG/SG/SF
 Mother Tucker,Bat,IL,Chet Holmgren,OKC,PF/C
 Brzi Botaničari,Fix,PG,Jalen Brunson,NYK,PG
 Brzi Botaničari,Fix,SG,Nickeil Alexander-Walker,ATL,PG/SG
@@ -163,10 +161,11 @@ Lipicaneri,Mario,SG,Anthony Black,ORL,PG/SG/SF
 Lipicaneri,Mario,SF,Julian Champagnie,SAS,SF/PF
 Lipicaneri,Mario,PF,Saddiq Bey,NOP,SF/PF
 Lipicaneri,Mario,C,Nikola Jokić,DEN,C
-Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
-Lipicaneri,Mario,BN,Tristan da Silva,ORL,SF/PF
 Lipicaneri,Mario,BN,Neemias Queta,BOS,C
+Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
 Lipicaneri,Mario,BN,Jalen Smith,CHI,PF/C
+Lipicaneri,Mario,BN,Collin Gillespie,PHX,PG/SG
+Lipicaneri,Mario,IL,Tristan da Silva,ORL,SF/PF
 Lipicaneri,Mario,IL,Keyonte George,UTA,PG/SG
 Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
 Vikings,Damir,PG,Donovan Mitchell,CLE,PG/SG
