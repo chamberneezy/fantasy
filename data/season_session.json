@@ -1,7 +1,7 @@
 {
   "mode": "season",
   "week": 4,
-  "adds_used": 0,
+  "adds_used": 1,
   "roster": [
     [
       "PG",
@@ -17,27 +17,27 @@
     ],
     [
       "PF",
-      "Tristan da Silva"
-    ],
-    [
-      "C",
-      "Neemias Queta"
-    ],
-    [
-      "BN1",
       "Saddiq Bey"
     ],
     [
-      "BN2",
+      "C",
       "Nikola Jokić"
     ],
     [
-      "BN3",
+      "BN1",
+      "Neemias Queta"
+    ],
+    [
+      "BN2",
       "Mario Hezonja"
     ],
     [
-      "BN4",
+      "BN3",
       "Jalen Smith"
+    ],
+    [
+      "BN4",
+      "Collin Gillespie"
     ]
   ],
   "il": [
@@ -48,6 +48,10 @@
     [
       "IL",
       "Keyonte George"
+    ],
+    [
+      "IL",
+      "Tristan da Silva"
     ]
   ],
   "status": {},
@@ -100,6 +104,10 @@
     {
       "date": "2026-11-04",
       "drop": "Tre Jones"
+    },
+    {
+      "date": "2026-11-11",
+      "add": "Collin Gillespie"
     }
   ]
 }
