@@ -1,73 +1,76 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Matisse Thybulle,LAL,SG/SF,,309,16
-Cam Spencer,MEM,PG/SG,,227,16
-Daniel Gafford,DAL,C,,148,53
-Sandro Mamukelashvili,LAL,PF/C,,138,33
-Ziaire Williams,LAL,SG/SF,,247,10
+Matisse Thybulle,LAL,SG/SF,,301,15
+Sandro Mamukelashvili,LAL,PF/C,,152,38
+Kris Dunn,LAC,PG/SG,,97,40
+Cam Spencer,MEM,PG/SG,,220,15
+Precious Achiuwa Q,SAC,PF/C,,229,28
+Klay Thompson Q,MIA,SG/SF,,217,42
 Kentavious Caldwell-Pope,PHI,SG/SF,,282,2
-Kobe Sanders,LAC,SG/SF,,248,3
-Robert Williams,III,POR,,202,12
-Tre Jones,CHI,PG/SG,,130,19
-Bobby Portis Jr.,MIA,PF/C,,198,21
-Quentin Grimes Q,LAL,SG/SF,,145,19
-Bennett Stirtz,OKC,PG,,253,4
-Bub Carrington,WAS,PG/SG,,256,1
-Ryan Kalkbrenner,CHA,C,,271,5
-Dean Wade,PHI,SF/PF,,250,1
-Joan Beringer,MIN,PF/C,,178,7
-Andrew Wiggins,MIA,SG/SF/PF,,114,64
-Trey Lyles,MIN,PF,,430,1
-Sam Hauser,BOS,SF/PF,,213,4
-Jarace Walker,IND,SF/PF,,233,6
-Luguentz Dort,ATL,SG/SF,,238,7
-Moritz Wagner,BKN,C,,360,9
-Jaylen Wells,MEM,SG/SF,,159,16
-Kingston Flemings,ATL,PG,,254,20
-Collin Gillespie,PHX,PG/SG,,136,40
-Jamal Shead,TOR,PG,,210,24
-Karlo Matković,NOP,PF/C,,281,21
-Georges Niang,GSW,PF,,419,3
-Sam Merrill Q,CLE,SG/SF,,273,3
-Bones Hyland,MIN,PG/SG,,237,5
-Brandon Williams Q,GSW,PG,,284,3
-Baylor Scheierman,BOS,SG/SF,,201,2
-Anfernee Simons,PHI,PG/SG,,199,10
-Jake LaRavia,LAL,SF/PF,,172,11
-Draymond Green,GSW,PF/C,,171,37
-Mo Bamba,UTA,C,,445,6
-Kenrich Williams,OKC,PF/C,,329,7
-Landry Shamet,NYK,SG/SF,,333,2
-Royce O'Neale,CHA,SF/PF,,216,2
+Sam Hauser,BOS,SF/PF,,215,5
+Daniel Gafford,DAL,C,,141,52
+Jaylen Wells,MEM,SG/SF,,172,20
+Aday Mara,OKC,C,,188,50
+Robert Williams,III,POR,,210,12
+Bennett Stirtz,OKC,PG,,246,7
+Tre Jones,CHI,PG/SG,,144,19
+Anfernee Simons,PHI,PG/SG,,205,10
+Meleek Thomas,CLE,SG,,448,16
+Baylor Scheierman,BOS,SG/SF,,209,2
+Kobe Sanders,LAC,SG/SF,,240,2
+Bones Hyland,MIN,PG/SG,,234,6
+Landry Shamet,NYK,SG/SF,,327,4
+Miles McBride,NYK,PG/SG,,213,4
+Draymond Green,GSW,PF/C,,181,36
+Andrew Wiggins,MIA,SG/SF/PF,,125,61
+Bobby Portis Jr.,MIA,PF/C,,204,18
+Joan Beringer,MIN,PF/C,,187,7
+Jamison Battle,TOR,SF/PF,,359,4
+Ryan Dunn,PHX,SF/PF,,283,5
+Brayden Burries,MIL,SG,,151,33
+Georges Niang,GSW,PF,,411,2
+Moritz Wagner,BKN,C,,356,8
+Quentin Grimes Q,LAL,SG/SF,,159,17
+Trey Lyles,MIN,PF,,428,2
+Mo Bamba,UTA,C,,435,6
+Khaman Maluach,PHX,C,,140,47
+Royce O'Neale,CHA,SF/PF,,241,2
+Peyton Watson,CLE,SF/PF,,148,60
+Ryan Rollins,MIL,PG/SG,,105,82
+Keaton Wagler,LAC,SG,,232,23
+Keon Ellis,BKN,SG/SF,,192,2
+Deandre Ayton,WAS,C,,186,6
+Trevon Brazile,DEN,PF,,247,4
+Bub Carrington O,WAS,PG/SG,,255,1
+Kingston Flemings Q,ATL,PG,,153,15
 Javonte Green,DET,SG/SF,,265,1
-Trevon Brazile,DEN,PF,,252,5
-Ryan Dunn,PHX,SF/PF,,285,4
-Keon Ellis,BKN,SG/SF,,185,2
-Tyrese Proctor,CLE,PG/SG,,378,1
-Al Horford,GSW,PF/C,,193,3
-Miles McBride,NYK,PG/SG,,209,3
-Meleek Thomas,CLE,SG,,489,6
-Isaiah Stewart D,MEM,PF/C,,203,10
-Walter Clayton Jr.,DAL,PG/SG,,307,9
-AJ Green,MIL,PG/SG/SF,,271,2
-Will Richard O,GSW,SG/SF,,295,0
-Keldon Johnson,SAS,SF/PF,,218,9
-Terrence Shannon Jr.,MIN,SG/SF,,186,11
-Jase Richardson,ORL,PG/SG,,231,2
-Isaiah Jackson,LAC,C,,162,15
-Andre Drummond,NYK,C,,242,10
-Jay Huff,IND,C,,214,4
-Jakob Poeltl,TOR,C,,146,49
+Al Horford,GSW,PF/C,,198,3
+Luguentz Dort,ATL,SG/SF,,251,5
+Tyrese Proctor,CLE,PG/SG,,367,1
+Karlo Matković,NOP,PF/C,,280,12
+Kenrich Williams,OKC,PF/C,,325,5
+Brandon Williams O,GSW,PG,,285,2
+Jarace Walker,IND,SF/PF,,224,4
+Tre Johnson,WAS,PG/SG/SF,,248,4
+Sam Merrill O,CLE,SG/SF,,273,2
+Jake LaRavia,LAL,SF/PF,,182,7
+Brice Sensabaugh,UTA,SG/SF/PF,,225,3
+Keldon Johnson,SAS,SF/PF,,245,8
+Walter Clayton Jr.,DAL,PG/SG,,309,8
 Luke Kennard,PHX,SG/SF,,267,2
-Sion James,CHA,SG/SF,,298,1
-Aaron Nesmith,IND,SG/SF,,163,16
-Marcus Smart,HOU,PG/SG,,223,3
-Max Christie,DAL,SG/SF,,264,3
-Bogdan Bogdanović,HOU,PG/SG/SF,,385,1
-Jordan Goodwin O,PHX,PG/SG,,272,2
-Gradey Dick,LAC,SG/SF,,235,1
-Larry Nance Jr.,IND,PF/C,,390,0
-Jamison Battle,TOR,SF/PF,,365,1
-Jalen Slawson,IND,SF/PF,,417,0
-Ronald Holland,II,DET,,276,2
-Tyus Jones,DEN,PG,,314,0
-Kelly Oubre Jr.,IND,SF/PF,,189,7
+Sidy Cissoko,POR,SF/PF,,339,7
+Alijah Martin,TOR,PG/SG,,460,1
+Jase Richardson,ORL,PG/SG,,222,2
+Larry Nance Jr.,IND,PF/C,,387,0
+AJ Green,MIL,PG/SG/SF,,272,2
+Leaky Black,SAC,SF/PF,,407,2
+Andre Drummond,NYK,C,,256,12
+Will Richard,GSW,SG/SF,,295,1
+Terrence Shannon Jr.,MIN,SG/SF,,160,9
+Gradey Dick,LAC,SG/SF,,226,1
+Marcus Smart O,HOU,PG/SG,,243,3
+Max Christie,DAL,SG/SF,,264,2
+Tidjane Salaün,CHA,PF/C,,363,1
+Isaiah Jackson,LAC,C,,161,12
+Bogdan Bogdanović,HOU,PG/SG/SF,,384,1
+Tyus Jones,DEN,PG,,313,0
+Aaron Nesmith Q,IND,SG/SF,,174,15
