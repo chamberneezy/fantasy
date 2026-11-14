@@ -1,0 +1,13 @@
+{
+  "source": "espn",
+  "fetched_at": "2026-11-14T09:16:42Z",
+  "rows": {
+    "schedule": 1200,
+    "players": 526,
+    "logs 2026-27": 4115,
+    "new games": 0,
+    "injuries": 100
+  },
+  "errors": {},
+  "unmatched": []
+}
