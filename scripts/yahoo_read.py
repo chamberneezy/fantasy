@@ -211,7 +211,7 @@ def write(found: dict) -> list[str]:
         adds = yahoo_snapshot.adds_used(found["team"]["text"])
         updated, changes = yahoo_snapshot.sync_session(session, found_seats, adds, yahoo_week, found["today"])
         if updated != session:
-            SESSION.write_text(json.dumps(updated, indent=2), encoding="utf-8")
+            SESSION.write_text(json.dumps(updated, indent=2, ensure_ascii=False), encoding="utf-8")
         notes.append("session: " + (", ".join(changes) if changes else "unchanged"))
     else:
         notes.append(f"session skipped: {len(found_seats)} seats read")
