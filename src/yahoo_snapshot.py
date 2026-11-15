@@ -106,3 +106,84 @@ def save_score(path: Path, rows: list[dict]) -> None:
     merged = merged.drop_duplicates(["week", "through", "side"], keep="last")
     merged = merged.astype({column: int for column in columns if column not in ("through", "side")})
     merged[columns].to_csv(path, index=False)
+
+
+# -- the hourly reader on the home server (scripts/yahoo_read.py) -------------------------------
+# Mario asked on 15 Nov 2026 for Yahoo to be read every hour on his server "gw". Still read only:
+# the reader opens pages and reads their tables; it never clicks, submits or changes a lineup.
+
+_CELL = re.compile(r"^(?P<name>.+?)\s*(?:(?:New |No new )?[Pp]layer [Nn]otes?)?\s*(?P<team>[A-Z]{2,4}) - (?P<positions>[A-Z,]+)(?:\s.*)?$")
+_ADDS = re.compile(r"used (\d+) of your (\d+) player adds")
+
+
+def seat_text(slot: str, cell: str) -> str | None:
+    """A roster cell as ``roster_rows`` reads it: ``PG Name TEAM - PG,SG``. ``None`` for an empty seat."""
+    cell = " ".join(cell.split())
+    if not cell or "(Empty)" in cell:
+        return None
+    match = _CELL.match(cell)
+    if match is None:
+        raise ValueError(f"Cannot read roster cell {cell!r}")
+    return f"{slot} {match['name'].strip()} {match['team']} - {match['positions']}"
+
+
+def seats(rows: list[tuple[str, str]]) -> list[tuple[str, str, str]]:
+    """Team page rows (slot, player cell) to (slot, name, status); bench seats numbered BN1..BN5."""
+    out, bench = [], 0
+    for slot, cell in rows:
+        text = seat_text(slot, cell)
+        if text is None:
+            continue
+        name, status = split_status(_CELL.match(" ".join(cell.split()))["name"].strip())
+        if slot == "BN":
+            bench += 1
+            slot = f"BN{bench}"
+        out.append((slot, name, status))
+    return out
+
+
+def adds_used(text: str) -> int | None:
+    """"You have used 2 of your 4 player adds for this week." → 2."""
+    match = _ADDS.search(" ".join(text.split()))
+    return int(match[1]) if match else None
+
+
+def score_through(today: str, tips_today: list[str], today_final: bool, now_utc: str) -> str | None:
+    """The last day whose games are fully in Yahoo's totals, or ``None`` while games are being played.
+
+    Before the first tip it is yesterday; once every game of the day is final it is today.
+    """
+    from datetime import date, timedelta
+
+    if not tips_today or now_utc < min(tips_today):
+        return (date.fromisoformat(today) - timedelta(days=1)).isoformat()
+    return today if today_final else None
+
+
+def sync_session(session: dict, found: list[tuple[str, str, str]], adds: int | None, week: int | None, today: str) -> tuple[dict, list[str]]:
+    """Session roster and IL as Yahoo shows them; new and gone players logged as today's moves."""
+    roster = [[slot, name] for slot, name, _ in found if slot != "IL"]
+    il = [["IL", name] for slot, name, _ in found if slot == "IL"]
+    from espn_feed import name_key
+
+    before = {name_key(name): name for _, name in [*session.get("roster", []), *session.get("il", [])]}
+    after = {name_key(name): name for _, name in [*roster, *il]}
+    changes = []
+    updated = dict(session)
+    moves = list(session.get("moves", []))
+    for key in sorted(set(after) - set(before)):
+        moves.append({"date": today, "add": after[key]})
+        changes.append(f"added {after[key]}")
+    for key in sorted(set(before) - set(after)):
+        moves.append({"date": today, "drop": before[key]})
+        changes.append(f"dropped {before[key]}")
+    if week is not None and week != session.get("week"):
+        changes.append(f"week {session.get('week')} → {week}")
+        updated["week"] = week
+    if adds is not None and adds != session.get("adds_used"):
+        changes.append(f"adds used {session.get('adds_used')} → {adds}")
+        updated["adds_used"] = adds
+    if roster != session.get("roster") or il != session.get("il"):
+        changes.append("seats as in Yahoo")
+    updated.update(roster=roster, il=il, moves=moves)
+    return updated, changes

@@ -1,6 +1,6 @@
 # Daily 12-category routine
 
-Mario asks for it in chat each morning. Read Yahoo first, then run the report. Mario asked for Yahoo to be read in his own Chrome (31 Oct 2026). Read only: ask before changing a lineup or making a move.
+Mario asks for it in chat each morning. Read Yahoo first, then run the report. Since 15 Nov 2026 the server gw reads Yahoo every hour (`scripts/yahoo_read.py`) and pushes rosters, free agents, the score and the session: `git pull` first and check the last "Yahoo read on gw" commit before reading by hand. Read only: ask before changing a lineup or making a move.
 
 ## 1. Read Yahoo (Claude in Chrome)
 

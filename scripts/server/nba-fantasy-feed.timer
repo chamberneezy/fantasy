@@ -1,0 +1,10 @@
+[Unit]
+Description=NBA Fantasy feed, every hour at :05
+
+[Timer]
+OnCalendar=*-*-* *:05:00
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
