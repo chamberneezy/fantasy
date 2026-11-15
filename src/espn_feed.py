@@ -29,6 +29,14 @@ ESPN_SEASON = 2027  # ESPN names a season by the year it ends
 REGULAR_SEASON = 2
 IDS_PATH = nba_feed.FEED_DIR / "espn_ids.csv"
 ID_COLUMNS = ("espn_id", "player_id", "player_name")
+# Every shot from the play-by-play, for the apps' game cards (shot chart, points by quarter).
+SHOTS_PATH = nba_feed.FEED_DIR / f"shots_{nba_feed.SEASON}.csv"
+SHOT_COLUMNS = ("game_id", "player_id", "period", "clock", "x", "y", "value", "made")
+# Finished games still without shots, fetched per run (fills the season in once, then only new games).
+SHOTS_BACKFILL = 400
+# ESPN's court: feet, x 0-50 across, y from the rim. Free throws carry a huge sentinel instead.
+COURT_X = (0, 50)
+COURT_Y = (-6, 47)
 ESPN_ID_OFFSET = 2_000_000_000
 EASTERN = ZoneInfo("America/New_York")
 PAUSE_SECONDS = 0.3
@@ -267,19 +275,73 @@ def game_notes(game_ids: list[str], session=None) -> dict[str, dict]:
     return notes
 
 
-def fetch_logs(session, schedule: pd.DataFrame, old: pd.DataFrame, ids: dict[int, tuple[int, str]]) -> tuple[pd.DataFrame, int]:
-    """Finished games not yet in ``old``, one summary call each. Returns all logs and the games added."""
-    have = set(old["game_id"].astype(str)) if len(old) else set()
-    todo = schedule.loc[schedule["final"] & ~schedule["game_id"].astype(str).isin(have)]
+def shape_shots(summary: dict, game: dict, ids: dict[int, tuple[int, str]]) -> list[dict]:
+    """Every shot in one game: shooter, quarter, spot on the court (none for free throws), value, made."""
     rows = []
+    for play in summary.get("plays") or []:
+        if not play.get("shootingPlay"):
+            continue
+        participants = play.get("participants") or []
+        if not participants:
+            continue
+        espn_id = int((participants[0].get("athlete") or {}).get("id") or 0)
+        if not espn_id:
+            continue
+        coordinate = play.get("coordinate") or {}
+        x, y = coordinate.get("x"), coordinate.get("y")
+        value = int(play.get("pointsAttempted") or 0)
+        on_court = value > 1 and x is not None and y is not None and COURT_X[0] <= x <= COURT_X[1] and COURT_Y[0] <= y <= COURT_Y[1]
+        rows.append(
+            {
+                "game_id": str(game["game_id"]),
+                "player_id": ids.get(espn_id, (ESPN_ID_OFFSET + espn_id, ""))[0],
+                "period": int((play.get("period") or {}).get("number") or 0),
+                "clock": str((play.get("clock") or {}).get("displayValue") or ""),
+                "x": x if on_court else None,
+                "y": y if on_court else None,
+                "value": value,
+                "made": 1 if play.get("scoringPlay") else 0,
+            }
+        )
+    return rows
+
+
+def fetch_logs(
+    session, schedule: pd.DataFrame, old: pd.DataFrame, ids: dict[int, tuple[int, str]], old_shots: pd.DataFrame | None = None
+) -> tuple[pd.DataFrame, int, pd.DataFrame]:
+    """Finished games not yet in ``old``, one summary call each; the same call gives the shots.
+
+    Games already logged but missing from ``old_shots`` are fetched for their shots
+    only, up to ``SHOTS_BACKFILL`` a run. Returns all logs, the games added, all shots.
+    """
+    old_shots = old_shots if old_shots is not None and len(old_shots) else pd.DataFrame(columns=list(SHOT_COLUMNS))
+    have = set(old["game_id"].astype(str)) if len(old) else set()
+    have_shots = set(old_shots["game_id"].astype(str))
+    final = schedule.loc[schedule["final"]]
+    todo = final.loc[~final["game_id"].astype(str).isin(have)]
+    backfill = final.loc[final["game_id"].astype(str).isin(have) & ~final["game_id"].astype(str).isin(have_shots)].head(SHOTS_BACKFILL)
+    rows, shots = [], []
     for game in todo.to_dict("records"):
-        rows += shape_box(_get(session, "summary", event=game["game_id"]), game, ids)
+        summary = _get(session, "summary", event=game["game_id"])
+        rows += shape_box(summary, game, ids)
+        shots += shape_shots(summary, game, ids)
         time.sleep(PAUSE_SECONDS)
+    for game in backfill.to_dict("records"):
+        try:
+            shots += shape_shots(_get(session, "summary", event=game["game_id"]), game, ids)
+        except Exception:  # shots are extra; a failed game is tried again next run
+            continue
+        time.sleep(PAUSE_SECONDS)
+    # A game fetched again replaces its shots rather than doubling them.
+    fresh = {str(row["game_id"]) for row in shots}
+    all_shots = pd.concat(
+        [old_shots.loc[~old_shots["game_id"].astype(str).isin(fresh)], pd.DataFrame(shots, columns=list(SHOT_COLUMNS))], ignore_index=True
+    ) if len(old_shots) else pd.DataFrame(shots, columns=list(SHOT_COLUMNS))
     added = pd.DataFrame(rows, columns=list(nba_feed.LOG_COLUMNS))
     frames = [frame for frame in (old, added) if len(frame)]
     logs = pd.concat(frames, ignore_index=True) if frames else added
     logs = logs.drop_duplicates(["game_id", "player_id"], keep="last")
-    return logs.sort_values(["date", "game_id", "player_id"], kind="mergesort").reset_index(drop=True), int(len(todo))
+    return logs.sort_values(["date", "game_id", "player_id"], kind="mergesort").reset_index(drop=True), int(len(todo)), all_shots
 
 
 # -- refresh ------------------------------------------------------------------
@@ -325,8 +387,12 @@ def refresh(feed_dir: Path | None = None) -> dict:
         # Logs from the NBA feed carry NBA game ids; the ESPN feed starts its own file.
         if len(old) and old["game_id"].astype(str).str.startswith("00").any():
             old = pd.DataFrame(columns=list(nba_feed.LOG_COLUMNS))
-        logs, games = fetch_logs(session, schedule, old, pairs)
+        shots_path = target / SHOTS_PATH.name
+        old_shots = _read(shots_path, dtype={"game_id": str})
+        logs, games, shots = fetch_logs(session, schedule, old, pairs, old_shots)
         logs.to_csv(logs_path, index=False)
+        shots.to_csv(shots_path, index=False)
+        report["rows"]["shots"] = int(len(shots))
         report["rows"][f"logs {nba_feed.SEASON}"] = int(len(logs))
         report["rows"]["new games"] = games
     except Exception as exc:  # a public endpoint; any failure keeps the old files

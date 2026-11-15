@@ -49,3 +49,19 @@ def test_a_night_counts_only_the_starters_who_played():
     rows, total = app_feed._night(plan, "mine", "2026-10-24")
     assert [row["player_name"] for row in rows] == ["Starter"]
     assert total[matchup.AT["pts"]] == 30
+
+
+def test_true_shooting_and_usage_follow_the_standard_formulas():
+    assert app_feed.true_shooting(22, 14, 5) == round(22 / (2 * (14 + 0.44 * 5)), 3)
+    assert app_feed.true_shooting(0, 0, 0) is None
+    player = {"min": 30, "fga": 15, "fta": 4, "to": 2}
+    team = {"min": 240, "fga": 88, "fta": 22, "to": 13}
+    expected = (15 + 0.44 * 4 + 2) * (240 / 5) / (30 * (88 + 0.44 * 22 + 13))
+    assert app_feed.usage(player, team) == round(expected, 3)
+    assert app_feed.usage({**player, "min": 0}, team) is None
+
+
+def test_short_names_keep_the_surname_whole():
+    assert app_feed.short_name("Nikola Jokić") == "N. Jokić"
+    assert app_feed.short_name("Jaren Jackson Jr.") == "J. Jackson Jr."
+    assert app_feed.short_name("Nenê") == "Nenê"
