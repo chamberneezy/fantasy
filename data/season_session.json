@@ -1,7 +1,7 @@
 {
   "mode": "season",
   "week": 4,
-  "adds_used": 1,
+  "adds_used": 2,
   "roster": [
     [
       "PG",
@@ -13,11 +13,11 @@
     ],
     [
       "SF",
-      "Julian Champagnie"
+      "Matisse Thybulle"
     ],
     [
       "PF",
-      "Mario Hezonja"
+      "Julian Champagnie"
     ],
     [
       "C",
@@ -25,23 +25,23 @@
     ],
     [
       "BN1",
-      "Jrue Holiday"
+      "Mario Hezonja"
     ],
     [
       "BN2",
-      "Anthony Black"
+      "Jrue Holiday"
     ],
     [
       "BN3",
-      "Saddiq Bey"
+      "Anthony Black"
     ],
     [
       "BN4",
-      "Nikola Jokić"
+      "Saddiq Bey"
     ],
     [
       "BN5",
-      "Jalen Smith"
+      "Nikola Jokić"
     ]
   ],
   "il": [
@@ -51,7 +51,7 @@
     ],
     [
       "IL",
-      "Tristan da Silva"
+      "Jalen Smith"
     ]
   ],
   "status": {},

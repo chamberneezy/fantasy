@@ -9,7 +9,7 @@ Mother Tucker,Bat,BN,Charles Bassey,GSW,C
 Mother Tucker,Bat,BN,Cedric Coward,MEM,SG/SF
 Mother Tucker,Bat,BN,Norman Powell,CHI,SG/SF
 Mother Tucker,Bat,IL,Austin Reaves,LAL,PG/SG/SF
-Mother Tucker,Bat,IL,Chet Holmgren,OKC,PF/C
+Mother Tucker,Bat,BN,Anfernee Simons,PHI,PG/SG
 Brzi Botaničari,Fix,PG,Jalen Brunson,NYK,PG
 Brzi Botaničari,Fix,SG,Nickeil Alexander-Walker,ATL,PG/SG
 Brzi Botaničari,Fix,SF,Zaccharie Risacher,DAL,SF/PF
@@ -50,7 +50,6 @@ Klobi Glina,Alen,BN,Karl-Anthony Towns,NYK,PF/C
 Klobi Glina,Alen,BN,Brandon Williams,GSW,PG
 Klobi Glina,Alen,BN,Fred VanVleet,HOU,PG
 Klobi Glina,Alen,BN,DeMar DeRozan,DEN,SF/PF
-Klobi Glina,Alen,BN,Anfernee Simons,PHI,PG/SG
 Klobi Glina,Alen,IL,Kon Knueppel,CHA,SG/SF
 Klobi Glina,Alen,IL,Ja Morant,POR,PG
 Klobi Glina,Alen,IL,Jusuf Nurkić,UTA,C
@@ -156,18 +155,6 @@ Varteks Banfica,Marko B.,BN,Peyton Watson,CLE,SF/PF
 Varteks Banfica,Marko B.,IL,Paolo Banchero,ORL,PF
 Varteks Banfica,Marko B.,IL,Jalen Suggs,ORL,PG/SG
 Varteks Banfica,Marko B.,IL,Nic Claxton,CHI,C
-Lipicaneri,Mario,PG,Collin Gillespie,PHX,PG/SG
-Lipicaneri,Mario,SG,Anthony Black,ORL,PG/SG/SF
-Lipicaneri,Mario,SF,Saddiq Bey,NOP,SF/PF
-Lipicaneri,Mario,PF,Jalen Smith,CHI,PF/C
-Lipicaneri,Mario,C,Nikola Jokić,DEN,C
-Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
-Lipicaneri,Mario,BN,Julian Champagnie,SAS,SF/PF
-Lipicaneri,Mario,BN,Neemias Queta,BOS,C
-Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
-Lipicaneri,Mario,BN,Keyonte George,UTA,PG/SG
-Lipicaneri,Mario,IL,Tristan da Silva,ORL,SF/PF
-Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
 Vikings,Damir,PG,Donovan Mitchell,CLE,PG/SG
 Vikings,Damir,SG,Stephon Castle,SAS,PG/SG
 Vikings,Damir,SF,Paul George,BOS,SF/PF
@@ -178,3 +165,15 @@ Vikings,Damir,BN,Amen Thompson,HOU,PG/SG
 Vikings,Damir,BN,Brandin Podziemski,GSW,PG/SG
 Vikings,Damir,BN,Georges Niang,GSW,PF
 Vikings,Damir,BN,Kyshawn George,WAS,SG/SF/PF
+Lipicaneri,Mario,PG,Collin Gillespie,PHX,PG/SG
+Lipicaneri,Mario,SG,Keyonte George,UTA,PG/SG
+Lipicaneri,Mario,SF,Matisse Thybulle,LAL,SG/SF
+Lipicaneri,Mario,PF,Julian Champagnie,SAS,SF/PF
+Lipicaneri,Mario,C,Neemias Queta,BOS,C
+Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
+Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
+Lipicaneri,Mario,BN,Anthony Black,ORL,PG/SG/SF
+Lipicaneri,Mario,BN,Saddiq Bey,NOP,SF/PF
+Lipicaneri,Mario,BN,Nikola Jokić,DEN,C
+Lipicaneri,Mario,IL,Jalen Smith,CHI,PF/C
+Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
