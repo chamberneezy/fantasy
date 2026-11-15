@@ -20,6 +20,12 @@ COUNTING = {"MIN": "mp", "3PM": "fg3m", "PTS": "pts", "REB": "reb", "AST": "ast"
 RATIOS = {"FG%": ("fgm", "fga"), "FT%": ("ftm", "fta")}
 RUNS = 20000
 SEED = 51867
+# The simulation is overconfident: it treats each player's expected line as known and every
+# game as independent. Measured on past seasons (scripts/backtest_categories.py: fit 2023-24,
+# graded on 2024-25 and 2025-26), the best pull toward even is a log-odds slope of
+# 0.68 on Monday, 0.83 on Thursday, 0.91 on Saturday: 1 - 0.32 x (share of the week left).
+SHRINK_PER_WEEK_LEFT = 0.32
+WEEK_DAYS = 7
 
 
 def line_vector(line: dict) -> np.ndarray:
@@ -94,6 +100,21 @@ def compare(mine: np.ndarray, theirs: np.ndarray) -> dict:
         "tie": float((won == lost).mean()),
         "lose": float((won < lost).mean()),
     }
+
+
+def category_chance(row: dict) -> float:
+    """Chance of a category from ``compare``: a tie counts half, as in the week's score."""
+    return float(row["win"] + 0.5 * row.get("tie", 0.0))
+
+
+def fair_chance(chance: float, days_left: int) -> float:
+    """The simulated chance pulled toward even by the measured overconfidence (see ``SHRINK_PER_WEEK_LEFT``)."""
+    if chance <= 0.0 or chance >= 1.0:
+        return float(chance)
+    left = min(max(days_left, 0), WEEK_DAYS) / WEEK_DAYS
+    slope = 1.0 - SHRINK_PER_WEEK_LEFT * left
+    odds = math.log(chance / (1.0 - chance))
+    return 1.0 / (1.0 + math.exp(-slope * odds))
 
 
 def swing_weights(mine: np.ndarray, theirs: np.ndarray) -> dict:

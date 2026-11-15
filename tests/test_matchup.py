@@ -216,3 +216,16 @@ def test_pad_reads_matchup_injuries_and_marks(tmp_path) -> None:
     for row in grid["plans"]:
         assert data.rostered_by(row["add"]) is None
         assert row["drop"] != "Mario Hezonja"
+
+
+def test_fair_chance_pulls_less_as_the_week_runs_out() -> None:
+    monday, thursday, saturday = (matchup.fair_chance(0.9, days) for days in (7, 4, 2))
+    assert 0.5 < monday < thursday < saturday < 0.9
+    assert matchup.fair_chance(0.9, 0) == pytest.approx(0.9)
+    assert matchup.fair_chance(0.5, 7) == pytest.approx(0.5)
+    assert matchup.fair_chance(0.1, 7) == pytest.approx(1 - monday)
+    assert matchup.fair_chance(1.0, 7) == 1.0
+
+
+def test_a_tie_counts_half() -> None:
+    assert matchup.category_chance({"win": 0.4, "tie": 0.2}) == pytest.approx(0.5)

@@ -40,6 +40,6 @@ Commit on `cursor/3rd-league-draft-dollars`, push (the push starts the season fe
 
 ## What is measured
 
-- Chances are shrunk to 60% of their log-odds (`CONFIDENCE_SHRINK`), from a replay of last season on a simplified model. Replace it once this season's graded forecasts are enough to measure it.
+- Chances are pulled toward even by the measured overconfidence: log-odds × (1 − 0.32 × share of the week left), so 0.68 on Monday, about 0.83 on Thursday, 0.91 on Saturday (`matchup.fair_chance`). Measured on 2024-25 and 2025-26 after fitting on 2023-24 (`scripts/backtest_categories.py`, 15 Nov 2026). A tie counts half. The report and the app use the same rule.
 - Moves of under about 0.5 categories are inside the model's error on one week.
 - One game: MIN, PTS, AST and REB are partly predictable; STL, PF and BLK are mostly not, so those are won by volume of games and players who are steadily good at them.

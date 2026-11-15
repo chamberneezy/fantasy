@@ -23,7 +23,6 @@ from math_engine import ALL_CATEGORIES, NEGATIVE_CATEGORIES, FantasyMathEngine
 MIN_GAMES = 3
 # Replay of 20 weeks of 2025-26 (1,846 category calls): the fairest chance is this share
 # of the model's log-odds. Said 91% happened 83%, said 9% happened 22%.
-CONFIDENCE_SHRINK = 0.6
 LOCKED = 0.995
 GONE = 0.005
 # A free agent absent from this many of his team's latest games, listed or not, has no usable line.
@@ -96,21 +95,18 @@ def team_values(values: pd.DataFrame) -> pd.DataFrame:
     return teams.sort_values("total", ascending=False)
 
 
-def fair_chance(chance: float) -> float:
-    """The model's chance pulled toward even by the measured overconfidence."""
-    if chance <= 0.0 or chance >= 1.0:
-        return float(chance)
-    odds = math.log(chance / (1.0 - chance))
-    return 1.0 / (1.0 + math.exp(-CONFIDENCE_SHRINK * odds))
+def fair_chance(chance: float, days_left: int = matchup.WEEK_DAYS) -> float:
+    """The model's chance pulled toward even by the measured overconfidence (``matchup.fair_chance``)."""
+    return matchup.fair_chance(chance, days_left)
 
 
-def category_word(chance: float) -> str:
+def category_word(chance: float, days_left: int = matchup.WEEK_DAYS) -> str:
     """Locked or gone from the raw chance; otherwise a lean word from the fair one."""
     if chance >= LOCKED:
         return "locked yours"
     if chance <= GONE:
         return "gone"
-    return lean_word(fair_chance(chance)).replace("his", "theirs")
+    return lean_word(fair_chance(chance, days_left)).replace("his", "theirs")
 
 
 def day_grid(by_day: dict[str, list[dict]], lineups: dict[str, dict[str, str]]) -> list[dict]:
@@ -265,15 +261,16 @@ def week_report(session, week: dict, today: date, rostered: dict[str, str], late
     opponent = _with_opponent_adds(session, week, today, plan)
     stressed = lineup.plan_week(plan["mine"], opponent, today.isoformat(), banked=plan.get("banked"))
     after = _category_rows(stressed["result"])
+    days_left = (week["end"] - today).days + 1
     report["categories"] = [
         {
             "cat": row["cat"],
             "mine": row["mine"],
             "theirs": row["theirs"],
-            "chance": row["win"],
-            "fair": fair_chance(row["win"]),
-            "word": category_word(row["win"]),
-            "word_if_opponent_adds": category_word(after[row["cat"]]["win"]),
+            "chance": matchup.category_chance(row),
+            "fair": fair_chance(matchup.category_chance(row), days_left),
+            "word": category_word(matchup.category_chance(row), days_left),
+            "word_if_opponent_adds": category_word(matchup.category_chance(after[row["cat"]]), days_left),
         }
         for row in plan["result"]["cats"]
     ]

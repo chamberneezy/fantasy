@@ -290,7 +290,11 @@ def _week(grid: dict, plan: dict) -> list[dict]:
 
 
 def _leans(matchup: dict | None, banked: dict | None) -> list[dict]:
-    """Per-cat word for the week's end, plus the score so far (``live_totals``) when there is one."""
+    """Per-cat word for the week's end, plus the score so far (``live_totals``) when there is one.
+
+    The grid's ``win`` already counts a tie as half and carries the measured pull toward even
+    (``season._matchup_card``), the same numbers as the morning report.
+    """
     if not matchup:
         return []
     rows = []
