@@ -1,0 +1,10 @@
+[Unit]
+Description=NBA Fantasy: hourly ESPN pull, Pages and app feeds
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/services/nba-fantasy/fantasy/scripts/server/season_hourly.sh
+TimeoutStartSec=40min
+Nice=10
