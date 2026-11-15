@@ -22,7 +22,7 @@ concurrency:
 env:
   CODE_REF: cursor/3rd-league-draft-dollars
   FEED_BRANCH: season-feed
-  FEED_FILES: schedule.csv players.csv gamelogs_2026-27.csv injuries.csv feed.json
+  FEED_FILES: schedule.csv players.csv gamelogs_2026-27.csv shots_2026-27.csv injuries.csv feed.json
 
 jobs:
   refresh:
