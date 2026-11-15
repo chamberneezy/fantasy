@@ -32,6 +32,9 @@ ID_COLUMNS = ("espn_id", "player_id", "player_name")
 # Every shot from the play-by-play, for the apps' game cards (shot chart, points by quarter).
 SHOTS_PATH = nba_feed.FEED_DIR / f"shots_{nba_feed.SEASON}.csv"
 SHOT_COLUMNS = ("game_id", "player_id", "period", "clock", "x", "y", "value", "made")
+# Box-score columns the logs do not carry, for the cards' Game Score and plus-minus.
+EXTRAS_PATH = nba_feed.FEED_DIR / f"boxextra_{nba_feed.SEASON}.csv"
+EXTRA_COLUMNS = ("game_id", "player_id", "oreb", "dreb", "plus_minus")
 # Finished games still without shots, fetched per run (fills the season in once, then only new games).
 SHOTS_BACKFILL = 400
 # ESPN's court: feet, x 0-50 across, y from the rim. Free throws carry a huge sentinel instead.
@@ -306,42 +309,81 @@ def shape_shots(summary: dict, game: dict, ids: dict[int, tuple[int, str]]) -> l
     return rows
 
 
-def fetch_logs(
-    session, schedule: pd.DataFrame, old: pd.DataFrame, ids: dict[int, tuple[int, str]], old_shots: pd.DataFrame | None = None
-) -> tuple[pd.DataFrame, int, pd.DataFrame]:
-    """Finished games not yet in ``old``, one summary call each; the same call gives the shots.
+def shape_extras(summary: dict, game: dict, ids: dict[int, tuple[int, str]]) -> list[dict]:
+    """Offensive and defensive rebounds and plus-minus for everyone who played."""
+    rows = []
+    for side in (summary.get("boxscore") or {}).get("players") or []:
+        for block in side.get("statistics") or []:
+            labels = [label.upper() for label in block.get("labels") or []]
+            for athlete in block.get("athletes") or []:
+                values = dict(zip(labels, athlete.get("stats") or []))
+                if athlete.get("didNotPlay") or _number(values.get("MIN", 0)) <= 0:
+                    continue
+                espn_id = int((athlete.get("athlete") or {}).get("id"))
+                rows.append(
+                    {
+                        "game_id": str(game["game_id"]),
+                        "player_id": ids.get(espn_id, (ESPN_ID_OFFSET + espn_id, ""))[0],
+                        "oreb": int(_number(values.get("OREB", 0))),
+                        "dreb": int(_number(values.get("DREB", 0))),
+                        "plus_minus": int(_number(values.get("+/-", 0))),
+                    }
+                )
+    return rows
 
-    Games already logged but missing from ``old_shots`` are fetched for their shots
-    only, up to ``SHOTS_BACKFILL`` a run. Returns all logs, the games added, all shots.
+
+def _replace_games(old: pd.DataFrame, rows: list[dict], columns: tuple[str, ...]) -> pd.DataFrame:
+    """Old rows plus new ones; a game fetched again replaces its rows rather than doubling them."""
+    fresh = pd.DataFrame(rows, columns=list(columns))
+    if not len(old):
+        return fresh
+    kept = old.loc[~old["game_id"].astype(str).isin(set(fresh["game_id"].astype(str)))]
+    return pd.concat([kept, fresh], ignore_index=True)
+
+
+def fetch_logs(
+    session,
+    schedule: pd.DataFrame,
+    old: pd.DataFrame,
+    ids: dict[int, tuple[int, str]],
+    old_shots: pd.DataFrame | None = None,
+    old_extras: pd.DataFrame | None = None,
+) -> tuple[pd.DataFrame, int, pd.DataFrame, pd.DataFrame]:
+    """Finished games not yet in ``old``, one summary call each; the same call gives shots and box extras.
+
+    Games already logged but missing from ``old_shots`` or ``old_extras`` are fetched
+    again for those only, up to ``SHOTS_BACKFILL`` a run. Returns all logs, the games
+    added, all shots and all extras.
     """
     old_shots = old_shots if old_shots is not None and len(old_shots) else pd.DataFrame(columns=list(SHOT_COLUMNS))
+    old_extras = old_extras if old_extras is not None and len(old_extras) else pd.DataFrame(columns=list(EXTRA_COLUMNS))
     have = set(old["game_id"].astype(str)) if len(old) else set()
-    have_shots = set(old_shots["game_id"].astype(str))
+    complete = set(old_shots["game_id"].astype(str)) & set(old_extras["game_id"].astype(str))
     final = schedule.loc[schedule["final"]]
-    todo = final.loc[~final["game_id"].astype(str).isin(have)]
-    backfill = final.loc[final["game_id"].astype(str).isin(have) & ~final["game_id"].astype(str).isin(have_shots)].head(SHOTS_BACKFILL)
-    rows, shots = [], []
+    ids_text = final["game_id"].astype(str)
+    todo = final.loc[~ids_text.isin(have)]
+    backfill = final.loc[ids_text.isin(have) & ~ids_text.isin(complete)].head(SHOTS_BACKFILL)
+    rows, shots, extras = [], [], []
     for game in todo.to_dict("records"):
         summary = _get(session, "summary", event=game["game_id"])
         rows += shape_box(summary, game, ids)
         shots += shape_shots(summary, game, ids)
+        extras += shape_extras(summary, game, ids)
         time.sleep(PAUSE_SECONDS)
     for game in backfill.to_dict("records"):
         try:
-            shots += shape_shots(_get(session, "summary", event=game["game_id"]), game, ids)
-        except Exception:  # shots are extra; a failed game is tried again next run
+            summary = _get(session, "summary", event=game["game_id"])
+        except Exception:  # extras; a failed game is tried again next run
             continue
+        shots += shape_shots(summary, game, ids)
+        extras += shape_extras(summary, game, ids)
         time.sleep(PAUSE_SECONDS)
-    # A game fetched again replaces its shots rather than doubling them.
-    fresh = {str(row["game_id"]) for row in shots}
-    all_shots = pd.concat(
-        [old_shots.loc[~old_shots["game_id"].astype(str).isin(fresh)], pd.DataFrame(shots, columns=list(SHOT_COLUMNS))], ignore_index=True
-    ) if len(old_shots) else pd.DataFrame(shots, columns=list(SHOT_COLUMNS))
     added = pd.DataFrame(rows, columns=list(nba_feed.LOG_COLUMNS))
     frames = [frame for frame in (old, added) if len(frame)]
     logs = pd.concat(frames, ignore_index=True) if frames else added
     logs = logs.drop_duplicates(["game_id", "player_id"], keep="last")
-    return logs.sort_values(["date", "game_id", "player_id"], kind="mergesort").reset_index(drop=True), int(len(todo)), all_shots
+    logs = logs.sort_values(["date", "game_id", "player_id"], kind="mergesort").reset_index(drop=True)
+    return logs, int(len(todo)), _replace_games(old_shots, shots, SHOT_COLUMNS), _replace_games(old_extras, extras, EXTRA_COLUMNS)
 
 
 # -- refresh ------------------------------------------------------------------
@@ -388,11 +430,15 @@ def refresh(feed_dir: Path | None = None) -> dict:
         if len(old) and old["game_id"].astype(str).str.startswith("00").any():
             old = pd.DataFrame(columns=list(nba_feed.LOG_COLUMNS))
         shots_path = target / SHOTS_PATH.name
+        extras_path = target / EXTRAS_PATH.name
         old_shots = _read(shots_path, dtype={"game_id": str})
-        logs, games, shots = fetch_logs(session, schedule, old, pairs, old_shots)
+        old_extras = _read(extras_path, dtype={"game_id": str})
+        logs, games, shots, extras = fetch_logs(session, schedule, old, pairs, old_shots, old_extras)
         logs.to_csv(logs_path, index=False)
         shots.to_csv(shots_path, index=False)
+        extras.to_csv(extras_path, index=False)
         report["rows"]["shots"] = int(len(shots))
+        report["rows"]["box extras"] = int(len(extras))
         report["rows"][f"logs {nba_feed.SEASON}"] = int(len(logs))
         report["rows"]["new games"] = games
     except Exception as exc:  # a public endpoint; any failure keeps the old files

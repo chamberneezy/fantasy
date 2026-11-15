@@ -106,3 +106,15 @@ def test_shots_keep_the_shooter_spot_and_drop_free_throw_sentinels() -> None:
     assert [(row["player_id"], row["value"], row["made"], row["period"]) for row in rows] == [(203999, 3, 1, 2), (203999, 1, 0, 3)]
     assert (rows[0]["x"], rows[0]["y"]) == (48, -2)
     assert rows[1]["x"] is None and rows[1]["y"] is None
+
+
+def test_box_extras_read_offensive_defensive_rebounds_and_plus_minus() -> None:
+    summary = {"boxscore": {"players": [{"statistics": [{
+        "labels": ["MIN", "OREB", "DREB", "+/-"],
+        "athletes": [
+            {"athlete": {"id": "11"}, "stats": ["32", "3", "5", "-8"]},
+            {"athlete": {"id": "12"}, "stats": ["0", "0", "0", "0"], "didNotPlay": True},
+        ],
+    }]}]}}
+    rows = espn_feed.shape_extras(summary, {"game_id": "9"}, {11: (1, "A")})
+    assert rows == [{"game_id": "9", "player_id": 1, "oreb": 3, "dreb": 5, "plus_minus": -8}]

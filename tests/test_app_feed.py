@@ -65,3 +65,9 @@ def test_short_names_keep_the_surname_whole():
     assert app_feed.short_name("Nikola Jokić") == "N. Jokić"
     assert app_feed.short_name("Jaren Jackson Jr.") == "J. Jackson Jr."
     assert app_feed.short_name("Nenê") == "Nenê"
+
+
+def test_game_score_follows_hollinger():
+    line = {"pts": 22, "fgm": 8, "fga": 14, "fta": 6, "ftm": 4, "stl": 1, "ast": 3, "blk": 0, "pf": 2, "to": 2}
+    expected = 22 + 0.4 * 8 - 0.7 * 14 - 0.4 * 2 + 0.7 * 1 + 0.3 * 5 + 1 + 0.7 * 3 + 0 - 0.4 * 2 - 2
+    assert app_feed.game_score(line, oreb=1, dreb=5) == round(expected, 1)
