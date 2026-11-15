@@ -105,18 +105,20 @@ struct BoardRowView: View {
             Text(row.rank.map { "\($0)" } ?? "–").font(Theme.display(13)).foregroundStyle(Theme.mute).frame(width: 22, alignment: .leading)
             Headshot(url: headshot, size: 42, ring: ownerColor == Theme.mute ? Theme.mute.opacity(0.5) : ownerColor)
             VStack(alignment: .leading, spacing: 2) {
-                Text(row.playerName).font(Theme.ui(15, .semibold)).foregroundStyle(Theme.ink).lineLimit(1).minimumScaleFactor(0.8)
+                Text(row.playerName).font(Theme.ui(15, .semibold)).foregroundStyle(Theme.ink).lineLimit(1).minimumScaleFactor(0.7)
                 HStack(spacing: 4) {
                     Text("\(row.team) · \(row.positions)").foregroundStyle(Theme.mute)
                     if showOwner { Text(row.ownerLabel).foregroundStyle(ownerColor) }
                 }
                 .font(Theme.ui(11, .medium))
                 .lineLimit(1)
+                Text("\(LineText.fmt(row.pts)) pts · \(LineText.fmt(row.reb)) reb · \(LineText.fmt(row.ast)) ast")
+                    .font(Theme.ui(12, .medium).monospacedDigit())
+                    .foregroundStyle(Theme.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            Spacer(minLength: 4)
-            MiniStat(value: row.pts, label: "PTS")
-            MiniStat(value: row.reb, label: "REB")
-            MiniStat(value: row.ast, label: "AST")
+            .frame(maxWidth: .infinity, alignment: .leading)
             VStack(spacing: 0) {
                 Text(String(format: "%+.1f", row.value)).font(Theme.display(19).monospacedDigit()).foregroundStyle(row.value >= 0 ? Theme.blue : Theme.red)
                 Text("VALUE").font(Theme.ui(8.5, .semibold)).kerning(0.6).foregroundStyle(Theme.mute)
@@ -135,19 +137,6 @@ struct BoardRowView: View {
         case "free": return Theme.heading
         default: return Theme.mute
         }
-    }
-}
-
-private struct MiniStat: View {
-    let value: Double
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 0) {
-            Text(String(format: "%.1f", value)).font(Theme.display(14).monospacedDigit()).foregroundStyle(Theme.ink)
-            Text(label).font(Theme.ui(8.5, .semibold)).foregroundStyle(Theme.mute)
-        }
-        .frame(width: 34)
     }
 }
 
