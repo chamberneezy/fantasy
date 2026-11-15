@@ -1,14 +1,14 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Kevin Huerter,DET,SG/SF,,216,15
 Precious Achiuwa,SAC,PF/C,Q,229,24
-Alex Caruso,OKC,SG/SF,,214,29
+Alex Caruso,OKC,SG/SF,,214,30
 Quenton Jackson,IND,PG/SG,,310,7
 Tristan da Silva,ORL,SF/PF,,142,22
 Aday Mara,OKC,C,,188,50
 Kentavious Caldwell-Pope,PHI,SG/SF,,281,2
 Robert Williams,III,POR,,210,10
 Tre Jones,CHI,PG/SG,,144,20
-Daniel Gafford,DAL,C,Q,141,49
+Daniel Gafford,DAL,C,P,141,49
 Andrew Wiggins,MIA,SG/SF/PF,,125,61
 Bennett Stirtz,OKC,PG,,246,5
 Sam Hauser,BOS,SF/PF,,215,5
@@ -31,7 +31,7 @@ Jamison Battle,TOR,SF/PF,,358,3
 Keaton Wagler,LAC,SG,,232,24
 Ryan Dunn,PHX,SF/PF,,283,2
 Luguentz Dort,ATL,SG/SF,,251,5
-Mo Bamba,UTA,C,,425,12
+Mo Bamba,UTA,C,,425,13
 Quentin Grimes,LAL,SG/SF,,159,18
 Keldon Johnson,SAS,SF/PF,,245,11
 Royce O'Neale,CHA,SF/PF,,241,2
