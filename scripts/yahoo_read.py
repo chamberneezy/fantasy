@@ -158,11 +158,15 @@ def write(found: dict) -> list[str]:
     managers = old.drop_duplicates("fantasy_team").set_index("fantasy_team")["manager"].to_dict()
     teams = {}
     for table in found["rosters"]:
-        if not table["team"]:
+        name = yahoo_snapshot.team_name(table["team"])
+        if not name:
             continue
         items = [yahoo_snapshot.seat_text(cells[0], cells[1]) for cells in table["rows"] if len(cells) >= 2]
-        teams[table["team"]] = "; ".join(item for item in items if item)
-    if len(teams) >= 16:
+        teams[name] = "; ".join(item for item in items if item)
+    unknown = sorted(set(teams) - set(managers))
+    if unknown:
+        notes.append(f"rosters skipped: team names not on file {unknown}")
+    elif len(teams) >= 16:
         rows = yahoo_snapshot.roster_rows(teams, managers, known)
         rows.to_csv(path, index=False, lineterminator="\r\n")
         notes.append(f"rosters: {len(rows)} players on {rows['fantasy_team'].nunique()} teams")

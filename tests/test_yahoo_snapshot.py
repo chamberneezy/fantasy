@@ -88,3 +88,8 @@ def test_session_follows_yahoo_and_logs_real_moves_only():
     assert {"date": "2026-11-16", "add": "Cam Spencer"} in updated["moves"]
     assert not any(move.get("add") == "Tristan da Silva" for move in updated["moves"])
     assert updated["adds_used"] == 3 and "adds used 2 → 3" in changes
+
+
+def test_team_headings_lose_yahoo_icon_glyphs():
+    assert snapshot.team_name("Mother Tucker ") == "Mother Tucker"
+    assert snapshot.team_name("  Brzi Botaničari ") == "Brzi Botaničari"

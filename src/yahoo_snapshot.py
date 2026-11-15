@@ -116,6 +116,11 @@ _CELL = re.compile(r"^(?P<name>.+?)\s*(?:(?:New |No new )?[Pp]layer [Nn]otes?)?\
 _ADDS = re.compile(r"used (\d+) of your (\d+) player adds")
 
 
+def team_name(text: str) -> str:
+    """A team heading without Yahoo's icon-font glyphs (private-use characters) and spare spaces."""
+    return " ".join(re.sub(r"[\ue000-\uf8ff]", "", text).split())
+
+
 def seat_text(slot: str, cell: str) -> str | None:
     """A roster cell as ``roster_rows`` reads it: ``PG Name TEAM - PG,SG``. ``None`` for an empty seat."""
     cell = " ".join(cell.split())
