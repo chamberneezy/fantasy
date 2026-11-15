@@ -83,6 +83,26 @@ def _shots(data) -> pd.DataFrame:
     return cache
 
 
+def _extras(data) -> dict:
+    """(game id, player id) → offensive / defensive rebounds and plus-minus."""
+    cache = getattr(data, "_extras", None)
+    if cache is None:
+        path = data.feed_dir / espn_feed.EXTRAS_PATH.name
+        frame = pd.read_csv(path, dtype={"game_id": str}) if path.exists() else pd.DataFrame(columns=list(espn_feed.EXTRA_COLUMNS))
+        cache = {(str(row.game_id), int(row.player_id)): {"oreb": int(row.oreb), "dreb": int(row.dreb), "plus_minus": int(row.plus_minus)} for row in frame.itertuples()}
+        data._extras = cache
+    return cache
+
+
+def game_score(line: dict, oreb: float, dreb: float) -> float:
+    """Hollinger's Game Score: one number for the night (about 10 is an average game, 40 a great one)."""
+    return round(
+        line["pts"] + 0.4 * line["fgm"] - 0.7 * line["fga"] - 0.4 * (line["fta"] - line["ftm"])
+        + 0.7 * oreb + 0.3 * dreb + line["stl"] + 0.7 * line["ast"] + 0.7 * line["blk"] - 0.4 * line["pf"] - line["to"],
+        1,
+    )
+
+
 def _team_games(data) -> pd.DataFrame:
     """Per game and team: points, minutes, shots and turnovers, summed from the box scores."""
     cache = getattr(data, "_team_games", None)
@@ -130,6 +150,7 @@ def game_card(data, game: dict) -> dict:
     opp = totals.loc[opp_key].to_dict() if opp_key in totals.index else None
     shots = _shots(data)
     mine = shots.loc[(shots["game_id"] == str(game["game_id"])) & (shots["player_id"] == int(game["player_id"]))]
+    extra = _extras(data).get((str(game["game_id"]), int(game["player_id"])))
     periods = max(4, int(mine["period"].max())) if len(mine) else 4
     quarters = [int((mine.loc[mine["period"] == period, "made"] * mine.loc[mine["period"] == period, "value"]).sum()) for period in range(1, periods + 1)]
     chart = [
@@ -146,6 +167,8 @@ def game_card(data, game: dict) -> dict:
         "fg3a": int(((mine["value"] == 3)).sum()) if len(mine) else None,
         "ts_pct": true_shooting(float(game["pts"]), float(game["fga"]), float(game["fta"])),
         "usg_pct": usage(game, team) if team else None,
+        "game_score": game_score(game, extra["oreb"], extra["dreb"]) if extra else None,
+        "plus_minus": extra["plus_minus"] if extra else None,
         "quarters": quarters if len(mine) else None,
         "shots": chart if len(mine) else None,
         **_value(data, game),
@@ -522,7 +545,7 @@ def _cards(data, board: dict, mine: list[str], theirs: list[str]) -> dict:
     names = {*mine, *theirs}
     for window in board["rows"].values():
         names.update(row["player_name"] for row in window["league"])
-    return {name: player_card(data, name) for name in sorted(names)}
+    return {name: player_card(data, name, RECENT_GAMES) for name in sorted(names)}
 
 
 def build(session, today: date) -> dict:

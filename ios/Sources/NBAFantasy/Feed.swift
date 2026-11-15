@@ -35,7 +35,8 @@ struct Feed: Codable {
 
     /// Season rank by 12-cat value, from the stats board.
     func seasonRank(_ name: String) -> Int? {
-        stats?.rows["season"]?.mine.first { $0.playerName == name }?.rank
+        guard let rows = stats?.rows["season"] else { return nil }
+        return (rows.mine + rows.theirs + rows.league).first { $0.playerName == name }?.rank
     }
 
     static let url = URL(string: "https://chamberneezy.github.io/fantasy/data/season/app.json")!
@@ -331,6 +332,9 @@ struct GameCard: Codable, Identifiable {
     let dd: Int
     let tsPct: Double?
     let usgPct: Double?
+    /// Hollinger's Game Score and the team's margin with him on the floor.
+    let gameScore: Double?
+    let plusMinus: Int?
     /// Points per quarter (overtimes after the fourth).
     let quarters: [Int]?
     /// [x, y, made, value]: feet, x 0–50 across, y from the rim.

@@ -8,39 +8,31 @@ struct PlayerSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 14) {
-                    PlayerHeader(card: card, rank: rank)
+        ScrollView {
+            VStack(spacing: 14) {
+                PlayerHeader(card: card, rank: rank) { dismiss() }
+                Group {
                     if let games = card.games, !games.isEmpty {
                         GamePicker(games: games, picked: $picked)
                         GameCardView(game: games[min(picked, games.count - 1)])
                     } else {
                         Panel { Text("No games this season yet").font(Theme.ui(14)).foregroundStyle(Theme.mute) }
                     }
+                    if let season = card.season {
+                        Panel(title: "Season averages · \(season.games) games") { SeasonGrid(season: season, ts: card.seasonTsPct) }
+                    }
                     if let value = card.seasonValue {
                         Panel(title: "Season · 12-cat value per game") {
                             ValueBars(value: value, caption: seasonCaption)
                         }
                     }
-                    if let season = card.season {
-                        Panel(title: "Season averages · \(season.games) games") { SeasonGrid(season: season, ts: card.seasonTsPct) }
-                    }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 24)
             }
-            .background(Theme.page)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }.font(Theme.ui(15, .semibold))
-                }
-            }
-            .toolbarBackground(Theme.banner, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.bottom, 24)
         }
+        .ignoresSafeArea(edges: .top)
+        .background(Theme.page)
     }
 
     private var seasonCaption: String {
@@ -50,17 +42,18 @@ struct PlayerSheet: View {
     }
 }
 
-/// Photo on the brand gradient, name, team and seat eligibility, injury.
+/// Photo on the brand gradient, edge to edge at the top of the sheet, with the close button top right.
 struct PlayerHeader: View {
     let card: PlayerCard
     let rank: Int?
+    let close: () -> Void
 
     var body: some View {
-        HStack(spacing: 14) {
-            Headshot(url: card.headshot, size: 86, ring: .white.opacity(0.9))
-            VStack(alignment: .leading, spacing: 4) {
-                Text(card.playerName.uppercased()).font(Theme.display(24)).kerning(0.6).foregroundStyle(.white).lineLimit(2).minimumScaleFactor(0.7)
-                Text("\(card.team) · \(card.positions)").font(Theme.ui(13, .medium)).foregroundStyle(.white.opacity(0.85))
+        HStack(spacing: 16) {
+            Headshot(url: card.headshot, size: 108, ring: .white.opacity(0.9))
+            VStack(alignment: .leading, spacing: 5) {
+                Text(card.playerName.uppercased()).font(Theme.display(28)).kerning(0.6).foregroundStyle(.white).lineLimit(2).minimumScaleFactor(0.7)
+                Text("\(card.team) · \(card.positions)").font(Theme.ui(14, .medium)).foregroundStyle(.white.opacity(0.85))
                 HStack(spacing: 6) {
                     if let value = card.seasonValue {
                         Tag(text: "Value \(Fmt.signed(value.value))", color: value.value >= 0 ? Theme.blue : Theme.red)
@@ -71,12 +64,28 @@ struct PlayerHeader: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(16)
+        .padding(.horizontal, 20)
+        .padding(.top, 52)
+        .padding(.bottom, 24)
+        .frame(maxWidth: .infinity)
         .background(
             LinearGradient(colors: [Color(hex: 0x1D428A), Theme.blue, Theme.red.opacity(0.85)], startPoint: .topLeading, endPoint: .bottomTrailing),
-            in: RoundedRectangle(cornerRadius: 18)
+            in: UnevenRoundedRectangle(bottomLeadingRadius: 24, bottomTrailingRadius: 24)
         )
-        .padding(.top, 8)
+        .overlay(alignment: .topTrailing) {
+            Button(action: close) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(.black.opacity(0.28), in: Circle())
+                    .overlay(Circle().stroke(.white.opacity(0.35), lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 16)
+            .padding(.trailing, 16)
+            .accessibilityLabel("Close")
+        }
     }
 }
 
@@ -104,7 +113,7 @@ struct GamePicker: View {
                     Button { picked = index } label: {
                         VStack(spacing: 1) {
                             Text(Dates.short(game.date)).font(Theme.ui(11, .semibold))
-                            Text("\(game.home ? "vs" : "@") \(game.opp) · \(game.pts)").font(Theme.display(13))
+                            Text("\(game.home ? "vs" : "@") \(game.opp)").font(Theme.display(13))
                         }
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .foregroundStyle(index == picked ? .white : Theme.ink)
@@ -147,16 +156,28 @@ struct GameCardView: View {
                     ])
                 }
             }
-            if let quarters = game.quarters {
-                Panel(title: "Points by quarter") { QuarterBars(quarters: quarters) }
-            }
             if let shots = game.shots {
                 Panel(title: "Shot chart · \(game.fgm)/\(game.fga) FG") { ShotChart(shots: shots) }
             }
+            if let quarters = game.quarters {
+                Panel(title: "Points by quarter") { QuarterBars(quarters: quarters) }
+            }
             Panel(title: "Efficiency") {
-                HStack(spacing: 12) {
-                    Gauge(label: "TS%", value: game.tsPct, scale: 0.8, note: "points per shot")
-                    Gauge(label: "USG%", value: game.usgPct, scale: 0.4, note: "team plays used")
+                VStack(spacing: 16) {
+                    HStack(spacing: 12) {
+                        Gauge(label: "TS%", text: game.tsPct.map { String(format: "%.1f", $0 * 100) }, fraction: (game.tsPct ?? 0) / 0.8, note: "points per shot")
+                        Gauge(label: "USG%", text: game.usgPct.map { String(format: "%.1f", $0 * 100) }, fraction: (game.usgPct ?? 0) / 0.4, note: "team plays used")
+                    }
+                    HStack(spacing: 12) {
+                        Gauge(label: "GAME SCORE", text: game.gameScore.map { String(format: "%.1f", $0) }, fraction: (game.gameScore ?? 0) / 40, note: "10 average · 20 good · 30+ great")
+                        Gauge(
+                            label: "+/-",
+                            text: game.plusMinus.map { $0 > 0 ? "+\($0)" : "\($0)" },
+                            fraction: Double(abs(game.plusMinus ?? 0)) / 30,
+                            note: "team margin with him on",
+                            tint: (game.plusMinus ?? 0) < 0 ? Theme.red : Theme.blue
+                        )
+                    }
                 }
             }
             Panel(title: "12-cat value this game") {
@@ -283,23 +304,28 @@ struct ShotChart: View {
 /// A ring filled to `value / scale`, the percentage in the middle.
 private struct Gauge: View {
     let label: String
-    let value: Double?
-    let scale: Double
+    let text: String?
+    let fraction: Double
     let note: String
+    /// One colour for a signed number (plus-minus); the brand blue→red sweep otherwise.
+    var tint: Color? = nil
 
     var body: some View {
         VStack(spacing: 6) {
             ZStack {
                 Circle().stroke(Theme.blue.opacity(0.15), lineWidth: 9)
                 Circle()
-                    .trim(from: 0, to: min(1, (value ?? 0) / scale))
-                    .stroke(AngularGradient(colors: [Theme.blue, Theme.red], center: .center), style: StrokeStyle(lineWidth: 9, lineCap: .round))
+                    .trim(from: 0, to: max(0, min(1, fraction)))
+                    .stroke(
+                        tint.map { AnyShapeStyle($0) } ?? AnyShapeStyle(AngularGradient(colors: [Theme.blue, Theme.red], center: .center)),
+                        style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                    )
                     .rotationEffect(.degrees(-90))
-                Text(value.map { String(format: "%.1f", $0 * 100) } ?? "–").font(Theme.display(22).monospacedDigit()).foregroundStyle(Theme.heading)
+                Text(text ?? "–").font(Theme.display(22).monospacedDigit()).foregroundStyle(tint ?? Theme.heading)
             }
             .frame(width: 92, height: 92)
             Text(label).font(Theme.display(13)).kerning(1).foregroundStyle(Theme.ink)
-            Text(note).font(Theme.ui(10.5)).foregroundStyle(Theme.mute)
+            Text(note).font(Theme.ui(10.5)).foregroundStyle(Theme.mute).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
     }

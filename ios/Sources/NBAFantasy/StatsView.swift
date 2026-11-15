@@ -5,6 +5,7 @@ struct StatsView: View {
     @Environment(FeedStore.self) private var store
     @AppStorage("stats.view") private var view = "mine"
     @AppStorage("stats.window") private var window = "7d"
+    @State private var sheet: PlayerCard?
 
     var body: some View {
         NavigationStack {
@@ -31,16 +32,27 @@ struct StatsView: View {
                         BrandSection(title(feed), footer: footer(board)) {
                             if shown.isEmpty { Text("No games in this window yet").font(Theme.ui(14)).foregroundStyle(Theme.mute) }
                             ForEach(shown) { row in
-                                NavigationLink {
-                                    PlayerDetail(card: feed.cards?[row.playerName], row: row, windowLabel: label(board))
-                                } label: {
-                                    BoardRowView(row: row, showOwner: view == "league")
+                                if let card = feed.cards?[row.playerName] ?? feed.card(row.playerName), card.games != nil {
+                                    Button { sheet = card } label: {
+                                        HStack {
+                                            BoardRowView(row: row, showOwner: view == "league")
+                                            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(Theme.mute.opacity(0.6))
+                                        }
+                                        .contentShape(Rectangle())
+                                    }
+                                    .buttonStyle(.plain)
+                                } else {
+                                    NavigationLink {
+                                        PlayerDetail(card: feed.cards?[row.playerName], row: row, windowLabel: label(board))
+                                    } label: {
+                                        BoardRowView(row: row, showOwner: view == "league")
+                                    }
                                 }
                             }
                         }
                     } else {
                         // A feed from before the board: season averages per player, as before.
-                        BrandSection(view == "theirs" ? (feed.opponent ?? "Opponent") : "Lipicaneri") {
+                        BrandSection(view == "theirs" ? (feed.opponent ?? "Opponent") : (feed.team ?? "Lipicaneri")) {
                             ForEach(view == "theirs" ? feed.theirs : feed.mine) { card in
                                 NavigationLink { PlayerDetail(card: card, row: nil, windowLabel: "Season") } label: { StatRow(card: card) }
                             }
@@ -52,6 +64,10 @@ struct StatsView: View {
             }
             .brandScreen("Stats")
             .refreshable { await store.refresh() }
+            .sheet(item: $sheet) { card in
+                PlayerSheet(card: card, rank: store.feed?.seasonRank(card.playerName))
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 
@@ -59,7 +75,7 @@ struct StatsView: View {
         switch view {
         case "league": return "League top 50 by value"
         case "theirs": return feed.opponent ?? "Opponent"
-        default: return "Lipicaneri"
+        default: return feed.team ?? "Lipicaneri"
         }
     }
 
