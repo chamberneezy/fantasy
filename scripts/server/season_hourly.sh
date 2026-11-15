@@ -32,9 +32,11 @@ fi
 
 .venv/bin/python scripts/refresh_season.py
 
-# Yahoo, read only, once Mario has signed in (scripts/server/yahoo_login.sh). Changed files go to GitHub.
+# Yahoo, read only. The league's pages are public; signing in once (scripts/server/yahoo_login.sh)
+# only adds the owner's view (adds used this week). Changed files go to GitHub.
 PROFILE=$BASE/yahoo-profile
-if [ -d "$PROFILE" ]; then
+mkdir -p "$PROFILE" && chmod 700 "$PROFILE"
+if true; then
   set +e
   .venv/bin/python scripts/yahoo_read.py --profile "$PROFILE"
   code=$?
@@ -44,7 +46,7 @@ if [ -d "$PROFILE" ]; then
     if ! git diff --cached --quiet; then
       git -c user.name="NBA Fantasy on gw" -c user.email="81742479+chamberneezy@users.noreply.github.com" \
         commit -q -m "Yahoo read on gw $(date +%Y-%m-%dT%H:%M)"
-      if git pull -q --rebase origin "$BRANCH" && git push -q origin "HEAD:$BRANCH"; then
+      if git pull -q --rebase --autostash origin "$BRANCH" && git push -q origin "HEAD:$BRANCH"; then
         echo "Yahoo files pushed"
       else
         git rebase --abort 2>/dev/null || true

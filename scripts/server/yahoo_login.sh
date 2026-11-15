@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Once (and whenever Yahoo signs you out): opens a Chromium window on gw's screen with the
-# profile the hourly reader uses. Sign in to Yahoo yourself, open the league, close the window.
+# Optional, once: opens a Chromium window on gw's screen with the profile the hourly reader uses.
+# Sign in to Yahoo yourself, open the league, close the window. Without it the reader still reads
+# the league's public pages; signing in adds the owner's view (adds used this week).
 set -euo pipefail
 BASE=${NBA_FANTASY_HOME:-$HOME/services/nba-fantasy}
 cd "$BASE/fantasy"

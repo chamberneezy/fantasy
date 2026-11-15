@@ -105,7 +105,7 @@ def _row_stats(cells: list[str]) -> str:
 
 
 def _score_rows(rows: list[list[str]]) -> tuple[str, str] | None:
-    data = [cells for cells in rows if len(cells) >= 15 and "/" in cells[2]]
+    data = [cells for cells in rows if len(cells) >= 15 and "/" in cells[2] and cells[1].replace(".", "").isdigit()]
     return (_row_stats(data[0]), _row_stats(data[1])) if len(data) >= 2 else None
 
 
@@ -158,11 +158,15 @@ def write(found: dict) -> list[str]:
     managers = old.drop_duplicates("fantasy_team").set_index("fantasy_team")["manager"].to_dict()
     teams = {}
     for table in found["rosters"]:
-        if not table["team"]:
+        name = yahoo_snapshot.team_name(table["team"])
+        if not name:
             continue
         items = [yahoo_snapshot.seat_text(cells[0], cells[1]) for cells in table["rows"] if len(cells) >= 2]
-        teams[table["team"]] = "; ".join(item for item in items if item)
-    if len(teams) >= 16:
+        teams[name] = "; ".join(item for item in items if item)
+    unknown = sorted(set(teams) - set(managers))
+    if unknown:
+        notes.append(f"rosters skipped: team names not on file {unknown}")
+    elif len(teams) >= 16:
         rows = yahoo_snapshot.roster_rows(teams, managers, known)
         rows.to_csv(path, index=False, lineterminator="\r\n")
         notes.append(f"rosters: {len(rows)} players on {rows['fantasy_team'].nunique()} teams")
@@ -211,7 +215,7 @@ def write(found: dict) -> list[str]:
         adds = yahoo_snapshot.adds_used(found["team"]["text"])
         updated, changes = yahoo_snapshot.sync_session(session, found_seats, adds, yahoo_week, found["today"])
         if updated != session:
-            SESSION.write_text(json.dumps(updated, ensure_ascii=True), encoding="utf-8")
+            SESSION.write_text(json.dumps(updated, indent=2, ensure_ascii=False), encoding="utf-8")
         notes.append("session: " + (", ".join(changes) if changes else "unchanged"))
     else:
         notes.append(f"session skipped: {len(found_seats)} seats read")
