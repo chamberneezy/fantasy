@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TodayView: View {
     @Environment(FeedStore.self) private var store
+    @State private var sheet: PlayerCard?
 
     var body: some View {
         NavigationStack {
@@ -9,6 +10,19 @@ struct TodayView: View {
                 if let feed = store.feed {
                     BrandSection("Week \(feed.week) score") {
                         ScoreCard(feed: feed)
+                    }
+                    if let lineup = feed.lineup {
+                        BrandSection("Today's five · \(Dates.short(lineup.date))", footer: "Tap a player for his last games, shot chart and 12-cat value") {
+                            CourtView(lineup: lineup) { sheet = feed.card($0) }
+                                .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+                            if !lineup.bench.isEmpty { BenchRow(title: "Bench", spots: lineup.bench) { sheet = feed.card($0) } }
+                            if !lineup.il.isEmpty { BenchRow(title: "IL", spots: lineup.il) { sheet = feed.card($0) } }
+                        }
+                    } else {
+                        BrandSection("Start today") {
+                            if feed.today.starters.isEmpty { Text("Nobody plays today").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
+                            ForEach(feed.today.starters) { GameRow(game: $0) }
+                        }
                     }
                     if let recap = feed.recap, recap.played {
                         BrandSection("Last night · \(Dates.short(recap.date))", footer: recapFooter(recap)) {
@@ -18,20 +32,6 @@ struct TodayView: View {
                     }
                     BrandSection("Starts per day vs \(feed.opponent ?? "—")", footer: feed.addsLeft.map { "\($0) add\($0 == 1 ? "" : "s") left this week" }) {
                         WeekStrip(days: feed.days, today: feed.today.date)
-                    }
-                    BrandSection("Start today") {
-                        if feed.today.starters.isEmpty { Text("Nobody plays today").font(Theme.ui(15)).foregroundStyle(Theme.mute) }
-                        ForEach(feed.today.starters) { GameRow(game: $0) }
-                    }
-                    if !feed.today.bench.isEmpty {
-                        BrandSection("Plays, but sits") {
-                            ForEach(feed.today.bench) { GameRow(game: $0) }
-                        }
-                    }
-                    if !feed.today.off.isEmpty {
-                        BrandSection("No game") {
-                            Text(feed.today.off.joined(separator: " · ")).font(Theme.ui(13)).foregroundStyle(Theme.mute)
-                        }
                     }
                     BrandSection {
                         if !store.notificationsAllowed {
@@ -47,6 +47,10 @@ struct TodayView: View {
             }
             .brandScreen("Today")
             .refreshable { await store.refresh() }
+            .sheet(item: $sheet) { card in
+                PlayerSheet(card: card, rank: store.feed?.seasonRank(card.playerName))
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 }

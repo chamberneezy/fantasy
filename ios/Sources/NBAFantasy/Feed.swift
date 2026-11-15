@@ -24,6 +24,19 @@ struct Feed: Codable {
     let cards: [String: PlayerCard]?
     let recap: Recap?
     let injuries: InjuryLists?
+    /// Today's seats as Yahoo has them (feed version 3 on).
+    let lineup: Lineup?
+    let team: String?
+
+    /// My card for a name: my ten and IL first, then the shared cards.
+    func card(_ name: String) -> PlayerCard? {
+        mine.first { $0.playerName == name } ?? cards?[name]
+    }
+
+    /// Season rank by 12-cat value, from the stats board.
+    func seasonRank(_ name: String) -> Int? {
+        stats?.rows["season"]?.mine.first { $0.playerName == name }?.rank
+    }
 
     static let url = URL(string: "https://chamberneezy.github.io/fantasy/data/season/app.json")!
 
@@ -274,6 +287,7 @@ struct Certainty: Codable {
 struct PlayerCard: Codable, Identifiable {
     var id: String { playerName }
     let playerName: String
+    let headshot: String?
     let team: String
     let positions: String
     let injury: CardInjury?
@@ -281,6 +295,79 @@ struct PlayerCard: Codable, Identifiable {
     let recent: [GameLine]
     let projection: Line?
     let basis: String
+    /// My players only: the last games as full cards, the season's 12-cat value and TS%.
+    let games: [GameCard]?
+    let seasonValue: CatValue?
+    let seasonTsPct: Double?
+}
+
+/// 12 z-scores against the season pool, and their plain sum.
+struct CatValue: Codable {
+    let z: [String: Double]
+    let value: Double
+}
+
+/// One game as the player card shows it.
+struct GameCard: Codable, Identifiable {
+    var id: String { gameId }
+    let gameId: String
+    let date: String
+    let opp: String
+    let home: Bool
+    let min: Double
+    let fgm: Int
+    let fga: Int
+    let ftm: Int
+    let fta: Int
+    let fg3m: Int
+    let fg3a: Int?
+    let pts: Int
+    let reb: Int
+    let ast: Int
+    let stl: Int
+    let blk: Int
+    let to: Int
+    let pf: Int
+    let dd: Int
+    let tsPct: Double?
+    let usgPct: Double?
+    /// Points per quarter (overtimes after the fourth).
+    let quarters: [Int]?
+    /// [x, y, made, value]: feet, x 0–50 across, y from the rim.
+    let shots: [[Double]]?
+    let z: [String: Double]
+    let value: Double
+    let score: GameScore?
+}
+
+struct GameScore: Codable {
+    let team: Int
+    let opp: Int
+    let won: Bool
+}
+
+struct Lineup: Codable {
+    let date: String
+    let court: [Spot]
+    let bench: [Spot]
+    let il: [Spot]
+}
+
+/// One seat: who sits in it, his photo, tonight's game.
+struct Spot: Codable, Identifiable {
+    var id: String { slot + (playerName ?? "") }
+    let slot: String
+    let playerName: String?
+    let shortName: String?
+    let headshot: String?
+    let team: String?
+    let positions: String?
+    let opp: String?
+    let home: Bool?
+    let tipUtc: String?
+    let status: String?
+
+    var plays: Bool { opp != nil }
 }
 
 struct CardInjury: Codable {

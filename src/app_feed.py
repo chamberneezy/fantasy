@@ -10,19 +10,26 @@ from datetime import date, datetime, timezone
 
 import numpy as np
 
+import pandas as pd
+
+import daily
+import espn_feed
 import matchup as matchup_stats
 import opportunity
 import schedule as slate
 import season
 import stats_board
 
-FEED_VERSION = 2
+FEED_VERSION = 3
 # Chance of winning a category (tie counts half) → the word shown.
 LEAN_WORDS = ((0.75, "likely yours"), (0.58, "lean yours"), (0.42, "coin flip"), (0.25, "lean his"))
 LEAN_FLOOR = "unlikely"
 LINE_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "to")
 GAME_STATS = ("min", "fgm", "fga", "ftm", "fta", "fg3m", "pts", "reb", "ast", "stl", "blk", "to", "pf", "dd")
 RECENT_GAMES = 5
+HEADSHOT = "https://a.espncdn.com/i/headshots/nba/players/full/{}.png"
+# Seats on the court screen, in the order the apps place them.
+COURT_SEATS = ("PG", "SG", "SF", "PF", "C")
 
 
 def lean_word(chance: float) -> str:
@@ -50,7 +57,105 @@ def _average(games) -> dict | None:
     return row
 
 
-def player_card(data, name: str) -> dict:
+def headshot(data, name: str) -> str | None:
+    """ESPN's photo for a player, from the id pairs the feed keeps; ``None`` when he has no ESPN id."""
+    player_id = data.player_id(name)
+    if player_id is None:
+        return None
+    if player_id >= espn_feed.ESPN_ID_OFFSET:
+        return HEADSHOT.format(player_id - espn_feed.ESPN_ID_OFFSET)
+    cache = getattr(data, "_espn_by_nba", None)
+    if cache is None:
+        path = data.feed_dir / espn_feed.IDS_PATH.name
+        ids = pd.read_csv(path) if path.exists() else pd.DataFrame(columns=list(espn_feed.ID_COLUMNS))
+        cache = {int(row.player_id): int(row.espn_id) for row in ids.itertuples()}
+        data._espn_by_nba = cache
+    espn_id = cache.get(int(player_id))
+    return HEADSHOT.format(espn_id) if espn_id else None
+
+
+def _shots(data) -> pd.DataFrame:
+    cache = getattr(data, "_shots", None)
+    if cache is None:
+        path = data.feed_dir / espn_feed.SHOTS_PATH.name
+        cache = pd.read_csv(path, dtype={"game_id": str}) if path.exists() else pd.DataFrame(columns=list(espn_feed.SHOT_COLUMNS))
+        data._shots = cache
+    return cache
+
+
+def _team_games(data) -> pd.DataFrame:
+    """Per game and team: points, minutes, shots and turnovers, summed from the box scores."""
+    cache = getattr(data, "_team_games", None)
+    if cache is None:
+        logs = data.logs
+        columns = ["pts", "min", "fga", "fta", "to"]
+        cache = logs.groupby(["game_id", "team"])[columns].sum() if len(logs) else pd.DataFrame(columns=columns)
+        data._team_games = cache
+    return cache
+
+
+def true_shooting(pts: float, fga: float, fta: float) -> float | None:
+    """Points per shooting chance: PTS / (2 × (FGA + 0.44 × FTA))."""
+    chances = 2 * (fga + 0.44 * fta)
+    return round(pts / chances, 3) if chances else None
+
+
+def usage(player: dict, team: dict) -> float | None:
+    """Share of the team's plays he used while on the floor (Basketball-Reference formula)."""
+    used = player["fga"] + 0.44 * player["fta"] + player["to"]
+    team_used = team["fga"] + 0.44 * team["fta"] + team["to"]
+    if not player["min"] or not team_used:
+        return None
+    return round(used * (team["min"] / 5) / (player["min"] * team_used), 3)
+
+
+def _engine_line(row: dict, games: int = 1) -> dict:
+    line = {"mp": row["min"] / games, **{stat: row[stat] / games for stat in daily.STAT_COLUMNS}, "dd": row["dd"] / games}
+    line["fg_pct"] = row["fgm"] / row["fga"] if row["fga"] else 0.0
+    line["ft_pct"] = row["ftm"] / row["fta"] if row["fta"] else 0.0
+    return line
+
+
+def _value(data, row: dict, games: int = 1) -> dict:
+    """12-cat z of a line against the season pool, and their plain sum."""
+    scored = daily.score_lines([_engine_line(row, games)], data.baselines)[0]
+    return {"z": scored["z"], "value": scored["value"]}
+
+
+def game_card(data, game: dict) -> dict:
+    """One game, as the app's card shows it: line, result, quarters, shot chart, TS%, usage, 12-cat value."""
+    totals = _team_games(data)
+    team_key, opp_key = (str(game["game_id"]), str(game["team"])), (str(game["game_id"]), str(game["opp"]))
+    team = totals.loc[team_key].to_dict() if team_key in totals.index else None
+    opp = totals.loc[opp_key].to_dict() if opp_key in totals.index else None
+    shots = _shots(data)
+    mine = shots.loc[(shots["game_id"] == str(game["game_id"])) & (shots["player_id"] == int(game["player_id"]))]
+    periods = max(4, int(mine["period"].max())) if len(mine) else 4
+    quarters = [int((mine.loc[mine["period"] == period, "made"] * mine.loc[mine["period"] == period, "value"]).sum()) for period in range(1, periods + 1)]
+    chart = [
+        [float(shot.x), float(shot.y), int(shot.made), int(shot.value)]
+        for shot in mine.itertuples()
+        if shot.value > 1 and pd.notna(shot.x) and pd.notna(shot.y)
+    ]
+    card = {
+        "game_id": str(game["game_id"]),
+        "date": str(game["date"]),
+        "opp": str(game["opp"]),
+        "home": bool(game["home"]),
+        **{stat: (round(float(game[stat]), 1) if stat == "min" else int(game[stat])) for stat in GAME_STATS},
+        "fg3a": int(((mine["value"] == 3)).sum()) if len(mine) else None,
+        "ts_pct": true_shooting(float(game["pts"]), float(game["fga"]), float(game["fta"])),
+        "usg_pct": usage(game, team) if team else None,
+        "quarters": quarters if len(mine) else None,
+        "shots": chart if len(mine) else None,
+        **_value(data, game),
+    }
+    if team and opp:
+        card["score"] = {"team": int(team["pts"]), "opp": int(opp["pts"]), "won": bool(team["pts"] > opp["pts"])}
+    return card
+
+
+def player_card(data, name: str, games_shown: int = 0) -> dict:
     """Stats for one player: this season's averages, his last games, the pad's next-game line, injury."""
     games = data.season_games(name)
     recent = []
@@ -65,8 +170,9 @@ def player_card(data, name: str) -> dict:
         )
     injury = data.injury(name) or {}
     line = data.line_for(name)
-    return {
+    card = {
         "player_name": name,
+        "headshot": headshot(data, name),
         "team": data.team_of(name),
         "positions": data.positions_for(name)[0],
         "injury": {"status": str(injury.get("status") or ""), "return_date": str(injury.get("return_date") or ""), "note": str(injury.get("note") or "")}
@@ -77,6 +183,49 @@ def player_card(data, name: str) -> dict:
         "projection": opportunity.shown(line),
         "basis": (line or {}).get("basis", ""),
     }
+    if games_shown:
+        card["games"] = [game_card(data, game) for game in games.tail(games_shown).iloc[::-1].to_dict("records")]
+        if len(games):
+            totals = {stat: float(games[stat].sum()) for stat in GAME_STATS}
+            card["season_value"] = _value(data, totals, len(games))
+            card["season_ts_pct"] = true_shooting(totals["pts"], totals["fga"], totals["fta"])
+    return card
+
+
+def lineup(session, data, today: date) -> dict:
+    """Today's seats as Yahoo has them: five on the court, the bench, IL, with photo and tonight's game."""
+    tonight = {row["player_name"]: row for row in session.calendar(today, today)["day"]["playing"]}
+
+    def spot(slot: str, name: str) -> dict:
+        game = tonight.get(name)
+        return {
+            "slot": slot,
+            "player_name": name,
+            "short_name": short_name(name),
+            "headshot": headshot(data, name),
+            "team": data.team_of(name),
+            "positions": data.positions_for(name)[0],
+            "opp": game["opp"] if game else None,
+            "home": bool(game["home"]) if game else None,
+            "tip_utc": game["tip_utc"] if game else None,
+            "status": (game or {}).get("status") or str((data.injury(name) or {}).get("status") or ""),
+        }
+
+    seats = {seat["slot_id"]: seat["player"]["player_name"] for seat in session.roster}
+    return {
+        "date": today.isoformat(),
+        "court": [spot(slot, seats[slot]) if slot in seats else {"slot": slot, "player_name": None} for slot in COURT_SEATS],
+        "bench": [spot(seat["slot_id"], seat["player"]["player_name"]) for seat in session.roster if seat["slot_id"] not in COURT_SEATS],
+        "il": [spot("IL", item["player"]["player_name"]) for item in session.il],
+    }
+
+
+def short_name(name: str) -> str:
+    """"Nikola Jokić" → "N. Jokić"; one-word names stay whole; suffixes stay on the surname."""
+    parts = name.split()
+    if len(parts) < 2:
+        return name
+    return f"{parts[0][0]}. {' '.join(parts[1:])}"
 
 
 def _today(grid: dict) -> dict:
@@ -405,7 +554,8 @@ def build(session, today: date) -> dict:
         "news": opportunity.news(data, mine, plan.get("opponent"), today, protected),
         "recap": recap(session, today),
         "injuries": {"mine": injuries(data, mine), "theirs": injuries(data, their)},
-        "mine": [player_card(data, name) for name in mine],
+        "lineup": lineup(session, data, today),
+        "mine": [player_card(data, name, RECENT_GAMES) for name in mine + [item["player"]["player_name"] for item in session.il]],
         "theirs": [player_card(data, name) for name in their],
         "stats": board,
         "cards": _cards(data, board, mine, their),

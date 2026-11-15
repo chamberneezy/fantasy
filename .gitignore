@@ -15,6 +15,7 @@ data/season/injuries.csv
 data/season/players.csv
 data/season/schedule.csv
 data/season/gamelogs_2026-27.csv
+data/season/shots_2026-27.csv
 data/season_export/
 
 data/season_export.published

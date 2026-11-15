@@ -92,3 +92,17 @@ def test_starters_and_line_come_from_the_summary() -> None:
     assert started[espn_feed.name_key("Kyle Filipowski")] is False
     assert espn_feed.shape_line(summary) == {"details": "POR -6.5", "total": 232.5, "spread": 6.5}
     assert espn_feed.shape_line({"pickcenter": []}) is None
+
+
+def test_shots_keep_the_shooter_spot_and_drop_free_throw_sentinels() -> None:
+    summary = {"plays": [
+        {"shootingPlay": True, "participants": [{"athlete": {"id": "11"}}, {"athlete": {"id": "22"}}], "coordinate": {"x": 48, "y": -2},
+         "pointsAttempted": 3, "scoringPlay": True, "period": {"number": 2}, "clock": {"displayValue": "5:01"}},
+        {"shootingPlay": True, "participants": [{"athlete": {"id": "11"}}], "coordinate": {"x": -214748340, "y": -214748365},
+         "pointsAttempted": 1, "scoringPlay": False, "period": {"number": 3}, "clock": {"displayValue": "1:00"}},
+        {"shootingPlay": False, "participants": [{"athlete": {"id": "11"}}], "coordinate": {"x": 25, "y": 0}},
+    ]}
+    rows = espn_feed.shape_shots(summary, {"game_id": "9"}, {11: (203999, "Nikola Jokić")})
+    assert [(row["player_id"], row["value"], row["made"], row["period"]) for row in rows] == [(203999, 3, 1, 2), (203999, 1, 0, 3)]
+    assert (rows[0]["x"], rows[0]["y"]) == (48, -2)
+    assert rows[1]["x"] is None and rows[1]["y"] is None

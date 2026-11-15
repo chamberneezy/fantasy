@@ -75,7 +75,7 @@ struct ScoreCard: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack(alignment: .center) {
-                Text("LIPICANERI").font(Theme.display(13)).kerning(1).foregroundStyle(Theme.blue)
+                Text((feed.team ?? "Lipicaneri").uppercased()).font(Theme.display(13)).kerning(1).foregroundStyle(Theme.blue)
                 Spacer()
                 Text((feed.opponent ?? "Opponent").uppercased()).font(Theme.display(13)).kerning(1).foregroundStyle(Theme.red).lineLimit(1)
             }
