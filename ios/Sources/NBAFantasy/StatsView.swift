@@ -35,7 +35,7 @@ struct StatsView: View {
                                 if let card = feed.cards?[row.playerName] ?? feed.card(row.playerName), card.games != nil {
                                     Button { sheet = card } label: {
                                         HStack {
-                                            BoardRowView(row: row, showOwner: view == "league")
+                                            BoardRowView(row: row, showOwner: view == "league", headshot: (feed.cards?[row.playerName] ?? feed.card(row.playerName))?.headshot)
                                             Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(Theme.mute.opacity(0.6))
                                         }
                                         .contentShape(Rectangle())
@@ -45,7 +45,7 @@ struct StatsView: View {
                                     NavigationLink {
                                         PlayerDetail(card: feed.cards?[row.playerName], row: row, windowLabel: label(board))
                                     } label: {
-                                        BoardRowView(row: row, showOwner: view == "league")
+                                        BoardRowView(row: row, showOwner: view == "league", headshot: (feed.cards?[row.playerName] ?? feed.card(row.playerName))?.headshot)
                                     }
                                 }
                             }
@@ -85,7 +85,7 @@ struct StatsView: View {
 
     private func footer(_ board: StatsBoard) -> String {
         guard let current = board.windows.first(where: { $0.key == window }) else { return "" }
-        var text = "Per game. Value = the pad's 12-cat z-score of these averages."
+        var text = "Per game: points, rebounds, assists. Value = the 12-cat z-score sum of these averages. Tap a player for his card."
         if let from = current.from, let to = current.to { text += " Games \(Dates.short(from)) – \(Dates.short(to))." }
         if current.minGames > 1 { text += " Ranked with \(current.minGames)+ games." }
         return text
@@ -94,41 +94,37 @@ struct StatsView: View {
 
 private let columns = ["MIN", "PTS", "REB", "AST", "3PM", "STL", "BLK", "FG%"]
 
-/// Rank and value on the right of the name, the numbers across the full width below.
+/// One player: rank, photo, name, three key numbers, and the 12-cat value large on the right.
 struct BoardRowView: View {
     let row: BoardRow
     let showOwner: Bool
+    var headshot: String? = nil
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(spacing: 6) {
-                if let rank = row.rank {
-                    Text("\(rank)").font(Theme.display(13)).foregroundStyle(Theme.mute).frame(minWidth: 22, alignment: .leading)
+        HStack(spacing: 10) {
+            Text(row.rank.map { "\($0)" } ?? "–").font(Theme.display(13)).foregroundStyle(Theme.mute).frame(width: 22, alignment: .leading)
+            Headshot(url: headshot, size: 42, ring: ownerColor == Theme.mute ? Theme.mute.opacity(0.5) : ownerColor)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(row.playerName).font(Theme.ui(15, .semibold)).foregroundStyle(Theme.ink).lineLimit(1).minimumScaleFactor(0.8)
+                HStack(spacing: 4) {
+                    Text("\(row.team) · \(row.positions)").foregroundStyle(Theme.mute)
+                    if showOwner { Text(row.ownerLabel).foregroundStyle(ownerColor) }
                 }
-                Text(row.playerName).font(Theme.ui(15.5, .semibold)).foregroundStyle(Theme.ink).lineLimit(1)
-                Spacer()
-                Text(String(format: "%.1f", row.value)).font(Theme.display(17).monospacedDigit()).foregroundStyle(row.value >= 0 ? Theme.blue : Theme.red)
+                .font(Theme.ui(11, .medium))
+                .lineLimit(1)
             }
-            HStack(spacing: 6) {
-                Text("\(row.team) · \(row.positions) · \(row.games) g").font(Theme.ui(11)).foregroundStyle(Theme.mute)
-                if showOwner { Text(row.ownerLabel).font(Theme.ui(11, .medium)).foregroundStyle(ownerColor) }
-                if row.fewGames == true { Text("few games").font(Theme.ui(11)).foregroundStyle(Theme.mute) }
+            Spacer(minLength: 4)
+            MiniStat(value: row.pts, label: "PTS")
+            MiniStat(value: row.reb, label: "REB")
+            MiniStat(value: row.ast, label: "AST")
+            VStack(spacing: 0) {
+                Text(String(format: "%+.1f", row.value)).font(Theme.display(19).monospacedDigit()).foregroundStyle(row.value >= 0 ? Theme.blue : Theme.red)
+                Text("VALUE").font(Theme.ui(8.5, .semibold)).kerning(0.6).foregroundStyle(Theme.mute)
             }
-            Grid(horizontalSpacing: 0, verticalSpacing: 1) {
-                GridRow { ForEach(columns, id: \.self) { Text($0).frame(maxWidth: .infinity) } }
-                    .font(Theme.ui(9.5, .semibold))
-                    .foregroundStyle(Theme.mute)
-                GridRow {
-                    ForEach(Array([row.min, row.pts, row.reb, row.ast, row.fg3m, row.stl, row.blk].enumerated()), id: \.offset) {
-                        Text(LineText.fmt($0.element)).frame(maxWidth: .infinity)
-                    }
-                    Text(row.fgPct.map { String(format: "%.3f", $0) } ?? "—").frame(maxWidth: .infinity)
-                }
-                .font(Theme.display(14).monospacedDigit())
-                .foregroundStyle(Theme.ink)
-            }
+            .frame(width: 52, alignment: .trailing)
         }
         .padding(.vertical, 2)
+        .opacity(row.fewGames == true ? 0.6 : 1)
     }
 
     /// Mine in blue, my opponent's in red, free agents in the heading colour, other teams muted.
@@ -139,6 +135,19 @@ struct BoardRowView: View {
         case "free": return Theme.heading
         default: return Theme.mute
         }
+    }
+}
+
+private struct MiniStat: View {
+    let value: Double
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(String(format: "%.1f", value)).font(Theme.display(14).monospacedDigit()).foregroundStyle(Theme.ink)
+            Text(label).font(Theme.ui(8.5, .semibold)).foregroundStyle(Theme.mute)
+        }
+        .frame(width: 34)
     }
 }
 

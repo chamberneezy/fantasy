@@ -138,7 +138,7 @@ extension View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) { BrandTitle() }
+                ToolbarItem(placement: .principal) { BrandTitle() }
             }
             .toolbarBackground(Theme.banner, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
