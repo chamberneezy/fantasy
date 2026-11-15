@@ -105,7 +105,7 @@ def _row_stats(cells: list[str]) -> str:
 
 
 def _score_rows(rows: list[list[str]]) -> tuple[str, str] | None:
-    data = [cells for cells in rows if len(cells) >= 15 and "/" in cells[2]]
+    data = [cells for cells in rows if len(cells) >= 15 and "/" in cells[2] and cells[1].replace(".", "").isdigit()]
     return (_row_stats(data[0]), _row_stats(data[1])) if len(data) >= 2 else None
 
 
