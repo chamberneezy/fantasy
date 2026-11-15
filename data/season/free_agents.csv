@@ -13,7 +13,6 @@ Andrew Wiggins,MIA,SG/SF/PF,,125,61
 Bennett Stirtz,OKC,PG,,246,5
 Sam Hauser,BOS,SF/PF,,215,5
 Dean Wade,PHI,SF/PF,,242,2
-Miles McBride,NYK,PG/SG,,213,7
 Kobe Sanders,LAC,SG/SF,,240,2
 Landry Shamet,NYK,SG/SF,,326,3
 Jamal Shead,TOR,PG,,143,20
@@ -24,7 +23,7 @@ Moritz Wagner,BKN,C,,355,8
 Kenrich Williams,OKC,PF/C,,318,5
 Georges Niang,GSW,PF,,409,1
 Brayden Burries,MIL,SG,,151,24
-Ryan Rollins,MIL,PG/SG,,105,83
+Ryan Rollins,MIL,PG/SG,Q,105,83
 Draymond Green,GSW,PF/C,,181,33
 Joan Beringer,MIN,PF/C,,187,9
 Trey Lyles,MIN,PF,,428,1
@@ -44,13 +43,13 @@ Bub Carrington,WAS,PG/SG,Q,255,1
 Javonte Green,DET,SG/SF,,265,1
 Deandre Ayton,WAS,C,,186,6
 Jakob Poeltl,TOR,C,,139,52
-Aaron Nesmith,IND,SG/SF,Q,174,14
+Aaron Nesmith,IND,SG/SF,,174,14
 Trevon Brazile,DEN,PF,,247,3
 Brice Sensabaugh,UTA,SG/SF/PF,,225,4
 Kingston Flemings,ATL,PG,O,153,11
 Brandon Williams,GSW,PG,O,285,2
 Tre Johnson,WAS,PG/SG/SF,Q,248,4
-Sidy Cissoko,POR,SF/PF,,339,7
+Sidy Cissoko,POR,SF/PF,,339,6
 Jarace Walker,IND,SF/PF,,224,3
 Sam Merrill,CLE,SG/SF,O,274,2
 Jake LaRavia,LAL,SF/PF,,182,6
@@ -68,9 +67,10 @@ Jase Richardson,ORL,PG/SG,,222,1
 Gradey Dick,LAC,SG/SF,,226,2
 Alijah Martin,TOR,PG/SG,,459,1
 Danny Wolf,BKN,PF/C,,328,16
-Isaiah Stewart,MEM,PF/C,,211,13
+Isaiah Stewart,MEM,PF/C,,211,12
 Patrick Williams,CHI,SF/PF,,309,8
 Tyus Jones,DEN,PG,,315,0
 Jay Huff,IND,C,,228,3
 Buddy Hield,CHI,SG/SF,,302,1
 Caleb Martin,DAL,SF/PF,,351,2
+Isaac Okoro,CHI,SG/SF,,291,2

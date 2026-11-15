@@ -79,6 +79,7 @@ Helper UX: tap a name (or type 3 letters), then **Sold** / **Me**. Dollar defaul
 - Unlisted = $1 on this board. Lab “most common name at each seat” is unique greedy — never two Sabonis.
 - In-season pad (`src/season.py`): Mario’s 10, Hezonja protected, week 1 starts with all 4 adds, IL in use (Kawhi, 26 Oct).
 - Season pad start/sit and matchup odds as **estimates**: strict-seat legal five, 20,000-run week vs the pasted opponent. Free ESPN feed (matches stats.nba.com: 812/812 player-games, 17 tiny stat corrections, minutes whole).
+- Category chances (15 Nov 2026 backtest, `scripts/backtest_categories.py`, report in `context/backtest_categories.md`): the raw simulation is overconfident (says 97%, happens 90%). After `matchup.fair_chance` (log-odds × (1 − 0.32 × share of week left), fit on 2023-24) it is calibrated on 2024-25 and 2025-26 within ±2 points. Brier 0.174 on Monday vs a coin's 0.25; FG% and FT% are the hardest (≈0.21), REB and DD the easiest (≈0.15). Morning report, app and pad all show the corrected chance, with a tie counted as half. Not measured: the week's headline win/tie/lose on the pad.
 - Injury bumps (`opportunity.py`) at their measured rate only: top named teammate gained minutes 69% / 64% / 57% of the time on high / medium / low calls (2025-26 replay). Per-minute production changes are untested.
 
 **Do not treat as a forecast**

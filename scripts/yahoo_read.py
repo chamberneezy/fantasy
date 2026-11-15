@@ -6,6 +6,8 @@ tables: it never clicks, submits a form, or changes a lineup. Moves stay Mario's
 
     .venv/bin/python scripts/yahoo_read.py --profile DIR            # hourly, headless
     .venv/bin/python scripts/yahoo_read.py --profile DIR --login    # once: a window to sign in to Yahoo
+    .venv/bin/python scripts/yahoo_read.py --profile DIR --team-id N --session FILE --scores FILE --team-only
+                                                                    # another team's seats and score only
 
 Writes data/season/league_rosters.csv, free_agents.csv, yahoo_scores.csv and the seats, IL,
 week and adds in data/season_session.json. Exit code 3 when Yahoo asks to sign in again.
@@ -109,7 +111,7 @@ def _score_rows(rows: list[list[str]]) -> tuple[str, str] | None:
     return (_row_stats(data[0]), _row_stats(data[1])) if len(data) >= 2 else None
 
 
-def read(profile: Path) -> dict:
+def read(profile: Path, team_id: int = MY_TEAM, team_only: bool = False) -> dict:
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as playwright:
@@ -124,12 +126,12 @@ def read(profile: Path) -> dict:
         week = slate.week_for(today, weeks)
         last_week = None
         if week and week["start"] == today and week["week"] > 1:
-            last_week = f"matchup?week={week['week'] - 1}&mid1={MY_TEAM}"
+            last_week = f"matchup?week={week['week'] - 1}&mid1={team_id}"
         paths = {
-            "matchup": f"matchup?mid1={MY_TEAM}",
-            "team": f"{MY_TEAM}/team",
+            "matchup": f"matchup?mid1={team_id}",
+            "team": f"{team_id}/team",
             "rosters": "startingrosters",
-            "free_agents": [FREE_AGENTS + extra for extra in FREE_AGENT_PAGES],
+            "free_agents": [] if team_only else [FREE_AGENTS + extra for extra in FREE_AGENT_PAGES],
             "last_week": last_week,
         }
         found = page.evaluate(READ_JS, paths)
@@ -147,10 +149,20 @@ def _tips_today(today: str) -> tuple[list[str], bool]:
     return sorted(games["tip_utc"].astype(str)), bool(len(games)) and set(games["game_id"]) <= logged
 
 
-def write(found: dict) -> list[str]:
+def write(found: dict, session_path: Path = SESSION, scores_path: Path | None = None, team_only: bool = False) -> list[str]:
     """The files from one read. Returns what changed, in words."""
     notes = []
+    scores_path = scores_path or FEED / "yahoo_scores.csv"
     known = [str(name) for name in pd.read_csv(FEED / "players.csv")["player_name"]]
+    if not team_only:
+        notes += _league_files(found, known)
+    notes += _team_files(found, session_path, scores_path)
+    return notes
+
+
+def _league_files(found: dict, known: list[str]) -> list[str]:
+    """League rosters and free agents, shared by every team's pad."""
+    notes = []
 
     # League rosters: one line per team, then the existing parser.
     path = FEED / "league_rosters.csv"
@@ -184,6 +196,12 @@ def write(found: dict) -> list[str]:
     if lines:
         yahoo_snapshot.free_agent_rows(lines, known).to_csv(FEED / "free_agents.csv", index=False)
         notes.append(f"free agents: {len(lines)}")
+    return notes
+
+
+def _team_files(found: dict, session_path: Path, scores_path: Path) -> list[str]:
+    """One team's score and seats."""
+    notes = []
 
     # The score, only for days whose games are all in Yahoo's totals.
     week = found.get("week_info")
@@ -206,16 +224,16 @@ def write(found: dict) -> list[str]:
         saved.append(yahoo_snapshot.score_row(week["week"] - 1, end, "theirs", last[1]))
         notes.append(f"final score week {week['week'] - 1}")
     if saved:
-        yahoo_snapshot.save_score(FEED / "yahoo_scores.csv", saved)
+        yahoo_snapshot.save_score(scores_path, saved)
 
     # My seats, IL, adds and week in the session.
     found_seats = yahoo_snapshot.seats([(cells[0], cells[1]) for cells in found["team"]["rows"] if len(cells) >= 2])
     if len([seat for seat in found_seats if seat[0] != "IL"]) == 10:
-        session = json.loads(SESSION.read_text(encoding="utf-8"))
+        session = json.loads(session_path.read_text(encoding="utf-8"))
         adds = yahoo_snapshot.adds_used(found["team"]["text"])
         updated, changes = yahoo_snapshot.sync_session(session, found_seats, adds, yahoo_week, found["today"])
         if updated != session:
-            SESSION.write_text(json.dumps(updated, indent=2, ensure_ascii=False), encoding="utf-8")
+            session_path.write_text(json.dumps(updated, indent=2, ensure_ascii=False), encoding="utf-8")
         notes.append("session: " + (", ".join(changes) if changes else "unchanged"))
     else:
         notes.append(f"session skipped: {len(found_seats)} seats read")
@@ -226,15 +244,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--profile", type=Path, required=True, help="Chromium profile that holds the Yahoo sign-in")
     parser.add_argument("--login", action="store_true", help="open a window to sign in to Yahoo")
+    parser.add_argument("--team-id", type=int, default=MY_TEAM, help="Yahoo team id (Lipicaneri is 15)")
+    parser.add_argument("--session", type=Path, default=SESSION, help="that team's session.json")
+    parser.add_argument("--scores", type=Path, help="that team's yahoo_scores.csv (default: the pad's)")
+    parser.add_argument("--team-only", action="store_true", help="only that team's seats and score, not the league files")
     args = parser.parse_args()
     if args.login:
         return login(args.profile)
     try:
-        found = read(args.profile)
+        found = read(args.profile, args.team_id, args.team_only)
     except PermissionError as exc:
         print(f"Yahoo sign-in needed: {exc}. Run: scripts/server/yahoo_login.sh")
         return 3
-    for note in write(found):
+    for note in write(found, args.session, args.scores, args.team_only):
         print(note)
     return 0
 

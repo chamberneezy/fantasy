@@ -331,7 +331,7 @@ class SeasonSession:
         grid["day"] = self._day_card(chosen, grid, plan)
         grid["sheet"] = team_sheet.sheet(self, chosen, plan, now, self.protected)
         grid["today"] = now.isoformat()
-        grid["matchup"] = self._matchup_card(plan)
+        grid["matchup"] = self._matchup_card(plan, (week["end"] - now).days + 1)
         grid["plans"] = self.stream_plans(week, now, plan) if week is slate.week_for(now, data.weeks) else []
         return grid
 
@@ -409,7 +409,9 @@ class SeasonSession:
             name = seat["player"]["player_name"]
             seat["slot_id"] = seat_of.get(name) or bench.pop(0)
 
-    def _matchup_card(self, plan: dict) -> dict | None:
+    def _matchup_card(self, plan: dict, days_left: int = matchup.WEEK_DAYS) -> dict | None:
+        """The week vs the opponent. Category chances count a tie as half and carry the measured
+        pull toward even (``matchup.fair_chance``), the same numbers as the morning report and the app."""
         result = plan.get("result")
         if not result:
             return None
@@ -428,11 +430,11 @@ class SeasonSession:
                     "cat": row["cat"],
                     "mine": round(row["mine"], 3 if "%" in row["cat"] else 1),
                     "theirs": round(row["theirs"], 3 if "%" in row["cat"] else 1),
-                    "win": round(row["win"] + 0.5 * row["tie"], 2),
+                    "win": round(matchup.fair_chance(matchup.category_chance(row), days_left), 2),
                 }
                 for row in result["cats"]
             ],
-            "expected": round(result["expected"], 1),
+            "expected": round(sum(matchup.fair_chance(matchup.category_chance(row), days_left) for row in result["cats"]), 1),
             "win": round(result["win"], 2),
             "tie": round(result["tie"], 2),
             "lose": round(result["lose"], 2),
