@@ -134,7 +134,8 @@ data/                   projections, sessions; do not commit secrets
 - No Yahoo API (tried Oct 2026: Yahoo now requires app approval; Mario chose screenshots instead). No official NBA logo.
 - Secrets never leave the laptop: `.env*`, keys and token files are git-ignored, and `scripts/git-hooks/pre-commit` (`git config core.hooksPath scripts/git-hooks`) refuses commits with them or secret-looking lines. Pages publishes only `docs/` plus the week's day JSON (`publish_season.PUBLIC_NAME`).
 - Do not edit the original plan file.
-- No Yahoo scraper or live wiring in the code. Mario asked (31 Oct 2026) that Claude read his league in his own Chrome each morning: read only, and ask before changing a lineup or making a move.
+- Yahoo is read, never written. Mario asked (15 Nov 2026) for an hourly read-only reader on his home server `gw` (`scripts/yahoo_read.py`, in `scripts/server/season_hourly.sh`): it opens pages in a signed-in Chromium and reads their tables, and never clicks, submits or changes a lineup. Claude may also read Yahoo in Mario's Chrome. Always ask before changing a lineup or making a move. No Yahoo API.
+- The server `gw` runs the hourly feed from its own clones in `~/services/nba-fantasy` (outside the Syncthing-shared `~/Projects`). Timer: `nba-fantasy-feed.timer` (systemd user). The Yahoo sign-in lives in `~/services/nba-fantasy/yahoo-profile` on gw only.
 - After every update (moves, rosters, Yahoo scores, session, code with tests passing): commit on `cursor/3rd-league-draft-dollars`, push, merge into `main` (no-ff; keep main's `.github/workflows/season.yml`), push `main`. Mario's standing ask, 3 Nov 2026. Never secrets, never `data/season/daily/`.
 - UI changes: verify `/season`, `/helper`, `/draft`, `/lab` as touched. Helper and mock must stay consistent.
 

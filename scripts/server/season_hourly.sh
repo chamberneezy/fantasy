@@ -23,7 +23,7 @@ echo "== $(date -Is) season feed"
 cd "$ENGINE"
 git fetch -q origin "$BRANCH" "$FEED_BRANCH"
 git reset -q --hard "origin/$BRANCH"
-.venv/bin/pip install -q -r requirements.txt cryptography
+.venv/bin/pip install -q -r requirements.txt cryptography playwright
 
 # First run on this machine: start from the raw feed GitHub already has.
 if [ ! -f data/season/schedule.csv ]; then
@@ -31,6 +31,32 @@ if [ ! -f data/season/schedule.csv ]; then
 fi
 
 .venv/bin/python scripts/refresh_season.py
+
+# Yahoo, read only, once Mario has signed in (scripts/server/yahoo_login.sh). Changed files go to GitHub.
+PROFILE=$BASE/yahoo-profile
+if [ -d "$PROFILE" ]; then
+  set +e
+  .venv/bin/python scripts/yahoo_read.py --profile "$PROFILE"
+  code=$?
+  set -e
+  if [ "$code" -eq 0 ]; then
+    git add data/season_session.json data/season/league_rosters.csv data/season/free_agents.csv data/season/yahoo_scores.csv
+    if ! git diff --cached --quiet; then
+      git -c user.name="NBA Fantasy on gw" -c user.email="81742479+chamberneezy@users.noreply.github.com" \
+        commit -q -m "Yahoo read on gw $(date +%Y-%m-%dT%H:%M)"
+      if git pull -q --rebase origin "$BRANCH" && git push -q origin "HEAD:$BRANCH"; then
+        echo "Yahoo files pushed"
+      else
+        git rebase --abort 2>/dev/null || true
+        echo "Yahoo files not pushed (the branch moved); used locally, next hour tries again"
+      fi
+    fi
+  elif [ "$code" -eq 3 ]; then
+    echo "Yahoo sign-in expired: run scripts/server/yahoo_login.sh on gw"
+  else
+    echo "Yahoo read failed (exit $code); ESPN feed still publishes"
+  fi
+fi
 
 # Keep the raw feed on GitHub too (the fallback workflow and other teams' feeds read it).
 work=$(mktemp -d)
