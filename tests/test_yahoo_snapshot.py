@@ -90,6 +90,13 @@ def test_session_follows_yahoo_and_logs_real_moves_only():
     assert updated["adds_used"] == 3 and "adds used 2 → 3" in changes
 
 
+def test_new_week_starts_with_no_adds_used_when_yahoo_does_not_say():
+    session = {"week": 4, "adds_used": 2, "roster": [["PG", "Jrue Holiday"]], "il": [], "moves": []}
+    updated, _ = snapshot.sync_session(session, [("PG", "Jrue Holiday", "")], None, 5, "2026-11-16")
+    assert updated["week"] == 5 and updated["adds_used"] == 0
+    same, _ = snapshot.sync_session({**session, "week": 5}, [("PG", "Jrue Holiday", "")], None, 5, "2026-11-17")
+    assert same["adds_used"] == 2
+
 def test_team_headings_lose_yahoo_icon_glyphs():
     assert snapshot.team_name("Mother Tucker ") == "Mother Tucker"
     assert snapshot.team_name("  Brzi Botaničari ") == "Brzi Botaničari"

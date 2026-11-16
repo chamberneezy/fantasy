@@ -185,6 +185,9 @@ def sync_session(session: dict, found: list[tuple[str, str, str]], adds: int | N
     if week is not None and week != session.get("week"):
         changes.append(f"week {session.get('week')} → {week}")
         updated["week"] = week
+        if adds is None and session.get("adds_used"):
+            changes.append(f"adds used {session.get('adds_used')} → 0 (new week)")
+            updated["adds_used"] = 0
     if adds is not None and adds != session.get("adds_used"):
         changes.append(f"adds used {session.get('adds_used')} → {adds}")
         updated["adds_used"] = adds
