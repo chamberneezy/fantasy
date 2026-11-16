@@ -1,18 +1,18 @@
 fantasy_team,manager,slot,player_name,nba_team,positions
-Mother Tucker,Bat,PG,Devin Booker,PHX,PG/SG
-Mother Tucker,Bat,SG,Anfernee Simons,PHI,PG/SG
-Mother Tucker,Bat,SF,RJ Barrett,TOR,SG/SF/PF
+Mother Tucker,Bat,PG,Jamal Murray,DEN,PG
+Mother Tucker,Bat,SG,Devin Booker,PHX,PG/SG
+Mother Tucker,Bat,SF,Cedric Coward,MEM,SG/SF
 Mother Tucker,Bat,PF,Miles Bridges,PHX,PF
-Mother Tucker,Bat,C,Paul Reed,DET,PF/C
-Mother Tucker,Bat,BN,Cedric Coward,MEM,SG/SF
-Mother Tucker,Bat,BN,Zion Williamson,NOP,PF/C
+Mother Tucker,Bat,C,Zion Williamson,NOP,PF/C
+Mother Tucker,Bat,BN,RJ Barrett,TOR,SG/SF/PF
+Mother Tucker,Bat,BN,Paul Reed,DET,PF/C
+Mother Tucker,Bat,BN,Anfernee Simons,PHI,PG/SG
 Mother Tucker,Bat,BN,Norman Powell,CHI,SG/SF
-Mother Tucker,Bat,BN,Jamal Murray,DEN,PG
 Mother Tucker,Bat,BN,Charles Bassey,GSW,C
 Mother Tucker,Bat,IL,Austin Reaves,LAL,PG/SG/SF
 Mother Tucker,Bat,IL,Chet Holmgren,OKC,PF/C
 Brzi Botaničari,Fix,PG,Jalen Brunson,NYK,PG
-Brzi Botaničari,Fix,SG,Darryn Peterson,UTA,SG
+Brzi Botaničari,Fix,SG,Darryn Peterson,UTA,PG/SG
 Brzi Botaničari,Fix,SF,Aaron Wiggins,ATL,SG/SF
 Brzi Botaničari,Fix,PF,Obi Toppin,IND,SF/PF
 Brzi Botaničari,Fix,C,Victor Wembanyama,SAS,C
@@ -46,7 +46,7 @@ BC Versus,Davor M,IL,Scottie Barnes,TOR,SF/PF/C
 Klobi Glina,Alen,PG,Fred VanVleet,HOU,PG
 Klobi Glina,Alen,SG,James Harden,CLE,PG/SG
 Klobi Glina,Alen,SF,LeBron James,PHI,SF/PF
-Klobi Glina,Alen,PF,Cameron Boozer,MEM,PF
+Klobi Glina,Alen,PF,Cameron Boozer,MEM,PF/C
 Klobi Glina,Alen,C,Joel Embiid,PHI,C
 Klobi Glina,Alen,BN,Kyrie Irving,DAL,PG/SG
 Klobi Glina,Alen,BN,Sion James,CHA,SG/SF
@@ -79,16 +79,17 @@ Rapske Manige,Rapske Manige,BN,Dyson Daniels,ATL,SG/SF
 Rapske Manige,Rapske Manige,BN,Moussa Diabaté,CHA,C
 Rapske Manige,Rapske Manige,BN,John Collins,DET,PF/C
 Rapske Manige,Rapske Manige,IL,Brandon Ingram,LAC,SG/SF/PF
-Čabar Hunters,Andrej,PG,De'Aaron Fox,SAS,PG
-Čabar Hunters,Andrej,SG,Jared McCain,OKC,PG/SG
+Čabar Hunters,Andrej,PG,Bones Hyland,MIN,PG/SG
+Čabar Hunters,Andrej,SG,Tyrese Proctor,CLE,PG/SG
 Čabar Hunters,Andrej,SF,Jayson Tatum,BOS,SF/PF
-Čabar Hunters,Andrej,PF,Cooper Flagg,DAL,SG/SF/PF
+Čabar Hunters,Andrej,PF,Jonathan Kuminga,MIN,SF/PF
 Čabar Hunters,Andrej,C,P.J. Washington,DAL,PF/C
-Čabar Hunters,Andrej,BN,Jonathan Kuminga,MIN,SF/PF
+Čabar Hunters,Andrej,BN,Cooper Flagg,DAL,SG/SF/PF
+Čabar Hunters,Andrej,BN,Jared McCain,OKC,PG/SG
 Čabar Hunters,Andrej,BN,Dillon Brooks,PHX,SF/PF
 Čabar Hunters,Andrej,BN,Rui Hachimura,LAC,SF/PF
-Čabar Hunters,Andrej,BN,Bones Hyland,MIN,PG/SG
 Čabar Hunters,Andrej,BN,Ja'Kobe Walter,TOR,PG/SG
+Čabar Hunters,Andrej,IL,De'Aaron Fox,SAS,PG
 Čabar Hunters,Andrej,IL,Dennis Schröder,CHA,PG/SG
 Čabar Hunters,Andrej,IL,Anthony Edwards,MIN,PG/SG
 ČKicago Bulls,Leon,PG,Jeremiah Fears,NOP,PG/SG
@@ -106,7 +107,7 @@ Silver Hill Capybaras,Blaz,SG,Miles McBride,NYK,PG/SG
 Silver Hill Capybaras,Blaz,SF,Cameron Johnson,DEN,SF/PF
 Silver Hill Capybaras,Blaz,PF,Giannis Antetokounmpo,MIA,PF/C
 Silver Hill Capybaras,Blaz,C,Jarrett Allen,CLE,C
-Silver Hill Capybaras,Blaz,BN,Dylan Harper,SAS,PG/SG
+Silver Hill Capybaras,Blaz,BN,Dylan Harper,SAS,PG/SG/SF
 Silver Hill Capybaras,Blaz,BN,Keegan Murray,SAC,SF/PF
 Silver Hill Capybaras,Blaz,BN,Sandro Mamukelashvili,LAL,PF/C
 Silver Hill Capybaras,Blaz,BN,Isaiah Hartenstein,OKC,C
