@@ -1,16 +1,17 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,Q,194,58
+Kris Dunn,LAC,PG/SG,,97,34
 Alex Caruso,OKC,SG/SF,,214,30
 Quenton Jackson,IND,PG/SG,,304,7
 Dean Wade,PHI,SF/PF,,242,2
 Aday Mara,OKC,C,,188,50
-Precious Achiuwa,SAC,PF/C,Q,229,23
+Precious Achiuwa,SAC,PF/C,Q,229,22
 Landry Shamet,NYK,SG/SF,,317,3
 Sam Hauser,BOS,SF/PF,,215,5
 Tristan da Silva,ORL,SF/PF,,142,22
 Baylor Scheierman,BOS,SG/SF,,209,3
 Daniel Gafford,DAL,C,,141,47
-Bennett Stirtz,OKC,PG,,246,4
+Bennett Stirtz,OKC,PG,,246,3
 Kentavious Caldwell-Pope,PHI,SG/SF,,281,2
 Reed Sheppard,HOU,PG/SG,,135,22
 Tre Jones,CHI,PG/SG,,144,20
@@ -24,7 +25,7 @@ Keaton Wagler,LAC,SG,,232,25
 Brayden Burries,MIL,SG,,151,22
 Kelly Oubre Jr.,IND,SF/PF,,195,26
 Bobby Portis Jr.,MIA,PF/C,,204,17
-Naji Marshall,DAL,SG/SF/PF,,146,25
+Naji Marshall,DAL,SG/SF/PF,,146,24
 Moritz Wagner,BKN,C,,356,8
 Georges Niang,GSW,PF,,411,1
 Ryan Dunn,PHX,SF/PF,,283,2
@@ -49,7 +50,7 @@ Caleb Martin,DAL,SF/PF,,345,3
 Keon Ellis,BKN,SG/SF,,192,2
 Al Horford,GSW,PF/C,,198,3
 Javonte Green,DET,SG/SF,,265,1
-Malik Monk,SAC,PG/SG,,218,5
+Malik Monk,SAC,PG/SG,,218,4
 Jakob Poeltl,TOR,C,,139,50
 Bogdan Bogdanović,HOU,PG/SG/SF,,368,1
 Deandre Ayton,WAS,C,,186,5
@@ -70,7 +71,6 @@ Larry Nance Jr.,IND,PF/C,,382,0
 Terrence Shannon Jr.,MIN,SG/SF,,160,9
 Will Richard,GSW,SG/SF,,295,1
 Josh Okogie,UTA,SG/SF,,312,0
-Danny Wolf,BKN,PF/C,,328,18
 Jase Richardson,ORL,PG/SG,,222,1
 Tyler Kolek,NYK,PG/SG,,358,1
 Patrick Williams,CHI,SF/PF,,311,10
