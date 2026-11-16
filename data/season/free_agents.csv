@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,Q,194,57
+Duncan Robinson,DET,SG/SF,O,194,57
 Kris Dunn,LAC,PG/SG,,97,32
 Alex Caruso,OKC,SG/SF,,214,29
 Quenton Jackson,IND,PG/SG,,304,7
@@ -43,7 +43,7 @@ Leaky Black,SAC,SF/PF,,387,1
 Aaron Nesmith,IND,SG/SF,,174,14
 Luguentz Dort,ATL,SG/SF,,251,5
 Khaman Maluach,PHX,C,,140,43
-Walter Clayton Jr.,DAL,PG/SG,,308,5
+Walter Clayton Jr.,DAL,PG/SG,,308,4
 Luke Kennard,PHX,SG/SF,,266,2
 Karlo Matković,NOP,PF/C,,279,6
 Caleb Martin,DAL,SF/PF,,345,3
@@ -62,7 +62,7 @@ Gradey Dick,LAC,SG/SF,,226,2
 Jay Huff,IND,C,,228,3
 Kingston Flemings,ATL,PG,Q,153,9
 Andre Drummond,NYK,C,,256,10
-Tre Johnson,WAS,PG/SG/SF,Q,248,3
+Tre Johnson,WAS,PG/SG/SF,,248,3
 Sam Merrill,CLE,SG/SF,O,273,2
 Sidy Cissoko,POR,SF/PF,,338,7
 Isaiah Jackson,LAC,C,,161,10

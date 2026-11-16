@@ -128,14 +128,14 @@ Madison Square Harden,Damir,BN,Kel'el Ware,MIL,C
 Madison Square Harden,Damir,IL,Stephen Curry,GSW,PG
 Madison Square Harden,Damir,IL,Jimmy Butler III,GSW,SF/PF
 Borongajci,,PG,Jordan Goodwin,PHX,PG/SG
-Borongajci,,SG,Josh Hart,NYK,SG/SF
-Borongajci,,SF,Bilal Coulibaly,WAS,SG/SF
+Borongajci,,SG,Jalen Green,PHX,SG/SF
+Borongajci,,SF,Deni Avdija,POR,SG/SF/PF
 Borongajci,,PF,Anthony Davis,WAS,PF/C
 Borongajci,,C,Alex Sarr,WAS,C
+Borongajci,,BN,Bilal Coulibaly,WAS,SG/SF
+Borongajci,,BN,Josh Hart,NYK,SG/SF
 Borongajci,,BN,Peyton Watson,CLE,SF/PF
-Borongajci,,BN,Deni Avdija,POR,SG/SF/PF
 Borongajci,,BN,Wendell Carter Jr.,ORL,C
-Borongajci,,BN,Jalen Green,PHX,SG/SF
 Borongajci,,BN,Mo Bamba,UTA,C
 Borongajci,,IL,Ty Jerome,MEM,PG/SG
 Borongajci,,IL,Dejounte Murray,NOP,PG/SG
@@ -143,15 +143,15 @@ Borongajci,,IL,Tyrese Haliburton,IND,PG/SG
 Borongajci,,IL,Jalen Duren,DET,C
 Harlem Bricks,Chosen One,PG,Nolan Traore,BKN,PG
 Harlem Bricks,Chosen One,SG,Derrick White,BOS,PG/SG
-Harlem Bricks,Chosen One,SF,Pelle Larsson,MIA,SG/SF
+Harlem Bricks,Chosen One,SF,Mikal Bridges,NYK,SF/PF
 Harlem Bricks,Chosen One,PF,Naz Reid,CHA,PF/C
-Harlem Bricks,Chosen One,C,Walker Kessler,LAL,C
+Harlem Bricks,Chosen One,C,Yves Missi,NOP,C
+Harlem Bricks,Chosen One,BN,Walker Kessler,LAL,C
 Harlem Bricks,Chosen One,BN,Shai Gilgeous-Alexander,OKC,PG
-Harlem Bricks,Chosen One,BN,Mikal Bridges,NYK,SF/PF
 Harlem Bricks,Chosen One,BN,Jaime Jaquez Jr.,MIL,SG/SF/PF
 Harlem Bricks,Chosen One,BN,Ryan Kalkbrenner,CHA,C
 Harlem Bricks,Chosen One,BN,Ajay Mitchell,OKC,PG/SG
-Harlem Bricks,Chosen One,IL,Yves Missi,NOP,C
+Harlem Bricks,Chosen One,IL,Pelle Larsson,MIA,SG/SF
 Varteks Banfica,Marko B.,PG,Tyrese Maxey,PHI,PG
 Varteks Banfica,Marko B.,SG,VJ Edgecombe,PHI,PG/SG
 Varteks Banfica,Marko B.,SF,Franz Wagner,ORL,SF/PF
@@ -169,11 +169,11 @@ Lipicaneri,Mario,SF,Mario Hezonja,CLE,SF/PF
 Lipicaneri,Mario,PF,Saddiq Bey,NOP,SF/PF
 Lipicaneri,Mario,C,Nikola Jokić,DEN,C
 Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
-Lipicaneri,Mario,BN,Neemias Queta,BOS,C
 Lipicaneri,Mario,BN,Keyonte George,UTA,PG/SG
 Lipicaneri,Mario,BN,Matisse Thybulle,LAL,SG/SF
 Lipicaneri,Mario,BN,Julian Champagnie,SAS,SF/PF
-Lipicaneri,Mario,IL,Jalen Smith,CHI,PF/C
+Lipicaneri,Mario,BN,Jalen Smith,CHI,PF/C
+Lipicaneri,Mario,IL,Neemias Queta,BOS,C
 Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
 Vikings,Damir,PG,Stephon Castle,SAS,PG/SG
 Vikings,Damir,SG,Amen Thompson,HOU,PG/SG
