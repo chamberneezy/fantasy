@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Kevin Huerter,DET,SG/SF,,216,15
+Duncan Robinson,DET,SG/SF,Q,194,60
 Precious Achiuwa,SAC,PF/C,O,229,23
 Alex Caruso,OKC,SG/SF,,214,30
 Quenton Jackson,IND,PG/SG,,310,7
@@ -34,6 +34,7 @@ Ryan Dunn,PHX,SF/PF,,283,2
 Luguentz Dort,ATL,SG/SF,,251,6
 Quentin Grimes,LAL,SG/SF,,159,18
 Keldon Johnson,SAS,SF/PF,,245,11
+Naji Marshall,DAL,SG/SF/PF,,146,28
 Royce O'Neale,CHA,SF/PF,,241,2
 Karlo Matković,NOP,PF/C,,279,7
 Khaman Maluach,PHX,C,,140,44
@@ -60,6 +61,7 @@ Walter Clayton Jr.,DAL,PG/SG,,311,6
 Will Richard,GSW,SG/SF,,295,1
 Andre Drummond,NYK,C,,256,11
 Luke Kornet,SAS,C,,263,2
+Leaky Black,SAC,SF/PF,,407,1
 AJ Green,MIL,PG/SG/SF,,272,1
 Luke Kennard,PHX,SG/SF,,267,2
 Jase Richardson,ORL,PG/SG,,222,1
@@ -72,5 +74,3 @@ Tyus Jones,DEN,PG,,315,0
 Jay Huff,IND,C,,228,3
 Buddy Hield,CHI,SG/SF,,302,1
 Caleb Martin,DAL,SF/PF,,351,3
-Isaac Okoro,CHI,SG/SF,,291,2
-Max Christie,DAL,SG/SF,O,264,2
