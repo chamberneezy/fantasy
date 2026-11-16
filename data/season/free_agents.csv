@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,Q,194,58
+Duncan Robinson,DET,SG/SF,Q,194,57
 Kris Dunn,LAC,PG/SG,,97,32
 Alex Caruso,OKC,SG/SF,,214,29
 Quenton Jackson,IND,PG/SG,,304,7
@@ -28,7 +28,7 @@ Bobby Portis Jr.,MIA,PF/C,,204,17
 Naji Marshall,DAL,SG/SF/PF,,146,23
 Moritz Wagner,BKN,C,,356,8
 Georges Niang,GSW,PF,,411,1
-Ryan Dunn,PHX,SF/PF,,283,2
+Ryan Dunn,PHX,SF/PF,Q,283,2
 Royce O'Neale,CHA,SF/PF,,241,2
 De'Andre Hunter,SAC,SF/PF,Q,227,24
 Jamison Battle,TOR,SF/PF,,359,2
@@ -73,4 +73,4 @@ Will Richard,GSW,SG/SF,,295,1
 Josh Okogie,UTA,SG/SF,,312,0
 Jase Richardson,ORL,PG/SG,,222,1
 Tyler Kolek,NYK,PG/SG,,358,1
-Patrick Williams,CHI,SF/PF,,311,11
+Tyus Jones,DEN,PG,,318,0
