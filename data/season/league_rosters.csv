@@ -56,26 +56,27 @@ Klobi Glina,Alen,BN,DeMar DeRozan,DEN,SF/PF
 Klobi Glina,Alen,IL,Kon Knueppel,CHA,SG/SF
 Klobi Glina,Alen,IL,Ja Morant,POR,PG
 Klobi Glina,Alen,IL,Jusuf Nurkić,UTA,C
-Old Stars,Pere,PG,Darius Garland,LAC,PG
+Old Stars,Pere,PG,Javon Small,MEM,PG/SG
 Old Stars,Pere,SG,Immanuel Quickley,TOR,PG/SG
 Old Stars,Pere,SF,AJ Dybantsa,WAS,SF
 Old Stars,Pere,PF,Michael Porter Jr.,BKN,SF/PF
 Old Stars,Pere,C,Bam Adebayo,MIA,PF/C
+Old Stars,Pere,BN,Darius Garland,LAC,PG
 Old Stars,Pere,BN,Collin Murray-Boyles,TOR,PF/C
-Old Stars,Pere,BN,Kelly Oubre Jr.,IND,SF/PF
 Old Stars,Pere,BN,Coby White,CHA,PG/SG
-Old Stars,Pere,BN,Jaren Jackson Jr.,UTA,PF/C
 Old Stars,Pere,BN,Kevin Huerter,DET,SG/SF
+Old Stars,Pere,BN,Keldon Johnson,SAS,SF/PF
+Old Stars,Pere,IL,Jaren Jackson Jr.,UTA,PF/C
 Old Stars,Pere,IL,Evan Mobley,CLE,PF/C
-Rapske Manige,Rapske Manige,PG,Payton Pritchard,BOS,PG
+Rapske Manige,Rapske Manige,PG,Damian Lillard,POR,PG
 Rapske Manige,Rapske Manige,SG,Kevin Durant,HOU,SG/SF/PF
 Rapske Manige,Rapske Manige,SF,Matas Buzelis,CHI,SF/PF
 Rapske Manige,Rapske Manige,PF,Domantas Sabonis,SAC,PF/C
 Rapske Manige,Rapske Manige,C,Donovan Clingan,POR,C
+Rapske Manige,Rapske Manige,BN,Payton Pritchard,BOS,PG
 Rapske Manige,Rapske Manige,BN,CJ McCollum,ATL,PG/SG
 Rapske Manige,Rapske Manige,BN,Dyson Daniels,ATL,SG/SF
 Rapske Manige,Rapske Manige,BN,Moussa Diabaté,CHA,C
-Rapske Manige,Rapske Manige,BN,Damian Lillard,POR,PG
 Rapske Manige,Rapske Manige,BN,John Collins,DET,PF/C
 Rapske Manige,Rapske Manige,IL,Brandon Ingram,LAC,SG/SF/PF
 Čabar Hunters,Andrej,PG,De'Aaron Fox,SAS,PG
@@ -113,13 +114,13 @@ Silver Hill Capybaras,Blaz,BN,Toumani Camara,POR,SF/PF
 Silver Hill Capybaras,Blaz,IL,Andrew Nembhard,IND,PG/SG
 Silver Hill Capybaras,Blaz,IL,Trey Murphy III,NOP,SG/SF
 Madison Square Harden,Damir,PG,De'Anthony Melton,GSW,PG/SG
-Madison Square Harden,Damir,SG,Luka Dončić,LAL,PG/SG
-Madison Square Harden,Damir,SF,Tari Eason,HOU,SG/SF/PF
-Madison Square Harden,Damir,PF,Alperen Şengün,HOU,PF/C
-Madison Square Harden,Damir,C,Myles Turner,MIL,C
-Madison Square Harden,Damir,BN,Jaden McDaniels,MIN,SF
-Madison Square Harden,Damir,BN,Yaxel Lendeborg,GSW,SF/PF
+Madison Square Harden,Damir,SG,Tari Eason,HOU,SG/SF/PF
+Madison Square Harden,Damir,SF,Jaden McDaniels,MIN,SF
+Madison Square Harden,Damir,PF,Yaxel Lendeborg,GSW,SF/PF
+Madison Square Harden,Damir,C,Alperen Şengün,HOU,PF/C
 Madison Square Harden,Damir,BN,Meleek Thomas,CLE,SG
+Madison Square Harden,Damir,BN,Luka Dončić,LAL,PG/SG
+Madison Square Harden,Damir,BN,Myles Turner,MIL,C
 Madison Square Harden,Damir,BN,Jerami Grant,MEM,SF/PF
 Madison Square Harden,Damir,BN,Kel'el Ware,MIL,C
 Madison Square Harden,Damir,IL,Stephen Curry,GSW,PG
@@ -152,24 +153,24 @@ Harlem Bricks,Chosen One,IL,Yves Missi,NOP,C
 Varteks Banfica,Marko B.,PG,Tyrese Maxey,PHI,PG
 Varteks Banfica,Marko B.,SG,VJ Edgecombe,PHI,PG/SG
 Varteks Banfica,Marko B.,SF,Franz Wagner,ORL,SF/PF
-Varteks Banfica,Marko B.,PF,Ace Bailey,UTA,SF/PF
+Varteks Banfica,Marko B.,PF,Olivier-Maxence Prosper,MEM,SF/PF/C
 Varteks Banfica,Marko B.,C,Rudy Gobert,MIN,C
+Varteks Banfica,Marko B.,BN,Ace Bailey,UTA,SF/PF
 Varteks Banfica,Marko B.,BN,Davion Mitchell,MIA,PG
 Varteks Banfica,Marko B.,BN,Trae Young,WAS,PG
-Varteks Banfica,Marko B.,BN,Tyrese Proctor,CLE,PG/SG
 Varteks Banfica,Marko B.,BN,Nic Claxton,CHI,C
 Varteks Banfica,Marko B.,BN,Max Strus,LAC,SF/PF
 Varteks Banfica,Marko B.,IL,Paolo Banchero,ORL,PF
 Lipicaneri,Mario,PG,Collin Gillespie,PHX,PG/SG
-Lipicaneri,Mario,SG,Keyonte George,UTA,PG/SG
-Lipicaneri,Mario,SF,Matisse Thybulle,LAL,SG/SF
-Lipicaneri,Mario,PF,Julian Champagnie,SAS,SF/PF
-Lipicaneri,Mario,C,Neemias Queta,BOS,C
-Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
+Lipicaneri,Mario,SG,Anthony Black,ORL,PG/SG/SF
+Lipicaneri,Mario,SF,Mario Hezonja,CLE,SF/PF
+Lipicaneri,Mario,PF,Saddiq Bey,NOP,SF/PF
+Lipicaneri,Mario,C,Nikola Jokić,DEN,C
 Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
-Lipicaneri,Mario,BN,Anthony Black,ORL,PG/SG/SF
-Lipicaneri,Mario,BN,Saddiq Bey,NOP,SF/PF
-Lipicaneri,Mario,BN,Nikola Jokić,DEN,C
+Lipicaneri,Mario,BN,Neemias Queta,BOS,C
+Lipicaneri,Mario,BN,Keyonte George,UTA,PG/SG
+Lipicaneri,Mario,BN,Matisse Thybulle,LAL,SG/SF
+Lipicaneri,Mario,BN,Julian Champagnie,SAS,SF/PF
 Lipicaneri,Mario,IL,Jalen Smith,CHI,PF/C
 Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
 Vikings,Damir,PG,Stephon Castle,SAS,PG/SG
