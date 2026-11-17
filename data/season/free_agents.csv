@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,O,194,57
+Duncan Robinson,DET,SG/SF,O,194,56
 Kris Dunn,LAC,PG/SG,,97,31
 Alex Caruso,OKC,SG/SF,,214,29
 Quenton Jackson,IND,PG/SG,,304,7
@@ -13,7 +13,7 @@ Baylor Scheierman,BOS,SG/SF,,209,3
 Daniel Gafford,DAL,C,,141,45
 Bennett Stirtz,OKC,PG,,246,3
 Kentavious Caldwell-Pope,PHI,SG/SF,,281,2
-Reed Sheppard,HOU,PG/SG,,135,22
+Reed Sheppard,HOU,PG/SG,,135,23
 Tre Jones,CHI,PG/SG,,144,20
 Robert Williams,III,POR,,210,12
 Kobe Sanders,LAC,SG/SF,,240,2
@@ -33,7 +33,7 @@ Royce O'Neale,CHA,SF/PF,,241,2
 De'Andre Hunter,SAC,SF/PF,Q,227,23
 Jamison Battle,TOR,SF/PF,,359,2
 Bub Carrington,WAS,PG/SG,,255,1
-Ryan Rollins,MIL,PG/SG,Q,105,81
+Ryan Rollins,MIL,PG/SG,Q,105,80
 Draymond Green,GSW,PF/C,,181,33
 Trey Lyles,MIN,PF,,429,1
 Joan Beringer,MIN,PF/C,,187,9
@@ -41,7 +41,7 @@ Brice Sensabaugh,UTA,SG/SF/PF,,225,4
 Jake LaRavia,LAL,SF/PF,,182,6
 Leaky Black,SAC,SF/PF,,387,1
 Aaron Nesmith,IND,SG/SF,,174,14
-Luguentz Dort,ATL,SG/SF,,251,5
+Luguentz Dort,ATL,SG/SF,,251,4
 Khaman Maluach,PHX,C,,140,43
 Walter Clayton Jr.,DAL,PG/SG,,308,4
 Luke Kennard,PHX,SG/SF,,266,2
