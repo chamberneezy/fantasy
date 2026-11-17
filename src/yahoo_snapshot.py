@@ -17,7 +17,9 @@ ROSTER_COLUMNS = ("fantasy_team", "manager", "slot", "player_name", "nba_team", 
 FREE_AGENT_COLUMNS = ("player_name", "nba_team", "positions", "yahoo_status", "yahoo_rank_pre", "pct_rostered")
 STATUS_TAGS = ("INJ", "GTD", "SUSP", "NA", "O", "Q", "D", "P")
 _ROW = re.compile(r"^(?P<slot>[A-Z]+) (?P<name>.+?) (?P<team>[A-Z]{2,4}) - (?P<positions>[A-Z,]+)$")
-_NOTE = re.compile(r"(New Player Note|Player Note|No new player Notes)")
+# Link labels Yahoo prints right after a player's name. "Video Forecast" appeared on 17 Nov 2026.
+_LABELS = r"(?:(?:New |No new )?[Pp]layer [Nn]otes?|Video Forecast)"
+_NOTE = re.compile(_LABELS)
 
 
 def split_status(name: str) -> tuple[str, str]:
@@ -112,7 +114,7 @@ def save_score(path: Path, rows: list[dict]) -> None:
 # Mario asked on 15 Nov 2026 for Yahoo to be read every hour on his server "gw". Still read only:
 # the reader opens pages and reads their tables; it never clicks, submits or changes a lineup.
 
-_CELL = re.compile(r"^(?P<name>.+?)\s*(?:(?:New |No new )?[Pp]layer [Nn]otes?)?\s*(?P<team>[A-Z]{2,4}) - (?P<positions>[A-Z,]+)(?:\s.*)?$")
+_CELL = re.compile(r"^(?P<name>.+?)\s*(?:" + _LABELS + r"\s*)*(?P<team>[A-Z]{2,4}) - (?P<positions>[A-Z,]+)(?:\s.*)?$")
 _ADDS = re.compile(r"used (\d+) of your (\d+) player adds")
 
 

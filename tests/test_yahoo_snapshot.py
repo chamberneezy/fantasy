@@ -16,6 +16,8 @@ def test_status_comes_off_the_name_but_numerals_stay() -> None:
     assert snapshot.split_status("Robert Williams III") == ("Robert Williams III", "")
     assert snapshot.split_status("Jusuf NurkićONo new player Notes") == ("Jusuf Nurkić", "O")
     assert snapshot.split_status("Doug McDermott") == ("Doug McDermott", "")
+    assert snapshot.split_status("Keyonte GeorgeVideo Forecast") == ("Keyonte George", "")
+    assert snapshot.split_status("Lauri MarkkanenOVideo Forecast") == ("Lauri Markkanen", "O")
 
 
 def test_short_names_expand_only_when_one_player_fits() -> None:
@@ -58,6 +60,8 @@ def test_score_row_reads_makes_and_attempts(tmp_path) -> None:
 def test_roster_cells_become_seat_lines_and_seats():
     assert snapshot.seat_text("IL", "Jalen SmithQNew Player Note CHI - PF,C") == "IL Jalen SmithQ CHI - PF,C"
     assert snapshot.seat_text("SF", "Derrick Jones Jr.Player Note LAC - SF,PF 4:30 pm vs CHA") == "SF Derrick Jones Jr. LAC - SF,PF"
+    assert snapshot.seat_text("BN", "Keyonte GeorgeVideo Forecast UTA - PG,SG") == "BN Keyonte George UTA - PG,SG"
+    assert snapshot.seat_text("IL", "Stephen CurryOPlayer NoteVideo Forecast GSW - PG") == "IL Stephen CurryO GSW - PG"
     assert snapshot.seat_text("BN", "(Empty)") is None
     found = snapshot.seats([
         ("PG", "Collin GillespiePlayer Note PHX - PG,SG 4:00 pm vs LAL"),
