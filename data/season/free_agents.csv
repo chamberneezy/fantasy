@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,O,194,55
+Duncan Robinson,DET,SG/SF,O,194,54
 Kris Dunn,LAC,PG/SG,,97,31
 Dean Wade,PHI,SF/PF,,242,3
 Alex Caruso,OKC,SG/SF,,214,28
@@ -17,6 +17,7 @@ Baylor Scheierman,BOS,SG/SF,,209,3
 Daniel Gafford,DAL,C,,141,44
 Bennett Stirtz,OKC,PG,,246,2
 Meleek Thomas,CLE,SG,,431,21
+Ja'Kobe Walter,TOR,PG/SG,,169,19
 Reed Sheppard,HOU,PG/SG,,135,21
 Anfernee Simons,PHI,PG/SG,,205,10
 Kenrich Williams,OKC,PF/C,,314,4
@@ -73,4 +74,3 @@ Tyus Jones,DEN,PG,,317,0
 Josh Okogie,UTA,SG/SF,,313,1
 Thomas Bryant,CLE,C,,304,1
 Jase Richardson,ORL,PG/SG,,222,1
-Noah Clowney,BKN,PF/C,,258,4
