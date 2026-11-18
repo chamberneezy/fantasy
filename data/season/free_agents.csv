@@ -1,18 +1,19 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,51
+Sandro Mamukelashvili,LAL,PF/C,,152,40
 Dean Wade,PHI,SF/PF,Q,242,4
-Alex Caruso,OKC,SG/SF,,214,28
+Alex Caruso,OKC,SG/SF,,214,29
 Tristan da Silva,ORL,SF/PF,,142,23
 Tre Jones,CHI,PG/SG,,144,23
 Ja'Kobe Walter,TOR,PG/SG,,169,20
 Sam Hauser,BOS,SF/PF,,215,5
 Jaylen Wells,MEM,SG/SF,,172,22
 Andrew Wiggins,MIA,SG/SF/PF,,125,60
-Robert Williams,III,POR,,210,12
+Robert Williams,IIIO,POR,,210,12
 Quenton Jackson,IND,PG/SG,,305,7
 Ziaire Williams,LAL,SG/SF,,239,11
 Aday Mara,OKC,C,,188,50
-Precious Achiuwa,SAC,PF/C,,229,19
+Precious Achiuwa,SAC,PF/C,,229,20
 Kentavious Caldwell-Pope,PHI,SG/SF,,280,2
 Baylor Scheierman,BOS,SG/SF,,209,3
 Daniel Gafford,DAL,C,,141,43
@@ -26,7 +27,7 @@ Kenrich Williams,OKC,PF/C,,315,4
 Trey Lyles,MIN,PF,,423,1
 Bobby Portis Jr.,MIA,PF/C,,204,17
 Royce O'Neale,CHA,SF/PF,,241,2
-Brayden Burries,MIL,SG,,151,20
+Brayden Burries,MIL,SG,,151,21
 Draymond Green,GSW,PF/C,Q,181,32
 Ryan Dunn,PHX,SF/PF,,282,1
 Luke Kennard,PHX,SG/SF,,266,2
@@ -73,4 +74,3 @@ Kingston Flemings,ATL,PG,O,153,10
 Sam Merrill,CLE,SG/SF,O,274,2
 Larry Nance Jr.,IND,PF/C,,379,0
 Tyus Jones,DEN,PG,,318,0
-Tyler Kolek,NYK,PG/SG,,357,1
