@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,O,194,53
+Duncan Robinson,DET,SG/SF,O,194,52
 Dean Wade,PHI,SF/PF,,242,3
 Alex Caruso,OKC,SG/SF,,214,28
 Tristan da Silva,ORL,SF/PF,,142,23
@@ -8,27 +8,27 @@ Sam Hauser,BOS,SF/PF,,215,5
 Jaylen Wells,MEM,SG/SF,,172,23
 Andrew Wiggins,MIA,SG/SF/PF,,125,60
 Ziaire Williams,LAL,SG/SF,,239,12
-Quenton Jackson,IND,PG/SG,,306,7
+Quenton Jackson,IND,PG/SG,,305,7
 Aday Mara,OKC,C,,188,50
 Precious Achiuwa,SAC,PF/C,Q,229,20
 Kentavious Caldwell-Pope,PHI,SG/SF,,280,2
-Robert Williams,III,POR,,210,13
+Robert Williams,III,POR,,210,12
 Baylor Scheierman,BOS,SG/SF,,209,3
 Daniel Gafford,DAL,C,,141,44
 Bennett Stirtz,OKC,PG,,246,2
-Meleek Thomas,CLE,SG,,431,20
+Meleek Thomas,CLE,SG,,430,20
 Ja'Kobe Walter,TOR,PG/SG,,169,19
 Reed Sheppard,HOU,PG/SG,,135,20
 Anfernee Simons,PHI,PG/SG,,205,10
-Kenrich Williams,OKC,PF/C,,314,4
+Kenrich Williams,OKC,PF/C,,315,4
 Kobe Sanders,LAC,SG/SF,,240,2
 Bilal Coulibaly,WAS,SG/SF,,233,7
 Bobby Portis Jr.,MIA,PF/C,,204,17
 Brayden Burries,MIL,SG,,151,20
-Trey Lyles,MIN,PF,,426,1
-Ryan Dunn,PHX,SF/PF,,283,2
+Trey Lyles,MIN,PF,,423,1
+Ryan Dunn,PHX,SF/PF,,282,2
 Luke Kennard,PHX,SG/SF,,266,2
-Draymond Green,GSW,PF/C,Q,181,33
+Draymond Green,GSW,PF/C,Q,181,32
 Naji Marshall,DAL,SG/SF/PF,,146,20
 Joan Beringer,MIN,PF/C,,187,9
 Royce O'Neale,CHA,SF/PF,,241,2
@@ -38,10 +38,10 @@ Jamison Battle,TOR,SF/PF,,359,2
 Bub Carrington,WAS,PG/SG,,255,1
 De'Andre Hunter,SAC,SF/PF,Q,227,21
 Ryan Rollins,MIL,PG/SG,,105,80
-Leaky Black,SAC,SF/PF,,386,1
+Leaky Black,SAC,SF/PF,,383,1
 Al Horford,GSW,PF/C,Q,198,3
 Khaman Maluach,PHX,C,,140,40
-Georges Niang,GSW,PF,,413,1
+Georges Niang,GSW,PF,,411,1
 Jake LaRavia,LAL,SF/PF,,182,10
 Aaron Nesmith,IND,SG/SF,,174,14
 Luguentz Dort,ATL,SG/SF,,251,4
@@ -50,13 +50,13 @@ Walter Clayton Jr.,DAL,PG/SG,P,308,3
 Peyton Watson,CLE,SF/PF,Q,148,52
 Caleb Martin,DAL,SF/PF,,345,4
 Tre Johnson,WAS,PG/SG/SF,,248,3
-Javonte Green,DET,SG/SF,,265,1
-Karlo Matković,NOP,PF/C,,279,5
+Javonte Green,DET,SG/SF,,264,1
+Karlo Matković,NOP,PF/C,,278,5
 Isaac Okoro,CHI,SG/SF,,285,2
 Deandre Ayton,WAS,C,,186,5
-Bogdan Bogdanović,HOU,PG/SG/SF,,368,1
+Bogdan Bogdanović,HOU,PG/SG/SF,,369,1
 Charles Bassey,GSW,C,,389,4
-Sidy Cissoko,POR,SF/PF,,339,7
+Sidy Cissoko,POR,SF/PF,,338,7
 Jakob Poeltl,TOR,C,,139,47
 Malik Monk,SAC,PG/SG,,218,4
 Will Richard,GSW,SG/SF,,292,1
@@ -70,7 +70,7 @@ Sam Merrill,CLE,SG/SF,O,274,2
 Kingston Flemings,ATL,PG,O,153,10
 Luke Kornet,SAS,C,,263,1
 Isaiah Jackson,LAC,C,,161,12
-Larry Nance Jr.,IND,PF/C,,382,0
-Tyus Jones,DEN,PG,,317,0
-Josh Okogie,UTA,SG/SF,,313,1
+Larry Nance Jr.,IND,PF/C,,379,0
+Tyus Jones,DEN,PG,,318,0
+Josh Okogie,UTA,SG/SF,,309,1
 Thomas Bryant,CLE,C,,304,1
