@@ -33,14 +33,14 @@ John Zid,Zvonimir,BN,Aaron Gordon,DEN,PF/C
 John Zid,Zvonimir,BN,Patrick Williams,CHI,SF/PF
 John Zid,Zvonimir,IL,Jaylen Brown,PHI,SG/SF/PF
 John Zid,Zvonimir,IL,Caleb Wilson,CHI,PF
-BC Versus,Davor M,PG,Cam Spencer,MEM,PG/SG
-BC Versus,Davor M,SG,Desmond Bane,ORL,SG/SF
-BC Versus,Davor M,SF,Scottie Barnes,TOR,SF/PF/C
+BC Versus,Davor M,PG,LaMelo Ball,MIN,PG
+BC Versus,Davor M,SG,Cam Spencer,MEM,PG/SG
+BC Versus,Davor M,SF,Landry Shamet,NYK,SG/SF
 BC Versus,Davor M,PF,Julius Randle,BKN,PF
 BC Versus,Davor M,C,Pascal Siakam,IND,PF/C
-BC Versus,Davor M,BN,LaMelo Ball,MIN,PG
+BC Versus,Davor M,BN,Scottie Barnes,TOR,SF/PF/C
+BC Versus,Davor M,BN,Desmond Bane,ORL,SG/SF
 BC Versus,Davor M,BN,Klay Thompson,MIA,SG/SF
-BC Versus,Davor M,BN,Landry Shamet,NYK,SG/SF
 BC Versus,Davor M,BN,Grayson Allen,CHA,SG/SF
 BC Versus,Davor M,BN,Zach Edey,MEM,C
 BC Versus,Davor M,IL,Jaxson Hayes,UTA,C
@@ -116,16 +116,16 @@ Silver Hill Capybaras,Blaz,BN,Keegan Murray,SAC,SF/PF
 Silver Hill Capybaras,Blaz,IL,Dylan Harper,SAS,PG/SG/SF
 Silver Hill Capybaras,Blaz,IL,Andrew Nembhard,IND,PG/SG
 Silver Hill Capybaras,Blaz,IL,Trey Murphy III,NOP,SG/SF
-Madison Square Harden,Damir,PG,Luka Dončić,LAL,PG/SG
-Madison Square Harden,Damir,SG,De'Anthony Melton,GSW,PG/SG
+Madison Square Harden,Damir,PG,De'Anthony Melton,GSW,PG/SG
+Madison Square Harden,Damir,SG,Will Richard,GSW,SG/SF
 Madison Square Harden,Damir,SF,Jaden McDaniels,MIN,SF
 Madison Square Harden,Damir,PF,Yaxel Lendeborg,GSW,SF/PF
-Madison Square Harden,Damir,C,Myles Turner,MIL,C
+Madison Square Harden,Damir,C,Kel'el Ware,MIL,C
+Madison Square Harden,Damir,BN,Luka Dončić,LAL,PG/SG
+Madison Square Harden,Damir,BN,Myles Turner,MIL,C
 Madison Square Harden,Damir,BN,Tari Eason,HOU,SG/SF/PF
 Madison Square Harden,Damir,BN,Alperen Şengün,HOU,PF/C
 Madison Square Harden,Damir,BN,Jerami Grant,MEM,SF/PF
-Madison Square Harden,Damir,BN,Brice Sensabaugh,UTA,SG/SF/PF
-Madison Square Harden,Damir,BN,Kel'el Ware,MIL,C
 Madison Square Harden,Damir,IL,Stephen Curry,GSW,PG
 Madison Square Harden,Damir,IL,Jimmy Butler III,GSW,SF/PF
 Borongajci,,PG,Jordan Goodwin,PHX,PG/SG

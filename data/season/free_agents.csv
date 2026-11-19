@@ -1,7 +1,7 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,50
-Sandro Mamukelashvili,LAL,PF/C,,145,37
-Ja'Kobe Walter,TOR,PG/SG,,147,22
+Sandro Mamukelashvili,LAL,PF/C,,145,36
+Ja'Kobe Walter,TOR,PG/SG,,147,23
 Sam Hauser,BOS,SF/PF,,215,5
 Tristan da Silva,ORL,SF/PF,,150,22
 Tre Jones,CHI,PG/SG,,151,24
@@ -11,7 +11,7 @@ Andrew Wiggins,MIA,SG/SF/PF,,126,60
 Aday Mara,OKC,C,,188,50
 Kentavious Caldwell-Pope,PHI,SG/SF,,278,2
 Jaylen Wells,MEM,SG/SF,,152,23
-Alex Caruso,OKC,SG/SF,Q,214,26
+Alex Caruso,OKC,SG/SF,Q,214,25
 Robert Williams,IIIO,POR,,210,10
 Reed Sheppard,HOU,PG/SG,,141,19
 Anfernee Simons,PHI,PG/SG,,205,10
@@ -22,6 +22,7 @@ Bennett Stirtz,OKC,PG,,246,2
 Daniel Gafford,DAL,C,,149,43
 Baylor Scheierman,BOS,SG/SF,,209,2
 Precious Achiuwa,SAC,PF/C,,229,18
+Brice Sensabaugh,UTA,SG/SF/PF,,225,24
 Jamal Shead,TOR,PG,,135,19
 Kobe Sanders,LAC,SG/SF,,240,2
 Bilal Coulibaly,WAS,SG/SF,,233,7
@@ -29,7 +30,7 @@ Bobby Portis Jr.,MIA,PF/C,,204,16
 Jake LaRavia,LAL,SF/PF,,182,8
 Draymond Green,GSW,PF/C,O,181,31
 Trey Lyles,MIN,PF,,424,2
-Naji Marshall,DAL,SG/SF/PF,,155,19
+Naji Marshall,DAL,SG/SF/PF,,155,18
 Jamison Battle,TOR,SF/PF,,357,1
 Javonte Green,DET,SG/SF,,264,1
 Royce O'Neale,CHA,SF/PF,,241,1
@@ -39,10 +40,9 @@ Luguentz Dort,ATL,SG/SF,,251,4
 Moritz Wagner,BKN,C,,353,7
 Ryan Dunn,PHX,SF/PF,,284,1
 Joan Beringer,MIN,PF/C,,187,10
-Will Richard,GSW,SG/SF,,287,4
 De'Andre Hunter,SAC,SF/PF,,227,20
 Caleb Martin,DAL,SF/PF,,340,4
-Jakob Poeltl,TOR,C,,146,44
+Jakob Poeltl,TOR,C,,146,43
 Keon Ellis,BKN,SG/SF,,192,1
 Isaac Okoro,CHI,SG/SF,,283,3
 Walter Clayton Jr.,DAL,PG/SG,,307,3
@@ -62,10 +62,10 @@ Jay Huff,IND,C,,228,3
 Tre Johnson,WAS,PG/SG/SF,,248,3
 Deandre Ayton,WAS,C,,186,5
 Charles Bassey,GSW,C,,390,6
-Isaiah Jackson,LAC,C,,164,12
+Isaiah Jackson,LAC,C,,164,13
 Josh Okogie,UTA,SG/SF,,309,1
 Luke Kornet,SAS,C,,263,1
-Svi Mykhailiuk,UTA,SG/SF,,319,0
+Svi Mykhailiuk,UTA,SG/SF,,319,1
 Andre Drummond,NYK,C,,256,9
 Bogdan Bogdanović,HOU,PG/SG/SF,,369,1
 Buddy Hield,CHI,SG/SF,,299,2
