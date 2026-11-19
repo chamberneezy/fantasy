@@ -2,7 +2,7 @@ player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,51
 Sandro Mamukelashvili,LAL,PF/C,,152,40
 Dean Wade,PHI,SF/PF,O,242,3
-Alex Caruso,OKC,SG/SF,,214,29
+Alex Caruso,OKC,SG/SF,O,214,29
 Tristan da Silva,ORL,SF/PF,,142,23
 Tre Jones,CHI,PG/SG,,144,24
 Ja'Kobe Walter,TOR,PG/SG,,169,21
@@ -65,7 +65,7 @@ Luke Kornet,SAS,C,,263,1
 Andre Drummond,NYK,C,,256,9
 Malik Monk,SAC,PG/SG,,218,4
 Gradey Dick,LAC,SG/SF,,226,2
-Kasparas Jakučionis,MIL,PG/SG,,249,4
+Kasparas Jakučionis,MIL,PG/SG,,249,5
 Brandon Williams,GSW,PG,O,286,2
 Will Richard,GSW,SG/SF,,292,1
 Jarace Walker,IND,SF/PF,,224,2
