@@ -1,5 +1,5 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
-Duncan Robinson,DET,SG/SF,O,194,51
+Duncan Robinson,DET,SG/SF,O,194,50
 Sandro Mamukelashvili,LAL,PF/C,,152,38
 Ja'Kobe Walter,TOR,PG/SG,,169,22
 Sam Hauser,BOS,SF/PF,,215,5
@@ -16,13 +16,13 @@ Robert Williams,IIIO,POR,,210,11
 Reed Sheppard,HOU,PG/SG,,135,19
 Anfernee Simons,PHI,PG/SG,,205,10
 Meleek Thomas,CLE,SG,,430,20
-Ziaire Williams,LAL,SG/SF,,239,10
+Ziaire Williams,LAL,SG/SF,,239,9
 Kenrich Williams,OKC,PF/C,,315,4
 Bennett Stirtz,OKC,PG,,246,2
 Daniel Gafford,DAL,C,,141,43
 Baylor Scheierman,BOS,SG/SF,,209,2
 Precious Achiuwa,SAC,PF/C,,229,19
-Jamal Shead,TOR,PG,,143,20
+Jamal Shead,TOR,PG,,143,19
 Kobe Sanders,LAC,SG/SF,,240,2
 Bilal Coulibaly,WAS,SG/SF,,233,7
 Bobby Portis Jr.,MIA,PF/C,,204,17
@@ -41,7 +41,7 @@ Ryan Dunn,PHX,SF/PF,,282,1
 Joan Beringer,MIN,PF/C,,187,9
 Will Richard,GSW,SG/SF,,292,2
 De'Andre Hunter,SAC,SF/PF,,227,20
-Caleb Martin,DAL,SF/PF,,345,5
+Caleb Martin,DAL,SF/PF,,345,4
 Jakob Poeltl,TOR,C,,139,44
 Keon Ellis,BKN,SG/SF,,192,1
 Isaac Okoro,CHI,SG/SF,,285,3
