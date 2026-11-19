@@ -2,7 +2,7 @@ player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,51
 Sandro Mamukelashvili,LAL,PF/C,,152,39
 Dean Wade,PHI,SF/PF,O,242,3
-Alex Caruso,OKC,SG/SF,O,214,29
+Alex Caruso,OKC,SG/SF,O,214,28
 Tristan da Silva,ORL,SF/PF,,142,23
 Tre Jones,CHI,PG/SG,,144,24
 Ja'Kobe Walter,TOR,PG/SG,,169,21
@@ -21,13 +21,14 @@ Kobe Sanders,LAC,SG/SF,,240,2
 Meleek Thomas,CLE,SG,,430,20
 Bennett Stirtz,OKC,PG,,246,2
 Reed Sheppard,HOU,PG/SG,,135,19
+Jamal Shead,TOR,PG,,143,20
 Anfernee Simons,PHI,PG/SG,,205,10
 Bilal Coulibaly,WAS,SG/SF,,233,7
 Kenrich Williams,OKC,PF/C,,315,4
 Trey Lyles,MIN,PF,,423,1
 Bobby Portis Jr.,MIA,PF/C,,204,17
 Royce O'Neale,CHA,SF/PF,,241,2
-Brayden Burries,MIL,SG,,151,21
+Collin Murray-Boyles,TOR,PF/C,Q,108,74
 Draymond Green,GSW,PF/C,,181,32
 Ryan Dunn,PHX,SF/PF,,282,1
 Luke Kennard,PHX,SG/SF,,266,2
@@ -56,7 +57,7 @@ Caleb Martin,DAL,SF/PF,,345,5
 Josh Okogie,UTA,SG/SF,,309,1
 Tre Johnson,WAS,PG/SG/SF,,248,3
 Karlo Matković,NOP,PF/C,,278,4
-Isaiah Jackson,LAC,C,,161,11
+Isaiah Jackson,LAC,C,,161,12
 Isaac Okoro,CHI,SG/SF,,285,3
 Charles Bassey,GSW,C,,389,4
 Bogdan Bogdanović,HOU,PG/SG/SF,,369,1
@@ -64,8 +65,6 @@ Deandre Ayton,WAS,C,,186,5
 Luke Kornet,SAS,C,,263,1
 Andre Drummond,NYK,C,,256,9
 Malik Monk,SAC,PG/SG,,218,4
-Gradey Dick,LAC,SG/SF,,226,2
-Kasparas Jakučionis,MIL,PG/SG,,249,6
 Brandon Williams,GSW,PG,O,286,2
 Will Richard,GSW,SG/SF,,292,1
 Jarace Walker,IND,SF/PF,,224,2
@@ -74,3 +73,4 @@ Kingston Flemings,ATL,PG,O,153,10
 Sam Merrill,CLE,SG/SF,,274,2
 Larry Nance Jr.,IND,PF/C,,379,0
 Tyus Jones,DEN,PG,,318,0
+Tyler Kolek,NYK,PG/SG,,357,1
