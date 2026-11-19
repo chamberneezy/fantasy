@@ -1,6 +1,6 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,50
-Sandro Mamukelashvili,LAL,PF/C,,152,38
+Sandro Mamukelashvili,LAL,PF/C,,152,37
 Ja'Kobe Walter,TOR,PG/SG,,169,22
 Sam Hauser,BOS,SF/PF,,215,5
 Tristan da Silva,ORL,SF/PF,,142,23
@@ -11,8 +11,8 @@ Andrew Wiggins,MIA,SG/SF/PF,,125,60
 Aday Mara,OKC,C,,188,50
 Kentavious Caldwell-Pope,PHI,SG/SF,,280,2
 Jaylen Wells,MEM,SG/SF,,172,22
-Alex Caruso,OKC,SG/SF,Q,214,27
-Robert Williams,IIIO,POR,,210,11
+Alex Caruso,OKC,SG/SF,Q,214,26
+Robert Williams,IIIO,POR,,210,10
 Reed Sheppard,HOU,PG/SG,,135,19
 Anfernee Simons,PHI,PG/SG,,205,10
 Meleek Thomas,CLE,SG,,430,20
@@ -27,14 +27,14 @@ Kobe Sanders,LAC,SG/SF,,240,2
 Bilal Coulibaly,WAS,SG/SF,,233,7
 Bobby Portis Jr.,MIA,PF/C,,204,16
 Jake LaRavia,LAL,SF/PF,,182,9
-Draymond Green,GSW,PF/C,,181,32
+Draymond Green,GSW,PF/C,D,181,32
 Trey Lyles,MIN,PF,,424,1
 Naji Marshall,DAL,SG/SF/PF,,155,19
 Jamison Battle,TOR,SF/PF,,357,1
 Javonte Green,DET,SG/SF,,264,1
 Royce O'Neale,CHA,SF/PF,,241,2
 Luke Kennard,PHX,SG/SF,,266,2
-Collin Murray-Boyles,TOR,PF/C,Q,111,73
+Collin Murray-Boyles,TOR,PF/C,Q,111,72
 Luguentz Dort,ATL,SG/SF,,251,4
 Moritz Wagner,BKN,C,,353,7
 Ryan Dunn,PHX,SF/PF,,284,1
