@@ -1,16 +1,16 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,51
 Sandro Mamukelashvili,LAL,PF/C,,152,40
-Dean Wade,PHI,SF/PF,Q,242,4
+Dean Wade,PHI,SF/PF,O,242,3
 Alex Caruso,OKC,SG/SF,,214,29
 Tristan da Silva,ORL,SF/PF,,142,23
 Tre Jones,CHI,PG/SG,,144,23
-Ja'Kobe Walter,TOR,PG/SG,,169,20
+Ja'Kobe Walter,TOR,PG/SG,,169,21
 Sam Hauser,BOS,SF/PF,,215,5
 Jaylen Wells,MEM,SG/SF,,172,22
 Andrew Wiggins,MIA,SG/SF/PF,,125,60
-Robert Williams,IIIO,POR,,210,12
-Quenton Jackson,IND,PG/SG,,305,7
+Robert Williams,IIIO,POR,,210,11
+Quenton Jackson,IND,PG/SG,,305,8
 Ziaire Williams,LAL,SG/SF,,239,11
 Aday Mara,OKC,C,,188,50
 Precious Achiuwa,SAC,PF/C,,229,20
@@ -28,7 +28,7 @@ Trey Lyles,MIN,PF,,423,1
 Bobby Portis Jr.,MIA,PF/C,,204,17
 Royce O'Neale,CHA,SF/PF,,241,2
 Brayden Burries,MIL,SG,,151,21
-Draymond Green,GSW,PF/C,Q,181,32
+Draymond Green,GSW,PF/C,,181,32
 Ryan Dunn,PHX,SF/PF,,282,1
 Luke Kennard,PHX,SG/SF,,266,2
 Jake LaRavia,LAL,SF/PF,,182,10
@@ -43,15 +43,15 @@ Jamison Battle,TOR,SF/PF,,359,1
 Leaky Black,SAC,SF/PF,,383,2
 Khaman Maluach,PHX,C,,140,39
 Georges Niang,GSW,PF,,411,1
-Al Horford,GSW,PF/C,Q,198,3
-Aaron Nesmith,IND,SG/SF,,174,14
+Al Horford,GSW,PF/C,O,198,3
+Aaron Nesmith,IND,SG/SF,,174,15
 Luguentz Dort,ATL,SG/SF,,251,4
 Walter Clayton Jr.,DAL,PG/SG,P,308,3
 Trevon Brazile,DEN,PF,,247,3
 Sidy Cissoko,POR,SF/PF,,338,6
 Javonte Green,DET,SG/SF,,264,1
-Peyton Watson,CLE,SF/PF,D,148,51
-Jakob Poeltl,TOR,C,,139,45
+Peyton Watson,CLE,SF/PF,O,148,51
+Jakob Poeltl,TOR,C,,139,44
 Caleb Martin,DAL,SF/PF,,345,4
 Josh Okogie,UTA,SG/SF,,309,1
 Tre Johnson,WAS,PG/SG/SF,,248,3
@@ -65,12 +65,12 @@ Luke Kornet,SAS,C,,263,1
 Andre Drummond,NYK,C,,256,9
 Malik Monk,SAC,PG/SG,,218,4
 Gradey Dick,LAC,SG/SF,,226,2
-Kasparas Jakučionis,MIL,PG/SG,,249,3
+Kasparas Jakučionis,MIL,PG/SG,,249,4
 Brandon Williams,GSW,PG,O,286,2
 Will Richard,GSW,SG/SF,,292,1
 Jarace Walker,IND,SF/PF,,224,2
 Jay Huff,IND,C,,228,3
 Kingston Flemings,ATL,PG,O,153,10
-Sam Merrill,CLE,SG/SF,O,274,2
+Sam Merrill,CLE,SG/SF,,274,2
 Larry Nance Jr.,IND,PF/C,,379,0
 Tyus Jones,DEN,PG,,318,0
