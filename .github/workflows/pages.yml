@@ -1,8 +1,8 @@
 name: GitHub Pages
 
+# Since 20 Nov 2026 only gw starts this, once an hour after its publish
+# (scripts/publish_season.py). The iPhone app reads data/season/app.json here.
 on:
-  push:
-    branches: [main, cursor/3rd-league-draft-dollars]
   workflow_dispatch:
 
 permissions:
