@@ -1,6 +1,6 @@
 player_name,nba_team,positions,yahoo_status,yahoo_rank_pre,pct_rostered
 Duncan Robinson,DET,SG/SF,O,194,49
-Derrick Jones Jr.,LAC,SF/PF,,183,23
+Derrick Jones Jr.,LAC,SF/PF,,183,22
 Sandro Mamukelashvili,LAL,PF/C,,145,35
 Jaylen Wells,MEM,SG/SF,,152,22
 Ja'Kobe Walter,TOR,PG/SG,,147,29
@@ -18,7 +18,7 @@ Ziaire Williams,LAL,SG/SF,,239,8
 Daniel Gafford,DAL,C,,149,42
 Bennett Stirtz,OKC,PG,,246,2
 Alex Caruso,OKC,SG/SF,Q,214,24
-Precious Achiuwa,SAC,PF/C,D,229,17
+Precious Achiuwa,SAC,PF/C,O,229,17
 Brice Sensabaugh,UTA,SG/SF/PF,,225,24
 Kenrich Williams,OKC,PF/C,,314,4
 Anfernee Simons,PHI,PG/SG,,205,10
