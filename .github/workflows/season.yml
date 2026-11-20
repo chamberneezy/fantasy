@@ -1,23 +1,11 @@
 # Season feed for the NBA Fantasy pad and iPhone app.
-# GitHub runs schedules only from the default branch, so a copy of this file lives on
-# main for the schedule; this copy on the working branch runs it after a push that
-# changes the roster, the league files, a Yahoo score or the code.
+# GitHub runs schedules only from the default branch, so this file lives on main
+# and runs the code on the working branch below.
 name: Season feed
 
+# Since 15 Nov 2026 the home server gw runs this every hour (scripts/server/season_hourly.sh).
+# The schedule is off; run it by hand here if gw is down.
 on:
-  schedule:
-    - cron: "0 6,7,8 * * *"   # mornings (07-09 Zurich in winter): last night's box scores
-    - cron: "0 17,22 * * *"   # evenings: injury news before tip-off
-  push:
-    branches: [cursor/3rd-league-draft-dollars]
-    paths:
-      - data/season_session.json
-      - data/season/league_rosters.csv
-      - data/season/free_agents.csv
-      - data/season/matchups.csv
-      - data/season/yahoo_scores.csv
-      - src/**
-      - scripts/**
   workflow_dispatch:
   repository_dispatch:
     types: [season-refresh]
@@ -33,7 +21,7 @@ concurrency:
 env:
   CODE_REF: cursor/3rd-league-draft-dollars
   FEED_BRANCH: season-feed
-  FEED_FILES: schedule.csv players.csv gamelogs_2026-27.csv injuries.csv feed.json
+  FEED_FILES: schedule.csv players.csv gamelogs_2026-27.csv shots_2026-27.csv boxextra_2026-27.csv injuries.csv feed.json
 
 jobs:
   refresh:
