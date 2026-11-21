@@ -2,13 +2,14 @@ fantasy_team,manager,slot,player_name,nba_team,positions
 Mother Tucker,Bat,PG,Jamal Murray,DEN,PG
 Mother Tucker,Bat,SG,Keaton Wagler,LAC,SG
 Mother Tucker,Bat,SF,Cedric Coward,MEM,SG/SF
-Mother Tucker,Bat,PF,Miles Bridges,PHX,PF
-Mother Tucker,Bat,C,Zion Williamson,NOP,PF/C
+Mother Tucker,Bat,PF,Zion Williamson,NOP,PF/C
+Mother Tucker,Bat,C,Joan Beringer,MIN,PF/C
+Mother Tucker,Bat,BN,Miles Bridges,PHX,PF
 Mother Tucker,Bat,BN,Devin Booker,PHX,PG/SG
 Mother Tucker,Bat,BN,Quentin Grimes,LAL,SG/SF
-Mother Tucker,Bat,BN,RJ Barrett,TOR,SG/SF/PF
 Mother Tucker,Bat,BN,Paul Reed,DET,PF/C
 Mother Tucker,Bat,BN,Norman Powell,CHI,SG/SF
+Mother Tucker,Bat,IL,RJ Barrett,TOR,SG/SF/PF
 Mother Tucker,Bat,IL,Austin Reaves,LAL,PG/SG/SF
 Mother Tucker,Bat,IL,Chet Holmgren,OKC,PF/C
 Brzi Botaničari,Fix,PG,Nickeil Alexander-Walker,ATL,PG/SG
@@ -44,16 +45,16 @@ BC Versus,Davor M,BN,Klay Thompson,MIA,SG/SF
 BC Versus,Davor M,BN,Grayson Allen,CHA,SG/SF
 BC Versus,Davor M,BN,Zach Edey,MEM,C
 BC Versus,Davor M,IL,Jaxson Hayes,UTA,C
-Klobi Glina,Alen,PG,Fred VanVleet,HOU,PG
-Klobi Glina,Alen,SG,James Harden,CLE,PG/SG
-Klobi Glina,Alen,SF,Sion James,CHA,SG/SF
-Klobi Glina,Alen,PF,Cameron Boozer,MEM,PF/C
-Klobi Glina,Alen,C,Aday Mara,OKC,C
-Klobi Glina,Alen,BN,Karl-Anthony Towns,NYK,PF/C
-Klobi Glina,Alen,BN,Brayden Burries,MIL,SG
-Klobi Glina,Alen,BN,Kyrie Irving,DAL,PG/SG
-Klobi Glina,Alen,BN,LeBron James,PHI,SF/PF
-Klobi Glina,Alen,BN,Joel Embiid,PHI,C
+Klobi Glina,Alen,PG,Kyrie Irving,DAL,PG/SG
+Klobi Glina,Alen,SG,Brayden Burries,MIL,SG
+Klobi Glina,Alen,SF,LeBron James,PHI,SF/PF
+Klobi Glina,Alen,PF,Karl-Anthony Towns,NYK,PF/C
+Klobi Glina,Alen,C,Joel Embiid,PHI,C
+Klobi Glina,Alen,BN,Aday Mara,OKC,C
+Klobi Glina,Alen,BN,Cameron Boozer,MEM,PF/C
+Klobi Glina,Alen,BN,Sion James,CHA,SG/SF
+Klobi Glina,Alen,BN,James Harden,CLE,PG/SG
+Klobi Glina,Alen,BN,Fred VanVleet,HOU,PG
 Klobi Glina,Alen,IL,Kon Knueppel,CHA,SG/SF
 Klobi Glina,Alen,IL,Ja Morant,POR,PG
 Klobi Glina,Alen,IL,Jusuf Nurkić,UTA,C
@@ -70,12 +71,12 @@ Old Stars,Pere,IL,Jaren Jackson Jr.,UTA,PF/C
 Old Stars,Pere,IL,Evan Mobley,CLE,PF/C
 Rapske Manige,Rapske Manige,PG,Damian Lillard,POR,PG
 Rapske Manige,Rapske Manige,SG,Jordan Poole,NOP,PG/SG
-Rapske Manige,Rapske Manige,SF,Dyson Daniels,ATL,SG/SF
+Rapske Manige,Rapske Manige,SF,Jaylen Wells,MEM,SG/SF
 Rapske Manige,Rapske Manige,PF,Domantas Sabonis,SAC,PF/C
 Rapske Manige,Rapske Manige,C,Donovan Clingan,POR,C
+Rapske Manige,Rapske Manige,BN,Dyson Daniels,ATL,SG/SF
 Rapske Manige,Rapske Manige,BN,Kevin Durant,HOU,SG/SF/PF
 Rapske Manige,Rapske Manige,BN,Matas Buzelis,CHI,SF/PF
-Rapske Manige,Rapske Manige,BN,John Collins,DET,PF/C
 Rapske Manige,Rapske Manige,BN,Moussa Diabaté,CHA,C
 Rapske Manige,Rapske Manige,BN,Payton Pritchard,BOS,PG
 Rapske Manige,Rapske Manige,IL,CJ McCollum,ATL,PG/SG
@@ -162,17 +163,17 @@ Varteks Banfica,Marko B.,BN,Nic Claxton,CHI,C
 Varteks Banfica,Marko B.,BN,Davion Mitchell,MIA,PG
 Varteks Banfica,Marko B.,IL,Tyrese Maxey,PHI,PG
 Varteks Banfica,Marko B.,IL,Paolo Banchero,ORL,PF
-Lipicaneri,Mario,PG,Keyonte George,UTA,PG/SG
+Lipicaneri,Mario,PG,Jrue Holiday,POR,PG/SG
 Lipicaneri,Mario,SG,Matisse Thybulle,LAL,SG/SF
 Lipicaneri,Mario,SF,Saddiq Bey,NOP,SF/PF
-Lipicaneri,Mario,PF,Mario Hezonja,CLE,SF/PF
-Lipicaneri,Mario,C,Nikola Jokić,DEN,C
-Lipicaneri,Mario,BN,Jalen Smith,CHI,PF/C
+Lipicaneri,Mario,PF,Julian Champagnie,SAS,SF/PF
+Lipicaneri,Mario,C,Neemias Queta,BOS,C
+Lipicaneri,Mario,BN,Keyonte George,UTA,PG/SG
+Lipicaneri,Mario,BN,Mario Hezonja,CLE,SF/PF
+Lipicaneri,Mario,BN,Nikola Jokić,DEN,C
 Lipicaneri,Mario,BN,Collin Gillespie,PHX,PG/SG
-Lipicaneri,Mario,BN,Jrue Holiday,POR,PG/SG
-Lipicaneri,Mario,BN,Julian Champagnie,SAS,SF/PF
 Lipicaneri,Mario,BN,Anthony Black,ORL,PG/SG/SF
-Lipicaneri,Mario,IL,Neemias Queta,BOS,C
+Lipicaneri,Mario,IL,Jalen Smith,CHI,PF/C
 Lipicaneri,Mario,IL,Kawhi Leonard,TOR,SG/SF/PF
 Vikings,Damir,PG,Stephon Castle,SAS,PG/SG
 Vikings,Damir,SG,Kris Dunn,LAC,PG/SG
